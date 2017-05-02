@@ -1,0 +1,159 @@
+{
+  "head" : {
+    "vars" : [
+      "sub",
+      "pred",
+      "obj"
+    ]
+  },
+  "results" : {
+    "bindings" : [
+      {
+        "sub" : {
+          "type" : "uri",
+          "value" : "http://brt.basisregistraties.overheid.nl/top10nl/id/waterdeel/108150017"
+        },
+        "pred" : {
+          "type" : "uri",
+          "value" : "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+        },
+        "obj" : {
+          "type" : "uri",
+          "value" : "http://brt.basisregistraties.overheid.nl/def/top10nl#Waterdeel"
+        }
+      },
+      {
+        "sub" : {
+          "type" : "uri",
+          "value" : "http://brt.basisregistraties.overheid.nl/top10nl/id/waterdeel/108150017"
+        },
+        "pred" : {
+          "type" : "uri",
+          "value" : "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+        },
+        "obj" : {
+          "type" : "uri",
+          "value" : "http://brt.basisregistraties.overheid.nl/def/top10nl#GreppelDrogeSloot"
+        }
+      },
+      {
+        "sub" : {
+          "type" : "uri",
+          "value" : "http://brt.basisregistraties.overheid.nl/top10nl/id/waterdeel/108150017"
+        },
+        "pred" : {
+          "type" : "uri",
+          "value" : "http://www.w3.org/2000/01/rdf-schema#label"
+        },
+        "obj" : {
+          "type" : "literal",
+          "value" : "waterdeel 108150017"
+        }
+      },
+      {
+        "sub" : {
+          "type" : "uri",
+          "value" : "http://brt.basisregistraties.overheid.nl/top10nl/id/waterdeel/108150017"
+        },
+        "pred" : {
+          "type" : "uri",
+          "value" : "http://brt.basisregistraties.overheid.nl/def/top10nl#hoogteniveau"
+        },
+        "obj" : {
+          "datatype" : "http://www.w3.org/2001/XMLSchema#integer",
+          "type" : "literal",
+          "value" : "0"
+        }
+      },
+      {
+        "sub" : {
+          "type" : "uri",
+          "value" : "http://brt.basisregistraties.overheid.nl/top10nl/id/waterdeel/108150017"
+        },
+        "pred" : {
+          "type" : "uri",
+          "value" : "http://brt.basisregistraties.overheid.nl/def/top10nl#visualisatieCode"
+        },
+        "obj" : {
+          "datatype" : "http://www.w3.org/2001/XMLSchema#integer",
+          "type" : "literal",
+          "value" : "12100"
+        }
+      },
+      {
+        "sub" : {
+          "type" : "uri",
+          "value" : "http://brt.basisregistraties.overheid.nl/top10nl/id/waterdeel/108150017"
+        },
+        "pred" : {
+          "type" : "uri",
+          "value" : "http://brt.basisregistraties.overheid.nl/def/top10nl#bronnauwkeurigheid"
+        },
+        "obj" : {
+          "datatype" : "http://www.w3.org/2001/XMLSchema#float",
+          "type" : "literal",
+          "value" : "2000"
+        }
+      },
+      {
+        "sub" : {
+          "type" : "uri",
+          "value" : "http://brt.basisregistraties.overheid.nl/top10nl/id/waterdeel/108150017"
+        },
+        "pred" : {
+          "type" : "uri",
+          "value" : "http://brt.basisregistraties.overheid.nl/def/top10nl#hoofdafwatering"
+        },
+        "obj" : {
+          "datatype" : "http://www.w3.org/2001/XMLSchema#boolean",
+          "type" : "literal",
+          "value" : "false"
+        }
+      },
+      {
+        "sub" : {
+          "type" : "uri",
+          "value" : "http://brt.basisregistraties.overheid.nl/top10nl/id/waterdeel/108150017"
+        },
+        "pred" : {
+          "type" : "uri",
+          "value" : "http://brt.basisregistraties.overheid.nl/def/top10nl#getijdeinvloed"
+        },
+        "obj" : {
+          "datatype" : "http://www.w3.org/2001/XMLSchema#boolean",
+          "type" : "literal",
+          "value" : "false"
+        }
+      },
+      {
+        "sub" : {
+          "type" : "uri",
+          "value" : "http://brt.basisregistraties.overheid.nl/top10nl/id/waterdeel/108150017"
+        },
+        "pred" : {
+          "type" : "uri",
+          "value" : "http://brt.basisregistraties.overheid.nl/def/top10nl#tijdstipRegistratie"
+        },
+        "obj" : {
+          "datatype" : "http://www.w3.org/2001/XMLSchema#date",
+          "type" : "literal",
+          "value" : "2008-11-24"
+        }
+      },
+      {
+        "sub" : {
+          "type" : "uri",
+          "value" : "http://brt.basisregistraties.overheid.nl/top10nl/id/waterdeel/108150017"
+        },
+        "pred" : {
+          "type" : "uri",
+          "value" : "http://brt.basisregistraties.overheid.nl/def/top10nl#brontype"
+        },
+        "obj" : {
+          "type" : "uri",
+          "value" : "http://brt.basisregistraties.overheid.nl/id/begrip/Top10vector"
+        }
+      }
+    ]
+  }
+}

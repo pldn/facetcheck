@@ -1,0 +1,11 @@
+@import '../../theme/bootstrap.overrides/variables.scss';
+@import '../../containers/Nav/vars.scss';
+.facet {
+  padding-left: 10px;
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top:2px solid #e4e4e4;
+}
+.disabled {
+  background:rgba(0,0,0,0.5);
+}

@@ -1,0 +1,86 @@
+{
+  "name": "facetCheck",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Laurens Rietveld <laurens.rietveld@triply.cc>",
+  "private": true,
+  "main": "build/src/index.js",
+  "typings": "build/src/index.d.ts",
+  "scripts": {
+    "build": "npm run clean && npm run setup-build-context && concurrently --prefix-colors \"bgBlue,bgMagenta\" --names \"client,server\" --prefix name \"better-npm-run build-client\" \"better-npm-run build-server\"",
+    "clean": "rm -rf build",
+    "build-client": "better-npm-run build-client",
+    "build-server": "better-npm-run build-server",
+    "setup-build-context": "mkdir -p build && rsync -zar  --prune-empty-dirs  ./static/ ./build/assets/ && better-npm-run compile-config",
+    "start": "better-npm-run start-server-prod",
+    "start-server-dev": "better-npm-run start-server-dev",
+    "watch-server": "better-npm-run watch-server",
+    "watch-client": "better-npm-run watch-client",
+    "dev": "npm run clean && npm run setup-build-context && concurrently --names \"client,server\" --prefix name \"npm run watch-client\" --prefix-colors \"bgBlue,bgMagenta,bgGreen\" \"npm run watch-server\"",
+    "test": "better-npm-run testLocal",
+    "copyAssets": "mkdir -p build/src && rsync -zar  --prune-empty-dirs --include '*/' --exclude '*.ts*' ./src/ ./build/src/"
+  },
+  "betterScripts": {
+    "compile-config": {
+      "command": "ENV=console && node ./bin/config-build"
+    },
+    "start-server-prod": {
+      "command": "ENV=console && node ./bin/server.js",
+      "env": {
+        "NODE_ENV": "production",
+        "NODE_PATH": "./build/src",
+        "PORT": 3000
+      }
+    },
+    "start-server-dev": {
+      "command": "ENV=console && node ./bin/server.js",
+      "env": {
+        "NODE_PATH": "./build/src",
+        "NODE_ENV": "development",
+        "PORT": 3000,
+        "NODE_TLS_REJECT_UNAUTHORIZED": "0"
+      }
+    },
+    "watch-client": {
+      "//": "remove webpack-assets. This way, we won't have the server using a stale version, as it now waits for assets file to be generated",
+      "command": "ENV=console && rm -f webpack-assets.json && node webpack/webpack-dev-server.js --no-info",
+      "env": {
+        "UV_THREADPOOL_SIZE": 100,
+        "NODE_ENV": "development",
+        "NODE_TLS_REJECT_UNAUTHORIZED": "0"
+      }
+    },
+    "watch-server": {
+      "command": "ENV=console && node ./bin/server-build.js",
+      "env": {
+        "NODE_ENV": "development",
+        "NODE_TLS_REJECT_UNAUTHORIZED": "0"
+      }
+    },
+    "build-client": {
+      "command": "ENV=console && webpack --hide-modules --colors --display-error-details --config webpack/config.js",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    "build-server": {
+      "command": "ENV=console && node ./bin/server-build.js",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    "testLocal": {
+      "command": "mocha $(find ./build/src -name '*-test.js') --require source-map-support/register",
+      "env": {
+        "NODE_PATH": "./build/src"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:LaurensRietveld/FacetCheck.git"
+  },
+  "engines": {
+    "node": ">=5.6.0"
+  },
+}
