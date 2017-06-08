@@ -1,6 +1,6 @@
 //external dependencies
 import * as React from 'react';
-import BaseComponent from 'helpers/BaseComponent'
+
 import * as ReduxForm from 'redux-form';
 import { CheckboxProps} from 'material-ui'
 import Checkbox from 'material-ui/Checkbox'
@@ -15,7 +15,7 @@ import {
 const styles = require('./style.scss')
 
 
-class MaterialCheckbox extends BaseComponent<MaterialCheckbox.Props & ReduxForm.WrappedFieldProps,MaterialCheckbox.State> {
+class MaterialCheckbox extends React.PureComponent<MaterialCheckbox.Props & ReduxForm.WrappedFieldProps,MaterialCheckbox.State> {
 
   adjustOwnProps():CheckboxProps {
     //map redux props to material-ui props

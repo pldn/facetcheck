@@ -13,13 +13,8 @@ declare module "redux-connect" {
     // type?: any,
     types?: [any, any, any]//request, success, fail
   }
-  export interface IAsyncDispatch<T> {
-    promise?: (client:any) => Promise<any>;
-    // type?: T,
-    types?: [T, T, T]//request, success, fail
-  }
 
-  
+
 
   export class ReduxAsyncConnect extends React.Component<any, any> { }
 

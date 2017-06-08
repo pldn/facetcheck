@@ -1,6 +1,6 @@
 //external dependencies
 import * as React from 'react';
-import BaseComponent from 'helpers/BaseComponent'
+
 import * as N3 from 'n3'
 import * as getClassName from 'classnames'
 // import {Table,Button} from 'react-bootstrap';
@@ -25,7 +25,7 @@ export module Term {
 
 const styles = require('./style.scss');
 //used for e.g. IRIs and graphnames
-class Term extends BaseComponent<Term.Props,any> {
+class Term extends React.PureComponent<Term.Props,any> {
   render() {
     const {term,className,context,label} = this.props;
 

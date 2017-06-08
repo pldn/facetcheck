@@ -1,6 +1,6 @@
 //external dependencies
 import * as React from 'react';
-import BaseComponent from 'helpers/BaseComponent'
+
 import * as ReduxForm from 'redux-form';
 import { TextFieldProps} from 'material-ui'
 import * as _ from 'lodash'
@@ -12,7 +12,7 @@ import {
 
 
 
-class MaterialPasswordField extends BaseComponent<MaterialPasswordField.Props & ReduxForm.WrappedFieldProps,MaterialPasswordField.State> {
+class MaterialPasswordField extends React.PureComponent<MaterialPasswordField.Props & ReduxForm.WrappedFieldProps,MaterialPasswordField.State> {
   field:any
   state:MaterialPasswordField.State =  {
     showPassword:false

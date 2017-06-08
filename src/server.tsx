@@ -4,10 +4,9 @@ import * as _ from 'lodash';
 import * as Express from 'express';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/server';
-import * as favicon from 'serve-favicon';
 let httpProxy = require('http-proxy');
 import * as path from 'path';
-import createStore from 'redux/create';
+import createStore from 'store/create';
 let PrettyError = require('pretty-error');
 import * as http from 'http';
 import { match } from 'react-router';
@@ -17,6 +16,7 @@ let createHistory = require('react-router/lib/createMemoryHistory');
 import {Provider} from 'react-redux';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import {createSelectLocationState} from 'reducers/routing'
 //see https://github.com/zilverline/react-tap-event-plugin. Can probably
 //remove this dep for a future version of react. Need this for the material-ui
 //dependency
@@ -47,8 +47,8 @@ const proxy = httpProxy.createProxyServer({
   target: targetUrl,
   // ws: true//websocket support
 });
-
-app.use(favicon(path.join(__dirname, '..', 'assets', 'favicon.ico')));
+app.disable('x-powered-by');
+app.set('trust proxy', true)
 
 app.use(Express.static(path.join(__dirname, '..', 'assets')));
 
@@ -88,7 +88,9 @@ app.use((req:Express.Request, res:Express.Response) => {
 
   const store = createStore(history, client);
 
-  const syncedHistory = syncHistoryWithStore(history, store);
+  const syncedHistory = syncHistoryWithStore(history, store,{
+    selectLocationState:createSelectLocationState()
+  });
   function hydrateOnClient() {
     res.send('<!doctype html>\n' +
       ReactDOM.renderToString(<Html assets={webpackIsomorphicTools.assets()} store={store}/>));
@@ -128,11 +130,15 @@ app.use((req:Express.Request, res:Express.Response) => {
           res.send('<!doctype html>\n' +
             ReactDOM.renderToString(<Html assets={webpackIsomorphicTools.assets()} component={component} store={store}/>));
         } catch(e) {
+          console.error(e)
           if (__DEVELOPMENT__) {
-            const RedBox = require('redbox-react').default;
-            // ReactDOM.renderToString(<Html assets={webpackIsomorphicTools.assets()} component={<RedBox error={e} />} store={store}/>));
-            // res.send(ReactDOM.renderToString(<RedBox error={e} />));
-            res.send(ReactDOM.renderToString(<Html assets={webpackIsomorphicTools.assets()} component={<RedBox error={e} />} store={store}/>))
+            try {
+              const RedBox = require('redbox-react').default;
+              res.send(ReactDOM.renderToString(<Html assets={webpackIsomorphicTools.assets()} component={<RedBox error={e}/>} store={store}/>))
+            } catch(e) {
+              console.error('Tried sending redbox error but failed. Something is REALLY wrong now', e)
+              res.send('Something is REALLY wrong. Could not draw error page.  ' + e.toString())
+            }
           } else {
             res.send('Something went really wrong here.. Please try again.')
           }

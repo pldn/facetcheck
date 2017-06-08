@@ -1,5 +1,5 @@
 import * as React from 'react';
-import BaseComponent from 'helpers/BaseComponent'
+
 import * as _ from 'lodash'
 import * as getClassName from 'classnames';
 import Checkbox from 'material-ui/Checkbox';
@@ -28,7 +28,7 @@ module FacetMultiSelect {
 }
 const styles = require('./style.scss');
 
-class FacetMultiSelect extends BaseComponent<FacetMultiSelect.Props,any> {
+class FacetMultiSelect extends React.PureComponent<FacetMultiSelect.Props,any> {
   updateFacets(value:string, checked:boolean) {
     const activeValues = _.clone(this.props.activeValues);
     activeValues[value] = checked;

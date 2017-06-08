@@ -1,7 +1,7 @@
 //external dependencies
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import BaseComponent from 'helpers/BaseComponent'
+
 import * as N3 from 'n3'
 import * as _ from 'lodash'
 import * as Bs from 'react-bootstrap'
@@ -42,7 +42,7 @@ if (!__SERVER__) {
 const styles = require('./style.scss');
 
 //used for e.g. IRIs and graphnames
-class TermGeo extends BaseComponent<TermGeo.Props,TermGeo.State> {
+class TermGeo extends React.PureComponent<TermGeo.Props,TermGeo.State> {
   map:any;
   mapWrapper:any
   state:TermGeo.State = {

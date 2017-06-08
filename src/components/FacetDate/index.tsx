@@ -1,5 +1,5 @@
 import * as React from 'react';
-import BaseComponent from 'helpers/BaseComponent'
+
 import * as _ from 'lodash'
 import * as getClassName from 'classnames';
 import DatePicker from 'material-ui/DatePicker';
@@ -19,7 +19,7 @@ module FacetDate {
 }
 const styles = require('./style.scss');
 
-class FacetDate extends BaseComponent<FacetDate.Props,any> {
+class FacetDate extends React.PureComponent<FacetDate.Props,any> {
 
   resetDate(whichDate: 'from'|'to') {
     if (whichDate === 'from') {

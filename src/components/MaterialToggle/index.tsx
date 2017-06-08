@@ -1,7 +1,7 @@
 //external dependencies
 import * as React from 'react';
 import {Label} from 'react-bootstrap'
-import BaseComponent from 'helpers/BaseComponent'
+
 import * as ReduxForm from 'redux-form';
 import { ToggleProps} from 'material-ui'
 import Toggle from 'material-ui/Toggle'
@@ -16,7 +16,7 @@ import {
 
 
 
-class MaterialToggle extends BaseComponent<MaterialToggle.Props & ReduxForm.WrappedFieldProps,MaterialToggle.State> {
+class MaterialToggle extends React.PureComponent<MaterialToggle.Props & ReduxForm.WrappedFieldProps,MaterialToggle.State> {
 
   adjustOwnProps():ToggleProps {
     //map redux props to material-ui props

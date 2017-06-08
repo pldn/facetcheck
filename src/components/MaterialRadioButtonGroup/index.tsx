@@ -1,6 +1,6 @@
 //external dependencies
 import * as React from 'react';
-import BaseComponent from 'helpers/BaseComponent'
+
 import * as ReduxForm from 'redux-form';
 import { RadioButtonGroupProps} from 'material-ui'
 // import  from 'material-ui/RadioButton'
@@ -15,7 +15,7 @@ import {
 const styles = require('./style.scss')
 
 
-class MaterialRadioButtonGroup extends BaseComponent<MaterialRadioButtonGroup.Props & ReduxForm.WrappedFieldProps,MaterialRadioButtonGroup.State> {
+class MaterialRadioButtonGroup extends React.PureComponent<MaterialRadioButtonGroup.Props & ReduxForm.WrappedFieldProps,MaterialRadioButtonGroup.State> {
   static RadioButton = RadioButton;
 
   adjustOwnProps():RadioButtonGroupProps{

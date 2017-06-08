@@ -1,6 +1,6 @@
 //external dependencies
 import * as React from 'react';
-import BaseComponent from 'helpers/BaseComponent'
+
 import * as ReactDOM from 'react-dom/server';
 let serialize = require('serialize-javascript');
 let Helmet = require('react-helmet');
@@ -17,7 +17,7 @@ let Helmet = require('react-helmet');
  * HTML doctype declaration, which is added to the rendered output
  * by the server.js file.
  */
-export default class Html extends BaseComponent<any,any> {
+export default class Html extends React.PureComponent<any,any> {
   // static propTypes = {
   //   assets: PropTypes.object,
   //   component: PropTypes.node,

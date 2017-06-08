@@ -1,11 +1,12 @@
 {
     "compilerOptions": {
-        "target": "es5",
+        "target": "es2015",
         "module": "es6",
-        "declaration": true,
+        "moduleResolution": "node",
+        "declaration": false,
         "noImplicitAny": true,
         "noImplicitThis": true,
-        "noUnusedLocals": false,
+        "noUnusedLocals": true,
         "noUnusedParameters": false,
         "removeComments": true,
         "rootDir": ".",
@@ -25,6 +26,7 @@
       "./ConfigTemplate.ts",
       "./typings/index.d.ts",
       "./typings-custom/main.d.ts",
-      "./node_modules/triply-server/src/swagger/standalone.ts"
+      "./node_modules/triply-server/src/swagger/standalone.ts",
+      "!node_modules/**"
   ]
 }

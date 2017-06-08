@@ -1,5 +1,5 @@
 import * as React from 'react';
-import BaseComponent from 'helpers/BaseComponent'
+
 import * as _ from 'lodash'
 import * as getClassName from 'classnames';
 import Checkbox from 'material-ui/Checkbox';
@@ -28,7 +28,7 @@ module Facet {
 }
 const styles = require('./style.scss');
 const panelStyles = require('../../containers/Panel/style.scss');
-class Facet extends BaseComponent<Facet.Props,any> {
+class Facet extends React.PureComponent<Facet.Props,any> {
   getHeader() {
     return <div className={panelStyles.sectionHeader}>
       <a href={this.props.shape.predicate} target="_blank">{this.props.label}</a>

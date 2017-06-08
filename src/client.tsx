@@ -13,44 +13,44 @@ import { ReduxAsyncConnect } from 'redux-connect';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 const {AppContainer} = require('react-hot-loader');
-import createStore from 'redux/create';
+import createStore from 'store/create';
 import customTheme from 'muiTheme'
 const {useScroll} = require('react-router-scroll')
+import { fromJs} from 'reducers'
+import {createSelectLocationState} from 'reducers/routing'
 import { Router, browserHistory,match,applyRouterMiddleware } from 'react-router';
 
 
 //import own dependencies
 import ApiClient from 'helpers/ApiClient';
 import getRoutes from 'routes';
-const client = new ApiClient(window.__data as any);
+
+const client = new ApiClient(fromJs(window.__data));
 // const history = useScroll(() => browserHistory)();
 
 const dest = document.getElementById('content');
 
 
+
 declare var window:__App.ReactWindow;
 declare var module:any;
-const store = createStore(browserHistory, client, window.__data);
-const syncedHistory = syncHistoryWithStore(browserHistory, store);
-// function initSocket() {
-//   const socket = io('', {path: '/ws'});
-//   socket.on('news', (data:any) => {
-//     socket.emit('my other event', { my: 'data from client' });
-//   });
-//   socket.on('msg', (data:any) => {
-//     console.info('some message via socket???', data)
-//   });
-//
-//   return socket;
-// }
+const store = createStore(browserHistory, client,fromJs(window.__data));
 
-// global.socket = initSocket();
+
+
+
+const syncedHistory = syncHistoryWithStore(browserHistory as any, store, {
+  selectLocationState: createSelectLocationState()
+});
 
 // const MuiThemeProvider = require('material-ui/styles/MuiThemeProvider')
 
 const getComponent = (renderProps:any = {}) => {
-  return <Router {...renderProps} history={syncedHistory} render={(props:any) =>
-          <ReduxAsyncConnect {...props} helpers={{client}} filter={(item:any) => !item.deferred} render={applyRouterMiddleware(useScroll())} />
+  //STRANGE: removing this line makes ReduxAsyncConnect undefined (crashing our client)
+  //perhaps a tree-shaking issue with webpack2
+	ReduxAsyncConnect;
+  return <Router {...renderProps} history={syncedHistory as any} render={(props:any) =>
+          <ReduxAsyncConnect {...props} helpers={{client}} filter={(item:any) => !item.deferred} render={applyRouterMiddleware(useScroll())} /> as any
         }>
       {getRoutes(store)}
     </Router>

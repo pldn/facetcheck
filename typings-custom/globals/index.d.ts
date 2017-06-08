@@ -15,3 +15,10 @@ declare var __DEVTOOLS__: boolean;
 declare var __DISABLE_SSR__: boolean;
 
 declare var webpackIsomorphicTools: boolean;//todo;fix
+
+declare module NodeJS  {
+
+    interface Global {
+        socket: SocketIOClient.Socket
+    }
+}

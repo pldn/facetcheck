@@ -1,0 +1,54 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "/home/lrd900/triply/console/node_modules/redux/package.json",
+    "raw": "npm:redux",
+    "main": "lib/index.js",
+    "typings": "./index.d.ts",
+    "version": "3.6.0",
+    "global": false,
+    "dependencies": {
+      "lodash": {
+        "src": "/home/lrd900/triply/console/node_modules/lodash/package.json",
+        "raw": "npm:lodash",
+        "main": "lodash.js",
+        "version": "4.16.1",
+        "global": false,
+        "name": "lodash"
+      },
+      "lodash-es": {
+        "src": "/home/lrd900/triply/console/node_modules/lodash-es/package.json",
+        "raw": "npm:lodash-es",
+        "main": "lodash.js",
+        "version": "4.16.1",
+        "global": false,
+        "name": "lodash-es"
+      },
+      "loose-envify": {
+        "src": "/home/lrd900/triply/console/node_modules/loose-envify/package.json",
+        "raw": "npm:loose-envify",
+        "version": "1.2.0",
+        "global": false,
+        "dependencies": {
+          "js-tokens": {
+            "src": "/home/lrd900/triply/console/node_modules/loose-envify/node_modules/js-tokens/package.json",
+            "raw": "npm:js-tokens",
+            "version": "1.0.3",
+            "global": false,
+            "name": "js-tokens"
+          }
+        },
+        "name": "loose-envify"
+      },
+      "symbol-observable": {
+        "src": "/home/lrd900/triply/console/node_modules/redux/node_modules/symbol-observable/package.json",
+        "raw": "npm:symbol-observable",
+        "typings": "index.d.ts",
+        "version": "1.0.2",
+        "global": false,
+        "name": "symbol-observable"
+      }
+    },
+    "name": "redux"
+  }
+}

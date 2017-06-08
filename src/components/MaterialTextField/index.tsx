@@ -1,7 +1,7 @@
 //external dependencies
 import * as React from 'react';
 // import * as ReactDOM from 'react-dom';
-import BaseComponent from 'helpers/BaseComponent'
+
 import * as ReduxForm from 'redux-form';
 import { Tooltip, Overlay,TooltipProps} from 'react-bootstrap'
 import { TextFieldProps} from 'material-ui'
@@ -16,7 +16,7 @@ import {
 
 
 
-class TooltipWrapper extends BaseComponent<TooltipProps,any> {
+class TooltipWrapper extends React.PureComponent<TooltipProps,any> {
   render() {
     return <Tooltip {...this.props} style={{
       //offset for floating label
@@ -28,7 +28,7 @@ class TooltipWrapper extends BaseComponent<TooltipProps,any> {
 }
 
 
-class MaterialTextField extends BaseComponent<MaterialTextField.Props & ReduxForm.WrappedFieldProps,MaterialTextField.State> {
+class MaterialTextField extends React.PureComponent<MaterialTextField.Props & ReduxForm.WrappedFieldProps,MaterialTextField.State> {
   field:any
   fieldWrapper:any
 

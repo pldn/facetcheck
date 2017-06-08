@@ -1,6 +1,6 @@
 //external dependencies
 import * as React from 'react';
-import BaseComponent from 'helpers/BaseComponent'
+
 import * as N3 from 'n3'
 import * as getClassName from 'classnames'
 //import own dependencies
@@ -22,7 +22,7 @@ export module TermLiteral {
 
 const styles = require('./style.scss');
 //used for e.g. IRIs and graphnames
-class TermLiteral extends BaseComponent<TermLiteral.Props,any> {
+class TermLiteral extends React.PureComponent<TermLiteral.Props,any> {
   static acceptsTerm(term:string, context:N3.Statement[]){
     return N3.Util.isLiteral(term) || N3.Util.isBlank(term)
   }

@@ -1,6 +1,6 @@
 //external dependencies
 import * as React from 'react';
-import BaseComponent from 'helpers/BaseComponent'
+
 import * as N3 from 'n3'
 import * as getClassName from 'classnames'
 // import {Table,Button} from 'react-bootstrap';
@@ -22,7 +22,7 @@ export module TermLink {
 const styles = require('./style.scss');
 
 //used for e.g. IRIs and graphnames
-class TermLink extends BaseComponent<TermLink.Props,any> {
+class TermLink extends React.PureComponent<TermLink.Props,any> {
   static acceptsTerm(term:string, context:N3.Statement[]){
     return N3.Util.isIRI(term)
   }

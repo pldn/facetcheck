@@ -1,6 +1,6 @@
 //external dependencies
 import * as React from 'react';
-import BaseComponent from 'helpers/BaseComponent'
+
 import * as Helmet from 'react-helmet';
 import * as reactRouterRedux from 'react-router-redux';
 import { asyncConnect, IAsyncConnect } from 'redux-connect';
@@ -20,7 +20,7 @@ import {IGlobalState} from 'redux/modules/index';
 
 
 export interface IAppProps  {
-  head: ReactHelmet.HelmetProps,
+  head: Helmet.Helmet.HelmetProps,
   children?: React.ReactNode,
   // user?: Account,
   appClassName: string,
@@ -54,7 +54,7 @@ const styles = require('./style.scss')
   }
 } as IAsyncConnect<any>])
 @(connect as any)(mapStateToProps, mapDispatchToProps)
-export default class App extends BaseComponent<IAppProps,any> {
+export default class App extends React.PureComponent<IAppProps,any> {
 
 
   render() {

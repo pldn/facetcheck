@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/5e1ca2b9ef1971a6b08d9fb6d9277f20c61887f2/mongoose/mongoose.d.ts",
+    "raw": "registry:dt/mongoose#3.8.5+20160517033907",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/5e1ca2b9ef1971a6b08d9fb6d9277f20c61887f2/mongoose/mongoose.d.ts"
+  }
+}

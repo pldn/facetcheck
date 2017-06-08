@@ -2,37 +2,59 @@
 import * as superagent from 'superagent';
 import {Request} from 'express';
 import * as _ from 'lodash';
-import SparqlJson from './SparqlJson'
-import * as N3 from 'n3';
+
 //import own dependencies
-import {IGlobalState} from 'redux/modules'
-import {getConfig, Config} from 'staticConfig';
+import {GlobalState} from 'reducers'
+import {getConfig, Config, ConnectionConfig} from 'staticConfig';
+import * as parseLinkHeader from 'parse-link-header'
+const urlParse = require('url-parse');
 
 // const config = getConfig();
 // declare var __SERVER__: boolean;
 // const methods = ['get', 'post', 'put', 'patch', 'del'];
-
-
-export interface RequestArguments {
-  method?: 'get' | 'post' | 'delete' | 'put' | 'patch',
-  endpoint?: string,
-  headers?:{[key:string]:string}
-  sparqlSelect?: string,
-  graph?: string,
-  sparqlConstruct?: string,
-  query?: Object,
-  isForm?:boolean
-  body?: Object,
-  statusCodeMap?:{[fromCode: number]: number}//these status codes are set to 200 (OK).Useful if we expect e.g. a 404, but don't want to clobber the browser with errors
-  files? : {[name:string]: string|File}
+export interface Links extends parseLinkHeader.Links{
+  next: parseLinkHeader.Link,
+  first: parseLinkHeader.Link
 }
-
+export interface ResponseMetaData {
+  status: number,
+  links: Links,
+  header: {[key:string]:string}
+}
+export interface ClientResult {
+  body: any,
+  meta?: ResponseMetaData
+}
+export interface RequestArguments {
+  url?: string,
+  apiUrl?:string
+  method: 'get' | 'post' | 'delete' | 'put' | 'patch',
+  query?: Object,
+  body?: Object | string,
+  contentType?: string
+  statusCodeMap?:{[fromCode: number]: number}//these status codes are set to 200 (OK).Useful if we expect e.g. a 404, but don't want to clobber the browser with errors
+  files? : {[fieldName:string]: string|File}
+  onProgress?:Function
+  requestTag?:string //when we're passing this arg, we're saving the request globally so reducers can e.g. cancel it
+}
+interface RunningRequests {
+  [reqTag:string]: {[uuid:string]:superagent.Request<any>}
+}
+export function reformatUrlForClient(clientConnection:ConnectionConfig, url:string):string {
+  const parsed = urlParse(url);
+  parsed.set('pathname', '/_api' + parsed.pathname);
+  parsed.set('hostname', clientConnection.domain);
+  if (clientConnection.publicPort !== 80) parsed.set('port', clientConnection.publicPort);
+  parsed.set('protocol', clientConnection.ssl?'https:':'http:');
+  return parsed.toString();
+}
 export default class ApiClient {
+  private static requests:RunningRequests = {};
   private request: Request;
   private config: Config
-  constructor(state:IGlobalState, req?:Request) {
-    if (state && state.config && state.config.config) {
-      this.config = state.config.config;
+  constructor(state:GlobalState, req?:Request) {
+    if (state && state.config && state.config.staticConfig) {
+      this.config = state.config.staticConfig;
     } else {
       //just get state from module directly.
       //Would like to avoid this when the class is ran from the client,
@@ -44,37 +66,77 @@ export default class ApiClient {
   }
 
 
+  formatUrl(urlOrPath:string) {
+    if (!urlOrPath) return '';
+    if (urlOrPath.indexOf('http') === 0) {
+      //its a complete url, and not only a path. (probably intentional, so leave this)
+      return urlOrPath;
+    }
+    const adjustedPath = urlOrPath[0] !== '/' ? '/' + urlOrPath : urlOrPath;
+    if (__SERVER__) {
+      // Prepend host and port of the API server to the path.
+      return (this.config.serverConnection.ssl?'https':'http') + '://' + this.config.serverConnection.domain + (this.config.serverConnection.ssl? '': ':' + this.config.serverConnection.publicPort) + adjustedPath;
+    }
+    return '/_api' + adjustedPath;
+  }
 
-  public req<A extends RequestArguments>(args:A) {
-    return new Promise((resolve, reject) => {
-      //set params based on sparql-specific settings
-      if (args.sparqlSelect || args.sparqlConstruct) {
-        args.method = 'post';
-        args.isForm = true;
-        args.body = {
-          query: args.sparqlSelect || args.sparqlConstruct
-        }
-        if (!args.headers) args.headers = {};
-        args.headers['Accept'] = args.sparqlSelect?'application/sparql-results+json':'application/n-triples'
-        if (args.graph) {
-          args.body['default-graph-uri'] = args.graph
-        }
-      }
-      const request:superagent.Request<any> = superagent[args.method](args.endpoint || this.config.endpoint);
-      if (args.headers) {
-        for (var h in  args.headers) {
-          request.set(h, args.headers[h])
-        }
-      }
+  //Modify urls gotten from server, so they are send via our proxy (needed because of cookie stuff...)
+  reformatUrlForClient(url:string):string {
+    return reformatUrlForClient(this.config.clientConnection, url)
+  }
 
-      if (args.isForm) request.type('form')
+  formatLinkHeader(linkHeader:string) {
+    if (!linkHeader) return {};
+    const links = parseLinkHeader(linkHeader);
+    _.forEach(links, (val, key) => {
+      links[key].url = this.reformatUrlForClient(val.url);
+    })
+    return links;
+  }
+
+  private addRequestReference(tag:string, request:superagent.Request<any>) {
+    if (tag) {
+      if (!ApiClient.requests[tag]) ApiClient.requests[tag] = {};
+      const uuid = _.uniqueId();
+
+      ApiClient.requests[tag][uuid] = request;
+      return uuid;
+    }
+  }
+  private removeRequestReference(tag:string, uuid:string) {
+    if (tag && uuid) {
+      if (!ApiClient.requests[tag]) return;
+      delete ApiClient.requests[tag][uuid]
+      if (_.isEmpty(ApiClient.requests[tag])) delete ApiClient.requests[tag]
+    }
+  }
+
+  public req<A extends RequestArguments, R extends ClientResult>(args:A) {
+    return new Promise<R>((resolve, reject) => {
+      const requestTo = args.apiUrl?this.reformatUrlForClient(args.apiUrl):this.formatUrl(args.url);
+      const request:superagent.Request<any> = superagent[args.method](requestTo);
+      const uuid = this.addRequestReference(args.requestTag, request);
+      console.info(requestTo)
       if (args.query) {
         request.query(args.query);
+      }
+
+      if (__SERVER__) {
+        //always behind a proxy anyway, so proxy these headers
+        ['cookie', 'x-forwarded-for', 'x-real-ip', 'x-forwarded-proto'].forEach((key) => {
+          if (this.request.get(key)) request.set(key, this.request.get(key));
+        })
+      }
+      if (args.contentType) {
+        request.set("Content-Type", args.contentType);
       }
       if (args.files) {
         _.forEach(args.files, function(val, key) {
           request.attach(key, <any>val);
         })
+      }
+      if (args.onProgress) {
+        request.on('progress', args.onProgress)
       }
       if (args.body) {
         request.send(args.body);
@@ -85,40 +147,38 @@ export default class ApiClient {
           }).join(','))
       }
       const formatError = (err:any, body:any) => {
-        if (!_.isEmpty(body)) return body;
-        if (err.message && err.status) return {error: err.status + ': ' + err.message, message: err.message, status: err.status}
+        var returnErr = typeof body === "object" ? body : {};
+        if (err.status) returnErr.error =  err.status + ': ' + (body.message || err.message);
+        if (!returnErr.message) returnErr.message = err.message;
+        if (!returnErr.status) returnErr.status = err.status;
+        if (returnErr.serverError) returnErr.devError = returnErr.serverError;
+        if (!_.isEmpty(returnErr.message)) return returnErr;
         return err;
       }
-      if (__SERVER__ && request.buffer) request.buffer(true)//need this somehow for request from server to work. on clientside it's the other way around
-      request.end((err:any, res: any) => {
-        const body = (res? res.body:undefined);
-        if (err || !res) return reject(formatError(err, body));
-        try {
-          if (args.sparqlSelect) return resolve(new SparqlJson(body));
-          if (args.sparqlConstruct) {
-            const parser = N3.Parser({ format: 'text/turtle' });
-            const statements:N3.Statement[] = [];
-            if (res.text === undefined) {
-              return reject({message: 'No construct result to parse'})
-            }
-            parser.parse(res.text, function(e, statement) {
-              if (e) {
-                return reject({message: e.message})
-              }
-              if (!statement) {
-                return resolve(statements);
-              }
-              statements.push(statement)
-            })
-          } else {
-            resolve(body);
-          }
 
-        } catch(e) {
-          reject(e);
+      request.end((err:Error, res: superagent.Response) => {
+        this.removeRequestReference(args.requestTag,uuid)
+        const body = (res ? (res.body ? res.body : (res.text ? res.text : undefined)) : undefined);
+        if (err || !res) return reject(formatError(err, body));
+        const meta = {
+          status: res.status,
+          header: res.header,
+          links: this.formatLinkHeader(res.header.link),
+          req: request
         }
+
+        return resolve(<any>{
+          body,
+          meta
+        });
       });
     })
   }
-
+  public static abortRequestsByTag(tag:string) {
+    if (ApiClient.requests[tag]) {
+      _.forEach(ApiClient.requests[tag], (val) => {
+        val.abort()
+      })
+    }
+  }
 }

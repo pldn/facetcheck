@@ -1,6 +1,6 @@
 //external dependencies
 import * as React from 'react';
-import BaseComponent from 'helpers/BaseComponent'
+
 import * as getClassName from 'classnames'
 // import {Table,Button} from 'react-bootstrap';
 //import own dependencies
@@ -15,7 +15,7 @@ export module TermBoolean {
 
 const styles = require('./style.scss');
 //used for e.g. IRIs and graphnames
-class TermBoolean extends BaseComponent<TermBoolean.Props,any> {
+class TermBoolean extends React.PureComponent<TermBoolean.Props,any> {
   render() {
     const {value,className} = this.props;
     const activeIconStyles = {
