@@ -48,6 +48,7 @@
     "socket.io": "registry:dt/socket.io#1.4.4+20160317120654",
     "socket.io-client": "registry:dt/socket.io-client#1.4.4+20161116080703",
     "superagent": "registry:dt/superagent#1.4.0+20160317120654",
+    "urijs": "registry:dt/urijs#1.15.1+20161119044246",
     "validator": "registry:dt/validator#4.5.1+20160316155526"
   },
   "dependencies": {

@@ -1,0 +1,18 @@
+.statement {
+  display:flex;
+  flex-direction: row;
+  margin: 5px 0;
+  div {
+    margin: 0 5px;
+  }
+  .pred {
+    width: 150px;
+    // flex-grow: 0;
+  }
+  .objs {
+    // flex-grow: 1;
+    .obj {
+
+    }
+  }
+}

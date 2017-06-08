@@ -1,0 +1,117 @@
+// Button variants
+//
+// Easily pump out default styles, as well as :hover, :focus, :active,
+// and disabled options for all buttons
+
+@mixin button-variant-inverse($color, $background, $border, $inverse) {
+
+  $useColor: if($inverse, $background, $color);
+  $useBackgroundColor: if($inverse, transparent, $background);
+  $useBorderColor: $border;
+  // $useBorderColor: if($inverse, $background, $border);
+
+  color: $useColor;
+  background-color: $useBackgroundColor;
+  border-color: $useBorderColor;
+
+  $focusBgColorEffect: 10%;
+  $focusBorderColorEffect: 25%;
+  $hoverBgColorEffect: 10%;
+  $hoverBorderColorEffect: 12%;
+  $activeBgColorEffect: 10%;
+  $activeBorderColorEffect: 12%;
+  $activeHoverBgColorEffect: 17%;
+  $activeHoverBorderColorEffect: 25%;
+
+
+  $focusColor: $useColor;
+  $focusBgColor: lighten($useBackgroundColor, $focusBgColorEffect);
+  $focusBorderColor: darken($useBorderColor, $focusBorderColorEffect);
+
+  $hoverColor: $useColor;
+  $hoverBgColor: lighten($useBackgroundColor, $hoverBgColorEffect);
+  $hoverBorderColor: darken($useBorderColor, $hoverBorderColorEffect);
+
+  $activeColor: $useColor;
+  $activeBgColor: lighten($useBackgroundColor, $activeBgColorEffect);
+  $activeBorderColor: darken($useBorderColor, $activeBorderColorEffect);
+
+  $activeHoverColor: $useColor;
+  $activeHoverBgColor: lighten($useBackgroundColor, $activeHoverBgColorEffect);
+  $activeHoverBorderColor: darken($useBorderColor, $activeHoverBorderColorEffect);
+
+  @if $inverse {
+    $focusColor: $color;
+    $focusBgColor: $background;
+    $focusBorderColor: $border;
+
+    $hoverColor: $color;
+    $hoverBgColor: $background;
+    $hoverBorderColor: $border;
+
+    $activeColor: $color;
+    $activeBgColor: $background;
+    $activeBorderColor: $border;
+
+    $activeHoverColor: $color;
+    $activeHoverBgColor: $background;
+    $activeHoverBorderColor: $border;
+  }
+  &:focus,
+  &.focus {
+    color: $focusColor;
+    background-color: $focusBgColor;
+      border-color: $focusBorderColor;
+  }
+  &:hover {
+    color: $focusColor;
+    background-color: $hoverBgColor;
+    border-color: $hoverBorderColor;
+  }
+  &:active,
+  &.active,
+  .open > &.dropdown-toggle {
+    color: $activeColor;
+    background-color: $activeBgColor;
+    border-color: $activeBorderColor;
+
+    &:hover,
+    &:focus,
+    &.focus {
+      color: $activeHoverColor;
+      background-color: $activeHoverBgColor;
+      border-color: $activeHoverBorderColor;
+    }
+  }
+  &:active,
+  &.active,
+  .open > &.dropdown-toggle {
+    background-image: none;
+  }
+  &.disabled,
+  &[disabled],
+  fieldset[disabled] & {
+    &,
+    &:hover,
+    &:focus,
+    &.focus,
+    &:active,
+    &.active {
+      background-color: $useBackgroundColor;
+          border-color: $useBorderColor;
+    }
+  }
+
+  .badge {
+    color: $useBackgroundColor;
+    background-color: $useColor;
+  }
+}
+
+// Button sizes
+@mixin button-size($padding-vertical, $padding-horizontal, $font-size, $line-height, $border-radius) {
+  padding: $padding-vertical $padding-horizontal;
+  font-size: $font-size;
+  line-height: $line-height;
+  border-radius: $border-radius;
+}

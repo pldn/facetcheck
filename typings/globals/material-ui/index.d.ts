@@ -19,6 +19,7 @@ declare module "material-ui" {
     export import Chip = __MaterialUI.Chip;
     export import CircularProgress = __MaterialUI.CircularProgress;
     export import DatePicker = __MaterialUI.DatePicker.DatePicker;
+    export import DatePickerProps = __MaterialUI.DatePicker.DatePickerProps;
     export import Dialog = __MaterialUI.Dialog;
     export import Divider = __MaterialUI.Divider;
     export import Drawer = __MaterialUI.Drawer;

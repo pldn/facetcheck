@@ -16,7 +16,7 @@ import {
 
 
 
-class MaterialToggle extends React.PureComponent<MaterialToggle.Props & ReduxForm.WrappedFieldProps,MaterialToggle.State> {
+class MaterialToggle extends React.PureComponent<MaterialToggle.Props & ReduxForm.WrappedFieldProps<any>,MaterialToggle.State> {
 
   adjustOwnProps():ToggleProps {
     //map redux props to material-ui props

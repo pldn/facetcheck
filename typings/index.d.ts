@@ -31,6 +31,7 @@
 /// <reference path="globals/socket.io-client/index.d.ts" />
 /// <reference path="globals/socket.io/index.d.ts" />
 /// <reference path="globals/superagent/index.d.ts" />
+/// <reference path="globals/urijs/index.d.ts" />
 /// <reference path="globals/validator/index.d.ts" />
 /// <reference path="modules/bytes/index.d.ts" />
 /// <reference path="modules/history/index.d.ts" />

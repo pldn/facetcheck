@@ -28,7 +28,7 @@ class TooltipWrapper extends React.PureComponent<TooltipProps,any> {
 }
 
 
-class MaterialTextField extends React.PureComponent<MaterialTextField.Props & ReduxForm.WrappedFieldProps,MaterialTextField.State> {
+class MaterialTextField extends React.PureComponent<MaterialTextField.Props & ReduxForm.WrappedFieldProps<any>,MaterialTextField.State> {
   field:any
   fieldWrapper:any
 
@@ -190,7 +190,7 @@ module MaterialTextField {
       overlayText?:string
       leftIcon?:string
       rightIcon?:string
-      rightIconClickHandler?:React.MouseEventHandler
+      rightIconClickHandler?:React.MouseEventHandler<any>
     }
     component:typeof React.Component
   }

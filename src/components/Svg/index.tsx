@@ -14,7 +14,7 @@ export interface ISvgProps {
   src: string,
   style?: React.CSSProperties,
   imgStyle?:React.CSSProperties
-  onClick?:React.EventHandler<React.MouseEvent>
+  onClick?:React.EventHandler<React.MouseEvent<any>>
 }
 
 const styles = require('./style.scss');

@@ -11,13 +11,13 @@ import {
   TermLiteral,
   TermGeo
 } from 'components'
-import {State as LabelsState,getLabel,fetchLabel} from 'reducers/labels'
+// import {State as LabelsState,getLabel,fetchLabel} from 'reducers/labels'
 export module Term {
   export interface Props {
     className?: string,
     term:string
     context: N3.Statement[]
-    label: string,
+    label?: string,
     // fetchLabel: typeof fetchLabel
   }
 

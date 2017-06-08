@@ -15,7 +15,7 @@ import {
 const styles = require('./style.scss')
 
 
-class MaterialRadioButtonGroup extends React.PureComponent<MaterialRadioButtonGroup.Props & ReduxForm.WrappedFieldProps,MaterialRadioButtonGroup.State> {
+class MaterialRadioButtonGroup extends React.PureComponent<MaterialRadioButtonGroup.Props & ReduxForm.WrappedFieldProps<any>,MaterialRadioButtonGroup.State> {
   static RadioButton = RadioButton;
 
   adjustOwnProps():RadioButtonGroupProps{

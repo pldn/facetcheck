@@ -20,9 +20,9 @@ import {GlobalState} from 'reducers';
 // import {State as FacetState,getMatchingIris, facetsChanged,matchingIrisChanged} from 'reducers/facets';
 
 module Home {
-  export interface OwnProps {
-
-    }
+  // export interface OwnProps {
+  //
+  //   }
     export interface DispatchProps {
       // getDatasets?: typeof getDatasets,
       // addDataset?:typeof addDataset,
@@ -41,7 +41,7 @@ module Home {
     export interface State {
       // modalShown: boolean
     }
-    export type Props = OwnProps & DispatchProps & PropsFromState
+    export type Props = DispatchProps & PropsFromState
 }
 
 
@@ -93,7 +93,7 @@ class Home extends React.PureComponent<Home.Props,any> {
 }
 
 
-export default connect<GlobalState, Home.PropsFromState, Home.DispatchProps, Home.OwnProps>(
+export default connect<GlobalState, Home.PropsFromState, Home.DispatchProps, {}>(
   (state,ownProps) => {
     return {
     }
