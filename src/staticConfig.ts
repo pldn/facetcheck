@@ -53,9 +53,9 @@ export class Config extends ConfigTemplate {
   postProcess() {
     //nothing to do here
   }
-  getCurrentUrl(path?:string, queryString?:string) {
-     return getCurrentUrl(this, path, queryString);
-   }
+  // getCurrentUrl(path?:string, queryString?:string) {
+  //    return getCurrentUrl(this, path, queryString);
+  //  }
 
 }
 export function getCurrentUrl(config:Config, path?:string,queryString?:string) {

@@ -1,0 +1,182 @@
+@import '../../theme/bootstrap.overrides/variables.scss';
+@import '../Nav/vars.scss';
+
+
+
+.panel {
+  color:$custom6;
+  label {
+    font-weight: normal;
+  }
+  position:fixed;
+  left: 0;
+  bottom:0;
+  top: $navbar-height;
+  padding-top: 2px;//to make it look a bit more even, considering the shadow of the navbar
+  box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14),0 3px 1px -2px rgba(0,0,0,0.12),0 1px 5px 0 rgba(0,0,0,0.2);
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+
+  align-items: stretch;
+
+}
+
+.main {
+  flex: 1 1 auto;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.header {
+  position:relative;
+  padding: 10px 0;
+  box-shadow: 0 -1px 0 $separatorColor inset;
+  transition: margin-right $animateDuration ease;
+  $spaceForConfigBtn: 46px;
+  .headerTitle {
+    //make space for config icon
+    margin-right:$spaceForConfigBtn;
+    span {
+      //make sure the span does not overflow with config button
+      text-overflow: ellipsis;
+
+      max-width:$panelWidth - $panelLeftPadding - $iconsSize - $iconRightSpacing - $spaceForConfigBtn;
+      display: inline-block;
+      white-space: nowrap;
+      overflow: hidden !important;
+    }
+  }
+  .config {
+    color:$custom6;
+    border-left: 1px solid $separatorColor;
+    position:absolute;
+    right:5px;
+    top:13px;
+    font-size:$iconsSize;
+    line-height:$iconsSize;
+
+    width: 40px;
+    height: 30px;
+    padding: 4px 12px;
+    opacity: 1;
+    transition: opacity $animateDuration ease, padding $animateDuration ease, height $animateDuration ease;
+    &:global(.active) {
+      color:$custom5;
+    }
+    &:hover {
+      color: $custom5;
+    }
+  }
+}
+
+
+@media #{$showBurgerOnSize} {
+  .panel {
+    z-index: 50;//should be higher than rest of body, but less than navbar
+    visibility: hidden;
+    transform: translate3d(-$panelWidth,0,0);
+    transition: transform $animateDuration cubic-bezier(0.4,0.0,0.2,1), visibility $animateDuration ease;
+  }
+  :global(.toggled) {
+    .panel {
+      width: $panelWidth;
+      visibility: visible;
+      transform: translate3d(0,0,0);
+    }
+  }
+
+}
+@media #{$showCollapsableOnSize} {
+  .panel {
+    transition: width $animateDuration cubic-bezier(0.4,0.0,0.2,1);
+  }
+}
+
+.staticFacets {
+  padding-top: 10px;
+}
+.section {
+    flex-shrink: 0;
+    display:flex;
+    flex-direction:column;
+    white-space: nowrap;
+    transition: background $animateDuration ease, box-shadow $animateDuration ease;
+    padding-left: $panelLeftPadding;
+}
+
+.sectionHeader {
+  padding: 0 $panelLeftPadding;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 24px;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  font-weight: bold;
+  height: 32px;
+  flex-shrink: 0;
+  transition: height $animateDuration ease,opacity $animateDuration ease .15s;
+}
+
+
+.upgrade {
+  flex: 0 0 auto;
+  height: 40px;
+}
+.footer {
+  box-shadow: 0 -1px 0 $separatorColor;
+}
+@media #{$showBurgerOnSize} {
+  .toggler {
+    display:none;;
+  }
+}
+.toggler {
+  flex: 0 0 auto;
+  height: 40px;
+  background-color: $custom2;
+
+  &:hover {
+    background-color:$custom2;
+  }
+  &:focus:active, &:focus {
+    background-color: $custom2;
+    //avoid showing of outline briefly on click (focus)
+    outline:none;
+  }
+}
+
+
+:global(.collapsed) {
+  .config {
+    left: -200px;//move it off screen, so it doesnt overlap with home btn
+  }
+  .hideCollapsed {
+    opacity: 0;
+  }
+  .onlyShowCollapsed {
+    opacity: 1;
+    height: 30px;
+  }
+  .sectionHeader {
+    height: 0px;
+    opacity: 0;
+  }
+  .section {
+    box-shadow: 0 1px 0 $separatorColor inset;
+  }
+}
+
+button.onlyShowCollapsed {
+  transition: opacity $animateDuration ease, height $animateDuration ease, min-height $animateDuration ease,padding $animateDuration ease;
+  height: 0;
+  opacity: 0;
+  min-height: 0;
+  padding-top:0;
+  padding-bottom:0;
+}
+:global(.collapsed) button.onlyShowCollapsed {
+  min-height: 36px;
+  padding: 6px $panelLeftPadding;
+}

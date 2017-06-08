@@ -1,0 +1,106 @@
+@import '../../theme/bootstrap.overrides/variables.scss';
+// $iconDim: 24px;
+.notification {
+  // transition: all 0.5s ease;
+  box-sizing: border-box;
+  // padding: $iconDim/2 $iconDim $iconDim/2 45px;
+  border-radius: 2px;
+  color: #fff;
+  background-color: $gray-light;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 2px 1px -1px rgba(0, 0, 0, 0.12);
+  position: relative;
+  opacity: 0.9;
+  overflow:hidden;
+  .notificationHeader {
+    color: #fff;
+    font-weight: bold;
+  }
+  &:hover, &:focus {
+    opacity: 1;
+  }
+  .notificationBody {
+    display:flex;
+    height:100%;
+    .message {
+      flex-grow:1;
+      display: flex;
+    flex-direction: column;
+    /* vertical-align: middle; */
+    justify-content: center;
+    }
+
+    .notificationIcon {
+      align-self:center;
+      margin-right:10px;
+      margin-left: 5px;
+    }
+    button.closeBtn {
+      // position:absolute;
+      // top:50%;
+      // right: $iconDim / 2;
+      // margin-top: -$iconDim/2;
+      display:block;
+      // width:$iconDim;
+      // height:$iconDim;
+      // font-size: $iconDim;
+      font-weight: bold;
+      // line-height: 1;
+      text-shadow: 0 1px 0 #fff;
+      color: white;
+      opacity: 0.6;
+      padding: 0;
+      cursor: pointer;
+      background: transparent;
+      border: 0;
+      -webkit-appearance: none;
+      margin-right: 10px;
+      margin-left: 5px;
+      &:hover {
+        opacity: 1.0;
+        color:white;
+      }
+
+    }
+
+  }
+
+}
+.devMessage {
+  border-top: 2px solid white;
+  // margin-top: 2px;
+  // padding-top: 2px;
+  div {
+    font-style: italic;
+  }
+}
+
+
+.info {
+
+  background-color: $brand-info;
+  .notificationIcon:before {
+    font-family: FontAwesome;
+    content: "\f05a";
+  }
+}
+.warning {
+  background-color: $brand-warning;
+  .notificationIcon:before {
+    font-family: FontAwesome;
+    content: "\f06a";
+  }
+}
+.error {
+  background-color: $brand-danger;
+  .notificationIcon:before {
+    font-family: FontAwesome;
+    content: "\f057";
+  }
+}
+.success {
+  background-color: $brand-success;
+  .notificationIcon:before {
+    font-family: FontAwesome;
+    content: "\f058";
+  }
+}

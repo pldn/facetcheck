@@ -8,21 +8,21 @@ import {Store} from 'redux';
 // import {
 //   shouldLoadAuth,
 //   load as loadAuth
-// } from 'redux/modules/auth';
-// import {Account} from 'redux/modules/accounts'
-import { IGlobalState } from 'redux/modules/';
+// } from 'reducers/auth';
+// import {Account} from 'reducers/accounts'
+import { GlobalState } from 'reducers';
 import * as Containers from 'containers';
 
 
 
-export default (store:Store<IGlobalState> = null) => {
+export default (store:Store<GlobalState> = null) => {
   type checkFunction = (nextState:RouterState) => string | undefined;
   //This function is only used to check redirects (e.g. to login page)
   //Authentication checking (i.e. hiding a component for non-admins) is done in the components themselves
   function checkRedirect(...checks: checkFunction[]) :EnterHook {
     return function(nextState, replace, cb) {
       function doCheck() {
-        const state = store.getState() as IGlobalState;
+        const state = store.getState() as GlobalState;
         _.some(checks, (check) => {
           var shouldRedirect = check(nextState);
           if (shouldRedirect)  {
@@ -37,7 +37,7 @@ export default (store:Store<IGlobalState> = null) => {
   }
 
 
-  const state:IGlobalState = store.getState();
+  const state:GlobalState = store.getState();
   /**
    * Please keep routes in alphabetical order
    */

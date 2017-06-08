@@ -6,7 +6,7 @@ import * as getClassName from 'classnames'
 // import {Table,Button} from 'react-bootstrap';
 import {Link} from 'react-router'
 //import own dependencies
-// import { ITerm} from 'redux/modules/data'
+// import { ITerm} from 'reducers/data'
 export module TermLink {
 
   export interface Props {

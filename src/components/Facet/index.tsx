@@ -3,9 +3,9 @@ import * as React from 'react';
 import * as _ from 'lodash'
 import * as getClassName from 'classnames';
 import Checkbox from 'material-ui/Checkbox';
-import {Shape} from 'redux/modules/schema'
-import {getLabel, State as LabelsState} from 'redux/modules/labels'
-import {FacetFilter,setFacetFilter, FacetFilterValue} from 'redux/modules/facets'
+import {Shape} from 'reducers/schema'
+import {getLabel, State as LabelsState} from 'reducers/labels'
+import {FacetFilter,setFacetFilter, FacetFilterValue} from 'reducers/facets'
 import * as moment from 'moment'
 // import {OverlayTrigger, Tooltip} from 'react-bootstrap'
 // import {Row,Col} from 'react-bootstrap';

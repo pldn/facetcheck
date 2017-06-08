@@ -4,7 +4,7 @@ import * as React from 'react';
 import * as getClassName from 'classnames'
 // import {Table,Button} from 'react-bootstrap';
 //import own dependencies
-// import { ITerm} from 'redux/modules/data'
+// import { ITerm} from 'reducers/data'
 export module TermBoolean {
   export interface Props {
     className?: string,

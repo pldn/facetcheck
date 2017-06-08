@@ -1,0 +1,14 @@
+@import '../../theme/bootstrap.overrides/variables.scss';
+.notifications {
+  position:fixed;
+  top: $navbar-height - 10px;
+  right: 8px;//offset to right, so we don't see rounded corners on right side
+  //cannot use minus offset right, as we might end up with horizontal scrollbars
+  width: 400px;
+  margin: 10px;
+  margin-right:0;
+
+  z-index: 100;//larger than main content obviously, such as upload widget, YASGUI.
+  //should be less than user widget though
+
+}

@@ -3,8 +3,8 @@ import * as React from 'react';
 import * as _ from 'lodash'
 import * as getClassName from 'classnames';
 import Checkbox from 'material-ui/Checkbox';
-import {setActiveClasses} from 'redux/modules/facets'
-import {Shape} from 'redux/modules/schema'
+import {setActiveClasses} from 'reducers/facets'
+import {Shape} from 'reducers/schema'
 // import {OverlayTrigger, Tooltip} from 'react-bootstrap'
 // import {Row,Col} from 'react-bootstrap';
 // import {Link} from 'react-router'

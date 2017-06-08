@@ -18,9 +18,9 @@ import ApiClient from 'helpers/ApiClient'
  * Reducers (keep in alphabetic order)
  */
 // import * as accounts from './accounts';
-// import * as app from './app';
+import * as app from './app';
 // import * as auth from './auth';
-// import * as config from './config';
+import * as config from './config';
 // import * as contact from './contact';
 // import * as containerManagement from './containerManagement';
 // import * as containers from './containers';
@@ -35,7 +35,7 @@ import * as routing from './routing';
 // import * as socket from './socket'
 // import * as triples from './triples';
 // import * as uploading from './uploading';
-// import * as notifications from './notifications';
+import * as notifications from './notifications';
 const transitImmutable = require('transit-immutable-js');
 
 const transitHandler = transitImmutable.withRecords([
@@ -78,8 +78,8 @@ Keep in alphabetic order
 export interface GlobalState  extends Partial<reactRedux.ProviderProps> {
   // accounts: accounts.StateRecordInterface,
   // auth: auth.StateRecordInterface,
-  // app: app.StateRecordInterface,
-  // config: config.StateRecordInterface,
+  app: app.StateRecordInterface,
+  config: config.StateRecordInterface,
   // contact: contact.StateRecordInterface,
   // containerManagement:containerManagement.StateInterface,
   // containers:containers.StateInterface,
@@ -89,7 +89,7 @@ export interface GlobalState  extends Partial<reactRedux.ProviderProps> {
   // fileUploads: fileUploads.StateInterface,
   // graphs: graphs.StateInterface,
   // imports: imports.StateInterface,
-  // notifications: notifications.StateInterface,
+  notifications: notifications.StateInterface,
   // prefixes: prefixes.StateInterface,
   // triples: triples.StateInterface,
   // uploading: uploading.StateInterface,
@@ -105,9 +105,9 @@ const appReducer = Redux.combineReducers(<{ [K in keyof GlobalState]: any }>{
    * Keep in alphabetic order
    */
   // accounts: accounts.reducer,
-  // app: app.reducer,
+  app: app.reducer,
   // auth: auth.reducer,
-  // config: config.reducer,
+  config: config.reducer,
   // contact:contact.reducer,
   // containers:containers.reducer,
   // containerManagement:containerManagement.reducer,
@@ -117,7 +117,7 @@ const appReducer = Redux.combineReducers(<{ [K in keyof GlobalState]: any }>{
   // fileUploads: fileUploads.reducer,
   // graphs: graphs.reducer,
   // imports: imports.reducer,
-  // notifications: notifications.reducer,
+  notifications: notifications.reducer,
   // prefixes:prefixes.reducer,
   // socket:socket.reducer,
   // triples:triples.reducer,

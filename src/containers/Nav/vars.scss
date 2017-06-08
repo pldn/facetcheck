@@ -1,0 +1,15 @@
+$animateDuration: .3s;
+$iconSize: 20px;
+
+
+$panelWidth: 250px;
+$panelWidthCollapsed: 70px;
+$separatorColor: rgba(0,0,0,0.12);
+
+$panelLeftPadding: 5px;
+$iconsSize: 20px;
+$iconRightSpacing: 16px;
+
+
+$showBurgerOnSize: "only screen and (max-width : $screen-xs-max)";
+$showCollapsableOnSize: "only screen and (min-width : $screen-sm-min)";

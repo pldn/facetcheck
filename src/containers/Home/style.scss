@@ -1,0 +1,14 @@
+@import '../../theme/bootstrap.overrides/variables.scss';
+
+.home {
+  margin: 10px;
+  transition: background 0.5s ease;
+}
+div.description {
+  &:first-child {
+    // margin-top: 0px;
+  }
+  &:last-child {
+    margin-bottom: 0px;
+  }
+}

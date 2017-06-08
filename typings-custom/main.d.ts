@@ -4,5 +4,6 @@
 /// <reference path="readdirp/index.d.ts" />
 /// <reference path="redux-connect/index.d.ts" />
 /// <reference path="sharp/index.d.ts" />
+/// <reference path="n3/index.d.ts" />
 /// <reference path="scroll-behavior/index.d.ts" />
 /// <reference path="scss/index.d.ts" />

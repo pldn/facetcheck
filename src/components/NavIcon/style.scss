@@ -1,0 +1,25 @@
+@import '../../theme/bootstrap.overrides/variables.scss';
+
+
+.wrapper {
+  display:flex;
+  align-items:center;
+  height: $navbar-height;
+  .navIcon {
+    $height: 0.8 * $navbar-height;
+    height: $height;
+    width: $height;
+    margin-right: 15px;//some spacing between logo and text
+    border-radius:50%;
+    background-color:$custom3;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 2px 1px -1px rgba(0, 0, 0, 0.12);
+    :global(.svg-static) {
+      img {
+        height: $height * 0.7;
+        width: $height * 0.7;
+        vertical-align: middle;
+        // margin: ($height * 0.15) 0 0 ($height * 0.15);
+      }
+    }
+  }
+}

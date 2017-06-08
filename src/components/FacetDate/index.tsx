@@ -4,8 +4,8 @@ import * as _ from 'lodash'
 import * as getClassName from 'classnames';
 import DatePicker from 'material-ui/DatePicker';
 import {DatePickerProps} from 'material-ui'
-import {setActiveClasses,FacetFilter,setFacetFilter} from 'redux/modules/facets'
-import {Shape} from 'redux/modules/schema'
+import {setActiveClasses,FacetFilter,setFacetFilter} from 'reducers/facets'
+import {Shape} from 'reducers/schema'
 import * as moment from 'moment'
 module FacetDate {
   export interface Props  {

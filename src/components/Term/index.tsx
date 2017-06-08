@@ -5,13 +5,13 @@ import * as N3 from 'n3'
 import * as getClassName from 'classnames'
 // import {Table,Button} from 'react-bootstrap';
 //import own dependencies
-// import { ITerm} from 'redux/modules/data'
+// import { ITerm} from 'reducers/data'
 import {
   TermLink,
   TermLiteral,
   TermGeo
 } from 'components'
-import {State as LabelsState,getLabel,fetchLabel} from 'redux/modules/labels'
+import {State as LabelsState,getLabel,fetchLabel} from 'reducers/labels'
 export module Term {
   export interface Props {
     className?: string,

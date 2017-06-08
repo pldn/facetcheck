@@ -1,0 +1,43 @@
+@import '../../theme/bootstrap.overrides/variables.scss';
+.header {
+  position:absolute;
+  top: -20px;
+  left:0;
+  right:0;
+
+  display:flex;
+  justify-content: space-between;
+  .iri {
+    color:$custom3;
+    padding: 5px 15px;
+    justify-content: center;
+    background-color: $custom4;
+    background:linear-gradient(173deg,$custom4,#078ac5);
+
+    box-shadow: 0 3px 4px 0 rgba(0,0,0,.1),0 3px 3px -2px rgba(0,0,0,.2),0 1px 8px 0;
+    a {
+      color: $custom3;
+      font-size:22px;
+      margin-top:0;
+      margin-bottom:0;
+    }
+  }
+  .controls {
+    display:flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color:$custom3;
+    box-shadow: 0 3px 4px 0 rgba(0,0,0,.1),0 3px 3px -2px rgba(0,0,0,.2),0 1px 8px 0;
+    padding: 0 10px;
+    margin: 6px;
+    a {
+      margin: 0 5px;
+    }
+  }
+
+}
+.resourceDescription{
+  position:relative;
+
+}

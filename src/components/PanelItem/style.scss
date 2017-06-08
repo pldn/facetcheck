@@ -1,0 +1,104 @@
+@import '../../theme/bootstrap.overrides/variables.scss';
+@import '../../containers/Nav/vars.scss';
+$height: 36px;
+$paddingVert: 6px;
+$paddingHor: $panelLeftPadding;
+.item {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: $height;
+  min-width: 0;
+  overflow: visible;
+  // font-weight: 500;
+  line-height: $iconSize;
+  text-align: start;
+  padding: $paddingVert $paddingHor;
+
+  align-items: center;
+  span {
+    font-size: 14px;
+    padding-left: $iconRightSpacing;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity $animateDuration ease;
+  }
+  i {
+    font-size:$iconSize;
+  }
+  &:hover {
+    background-color: $custom2;
+  }
+}
+
+// @keyframes hide {
+//   to {
+//     opacity: 0;
+//     //if we want to move the element outside of the dom, use the pos absolute
+//     //below. Can't use display:none, because its not an animatable property
+//     //see https://snook.ca/archives/html_and_css/css3-animation-proposal
+//     // position: absolute;
+//     // left: -999px;
+//   }
+//
+// }
+.active {
+  color: $custom5;
+}
+
+
+:global(.collapsed) .item {
+  span {
+    opacity: 0;
+  }
+}
+
+
+$tooltipHeight: 26px;
+$tooltipPaddingVert: 2px;
+$tooltipPaddingHor: 25px;
+.tooltip {
+  display:none;
+  position:absolute;
+  left: $panelWidthCollapsed + 10;
+  background: $custom6;
+  // border-radius: 5px;
+  // bottom: 26px;
+  color: #fff;
+  // content: attr(title);
+  // left: 20%;
+  padding: $tooltipPaddingVert $tooltipPaddingHor;
+  height:$tooltipHeight;
+  // position: absolute;
+  // z-index: 98;
+  font-size:12px;
+  line-height: 20px;
+  margin-top:-4px;
+  border-radius: 3px;
+  opacity: 0;
+}
+
+
+:global(.collapsed) .item:hover .tooltip {
+  //added very small delay (.1s) to avoid flickering when moving mouse over menu
+  animation: animateTooltip .25s linear .1s;
+  animation-fill-mode: forwards;
+  display:block;
+}
+
+@keyframes animateTooltip {
+  0% {
+      transform: scale(0,0);
+      opacity: 0;
+  }
+
+  80% {
+      transform: scale(1.1,1.1);
+      opacity: 0.7;
+  }
+
+  100% {
+      transform: scale(1);
+      opacity: 1;
+  };
+}

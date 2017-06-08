@@ -1,0 +1,8 @@
+@import '../../theme/bootstrap.overrides/variables.scss';
+.burger {
+  :global(.icon-bar) {
+    background-color: $custom3;
+  }
+  float:none;
+  margin-right: 10px;
+}
