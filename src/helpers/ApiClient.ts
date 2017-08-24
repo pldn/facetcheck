@@ -2,7 +2,7 @@
 import * as superagent from "superagent";
 import { Request } from "express";
 import * as _ from "lodash";
-
+import * as N3 from 'n3'
 //import own dependencies
 import { GlobalState } from "reducers";
 import { getConfig, Config, ConnectionConfig } from "staticConfig";
@@ -198,10 +198,27 @@ export default class ApiClient {
         if (!_.isEmpty(returnErr.message)) return returnErr;
         return err;
       };
-
+      const getBody = (res: superagent.Response) => {
+        if (res.body) return res.body;
+        if (res.text) {
+          if (args.sparqlConstruct) {
+            return  N3.Parser().parse(res.text)
+          }
+          return res.text
+        }
+        return undefined
+      }
       request.end((err: Error, res: superagent.Response) => {
         this.removeRequestReference(args.requestTag, uuid);
-        const body = res ? (res.body ? res.body : res.text ? res.text : undefined) : undefined;
+        const body = getBody(res);
+        // if (res) {
+        //   if (res.text) {
+        //
+        //   } else {
+        //
+        //     body = res.body;
+        //   }
+        // }
         if (err || !res) return reject(formatError(err, body));
         const meta = {
           status: res.status,

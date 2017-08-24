@@ -7,29 +7,23 @@ import * as _ from "lodash";
 //import own dependencies
 // import {getLabel, State as Labels,fetchLabel} from 'redux/modules/labels'
 import { Term, TermLink, TermLiteral } from "components";
-
+import * as Immutable from 'immutable';
 const styles = require("./style.scss");
-namespace ResourceDescription {
+namespace Statement {
   export interface GroupedStatements {
     [predicate: string]: string[];
   }
 
   export interface Props {
     // labels: Labels
-    context: N3.Statement[];
+    context: Immutable.List<N3.Statement>
     predicate: string;
     objects: string[];
     // fetchLabel: typeof fetchLabel
   }
 }
 
-class ResourceDescription extends React.PureComponent<ResourceDescription.Props, any> {
-  // groupStatementsByPred():ResourceDescription.GroupedStatements {
-  //   return _.transform(this.props.statements, function(result:ResourceDescription.GroupedStatements, statement) {
-  //     if (!result[statement.predicate]) result[statement.predicate] = [];
-  //     result[statement.predicate].push(statement.object)
-  //   }, {})
-  // }
+class Statement extends React.PureComponent<Statement.Props, any> {
 
   render() {
     const {
@@ -66,4 +60,4 @@ class ResourceDescription extends React.PureComponent<ResourceDescription.Props,
   }
 }
 
-export default ResourceDescription;
+export default Statement;

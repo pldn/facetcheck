@@ -3,6 +3,7 @@ import * as React from "react";
 
 import * as N3 from "n3";
 import * as getClassName from "classnames";
+import * as Immutable from 'immutable'
 //import own dependencies
 import { TermLiteralBoolean } from "components";
 
@@ -20,7 +21,7 @@ export namespace TermLiteral {
 const styles = require("./style.scss");
 //used for e.g. IRIs and graphnames
 class TermLiteral extends React.PureComponent<TermLiteral.Props, any> {
-  static acceptsTerm(term: string, context: N3.Statement[]) {
+  static acceptsTerm(term: string,context: Immutable.List<N3.Statement>) {
     return N3.Util.isLiteral(term) || N3.Util.isBlank(term);
   }
   render() {

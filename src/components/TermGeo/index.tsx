@@ -6,7 +6,7 @@ import * as N3 from "n3";
 import * as _ from "lodash";
 import * as Bs from "react-bootstrap";
 import * as getClassName from "classnames";
-
+import * as Immutable from 'immutable'
 // import {Table,Button} from 'react-bootstrap';
 import { Link } from "react-router";
 //import own dependencies
@@ -14,7 +14,7 @@ import { Link } from "react-router";
 export namespace TermGeo {
   export interface Props {
     className?: string;
-    context: N3.Statement[];
+    context: Immutable.List<N3.Statement>;
     term: string;
   }
   export interface State {
@@ -45,11 +45,10 @@ class TermGeo extends React.PureComponent<TermGeo.Props, TermGeo.State> {
   state: TermGeo.State = {
     showModal: false
   };
-  private static getCoordinate(term: string, context: N3.Statement[]): string {
+  private static getCoordinate(term: string, context:   Immutable.List<N3.Statement>): string {
     if (N3.Util.isIRI(term) || N3.Util.isBlank(term)) {
       //Ah, its an IRI/bnode. Check whether we've got geo info about this term in our context
-      for (var i = 0; i < context.length; i++) {
-        var statement = context[i];
+      for (const statement of context) {
         if (statement.subject === term) {
           //check whether object value is accepteable
           var coor = TermGeo.getCoordinate(statement.object, context);
@@ -64,7 +63,7 @@ class TermGeo extends React.PureComponent<TermGeo.Props, TermGeo.State> {
     }
     return null;
   }
-  static acceptsTerm(term: string, context: N3.Statement[]) {
+  static acceptsTerm(term: string, context: Immutable.List<N3.Statement>) {
     return !!TermGeo.getCoordinate(term, context);
   }
   close() {

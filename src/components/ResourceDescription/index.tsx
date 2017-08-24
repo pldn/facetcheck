@@ -4,6 +4,7 @@ import * as getClassNames from "classnames";
 import * as UriJs from "urijs";
 import * as N3 from "n3";
 import * as _ from "lodash";
+import * as Immutable from 'immutable'
 //import own dependencies
 // import {getLabel,State as LabelsState,fetchLabel} from 'reducers/labels'
 import { Statement } from "components";
@@ -32,22 +33,19 @@ namespace ResourceDescription {
     className?: string;
     // labels: LabelsState,
     forIri: string;
-    statements: N3.Statement[];
+    statements: Immutable.List<N3.Statement>;
     // fetchLabel: typeof fetchLabel
   }
 }
 
 class ResourceDescription extends React.PureComponent<ResourceDescription.Props, any> {
   groupStatementsByPred(): ResourceDescription.GroupedStatements {
-    return _.transform(
-      this.props.statements,
-      (result: ResourceDescription.GroupedStatements, statement) => {
-        if (this.props.forIri !== statement.subject) return;
-        if (!result[statement.predicate]) result[statement.predicate] = [];
-        result[statement.predicate].push(statement.object);
-      },
-      {}
-    );
+    return this.props.statements.reduce<ResourceDescription.GroupedStatements>((result, statement) => {
+      if (this.props.forIri !== statement.subject) return result;
+      if (!result[statement.predicate]) result[statement.predicate] = [];
+      result[statement.predicate].push(statement.object);
+      return result;
+    }, {})
   }
   renderStatements() {
     const grouped = this.groupStatementsByPred();

@@ -3,6 +3,7 @@ import * as React from "react";
 
 import * as N3 from "n3";
 import * as getClassName from "classnames";
+import * as Immutable from 'immutable'
 // import {Table,Button} from 'react-bootstrap';
 import { Link } from "react-router";
 //import own dependencies
@@ -22,7 +23,7 @@ const styles = require("./style.scss");
 
 //used for e.g. IRIs and graphnames
 class TermLink extends React.PureComponent<TermLink.Props, any> {
-  static acceptsTerm(term: string, context: N3.Statement[]) {
+  static acceptsTerm(term: string, context: Immutable.List<N3.Statement>) {
     return N3.Util.isIRI(term);
   }
   render() {

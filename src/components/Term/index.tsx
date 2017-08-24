@@ -3,6 +3,7 @@ import * as React from "react";
 
 import * as N3 from "n3";
 import * as getClassName from "classnames";
+import * as Immutable from 'immutable'
 // import {Table,Button} from 'react-bootstrap';
 //import own dependencies
 // import { ITerm} from 'reducers/data'
@@ -12,7 +13,7 @@ export namespace Term {
   export interface Props {
     className?: string;
     term: string;
-    context: N3.Statement[];
+    context: Immutable.List<N3.Statement>;
     label?: string;
     // fetchLabel: typeof fetchLabel
   }

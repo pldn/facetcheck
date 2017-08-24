@@ -25,6 +25,7 @@ declare module "n3" {
     }
     export class N3Parser {
       parse(inputString: string, cb: (error: Error, statement: Statement, prefixes: Object) => void): void;
+      parse(inputString: string): Statement[]
     }
     export function StreamParser(): stream.Duplex;
     export interface WriteOptions {

@@ -48,28 +48,11 @@ const styles = require("./style.scss");
 
 // @(connect as any)(mapStateToProps, {getMatchingIris,getResourceDescription,fetchLabel,fetchShapes})
 class Home extends React.PureComponent<Home.Props, any> {
-  componentWillReceiveProps(nextProps: Home.Props) {
-    //Refetch matching IRIs when one of the facets change
-    // if (facetsChanged(this.props.facets, nextProps.facets)) {
-    //   this.props.getMatchingIris(nextProps.facets);
-    //   this.props.fetchShapes(this.props.shapes, nextProps.facets);//will only fetch if needed
-    //   // this.props.fetchShapeCounts(this.props.shapeCounts);
-    // }
-    // //Get resource descriptions if needed
-    // if (
-    //   //just fetched matching IRIs
-    //   (this.props.gettingMatchingIris && !nextProps.gettingMatchingIris)
-    // ) {
-    //   nextProps.matchingIris.forEach((iri) => {
-    //
-    //     if (this.props.resourceDescriptions[iri] === undefined) this.props.getResourceDescription(iri);
-    //   })
-    // }
-  }
+
   render() {
     // const {resourceDescriptions, labels,fetchLabel, matchingIris} = this.props
     const renderDescriptions = () => {
-      if (this.props.resourceDescriptions.size === 0)
+      if (this.props.resourceDescriptions.size === 0) {
         // const arr:any = []
         // for (var key in resourceDescriptions) {
         //   if (resourceDescriptions[key] && resourceDescriptions[key].length) arr.push(<ResourceDescription fetchLabel={fetchLabel} className={styles.description} key={key} labels={labels} forIri={key} statements={resourceDescriptions[key]}/>)
@@ -79,7 +62,10 @@ class Home extends React.PureComponent<Home.Props, any> {
         // } else {
         //   return arr
         // }
-        return "descriptions!";
+        return "no descriptions found...";
+      }
+      // return this.props.resourceDescriptions.mapEntries((forIri, statements) => <ResourceDescription statements={statements} forIri={forIri}/>)
+      return this.props.resourceDescriptions.entrySeq().map(([forIri,statements]) => <ResourceDescription key={forIri} statements={statements} forIri={forIri}/>)
     };
 
     return (

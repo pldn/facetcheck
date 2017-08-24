@@ -2,6 +2,7 @@
 import * as React from "react";
 
 import * as getClassName from "classnames";
+import * as Immutable from 'immutable'
 // import {Table,Button} from 'react-bootstrap';
 //import own dependencies
 // import { ITerm} from 'reducers/data'
