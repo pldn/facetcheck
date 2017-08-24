@@ -1,54 +1,54 @@
 //external dependencies
-import * as React from 'react';
+import * as React from "react";
 
-import * as ReduxForm from 'redux-form';
-import { RadioButtonGroupProps} from 'material-ui'
+import * as ReduxForm from "redux-form";
+import { RadioButtonGroupProps } from "material-ui";
 // import  from 'material-ui/RadioButton'
-import {RadioButtonGroup, RadioButton} from 'material-ui/RadioButton'
-import * as _ from 'lodash'
+import { RadioButtonGroup, RadioButton } from "material-ui/RadioButton";
+import * as _ from "lodash";
 //import own dependencies
-import {
-  // FormField
-} from 'components'
+import // FormField
+"components";
 
+const styles = require("./style.scss");
 
-const styles = require('./style.scss')
-
-
-class MaterialRadioButtonGroup extends React.PureComponent<MaterialRadioButtonGroup.Props & ReduxForm.WrappedFieldProps<any>,MaterialRadioButtonGroup.State> {
+class MaterialRadioButtonGroup extends React.PureComponent<
+  MaterialRadioButtonGroup.Props & ReduxForm.WrappedFieldProps<any>,
+  MaterialRadioButtonGroup.State
+> {
   static RadioButton = RadioButton;
 
-  adjustOwnProps():RadioButtonGroupProps{
+  adjustOwnProps(): RadioButtonGroupProps {
     //map redux props to material-ui props
-    const props:any = _.assign<RadioButtonGroupProps>({}, this.props);
+    const props: any = _.assign<RadioButtonGroupProps>({}, this.props);
 
     props.input.valueSelected = this.props.input.value;
     _.assign(props, props.input);
-    return _.omit<RadioButtonGroupProps,RadioButtonGroupProps>(props, ['input', 'meta', 'custom'])
+    return _.omit<RadioButtonGroupProps, RadioButtonGroupProps>(props, ["input", "meta", "custom"]);
   }
 
   render() {
-    return <div className={styles.checkbox}>
-          <RadioButtonGroup
+    return (
+      <div className={styles.checkbox}>
+        <RadioButtonGroup
           {...this.adjustOwnProps()}
           style={{
-            fontSize:'inherit'
+            fontSize: "inherit"
           }}
-          />
-       </div>
+        />
+      </div>
+    );
   }
 }
-module MaterialRadioButtonGroup {
-
+namespace MaterialRadioButtonGroup {
   export class Field extends ReduxForm.Field<Props & RadioButtonGroupProps> {}
-  export interface Props extends RadioButtonGroupProps{
-
+  export interface Props extends RadioButtonGroupProps {
     //'custom' field are our own prop extensions to the text field props
     //putting this in a separate key, so we can easily remove it when passing it on to the textfield
     custom?: {
       // checkedOnDisabled?:boolean
-    }
-    component:typeof React.Component
+    };
+    component: typeof React.Component;
   }
   export interface State {}
 }

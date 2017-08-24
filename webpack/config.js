@@ -6,7 +6,7 @@ var webpack = require("webpack");
 var appConfig = require("./_appConfig").getConfig();
 var paths = require("./paths");
 var WatchMissingNodeModulesPlugin = require("react-dev-utils/WatchMissingNodeModulesPlugin");
-var ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+var ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 var getClientEnvironment = require("./env");
 var WebpackBuildNotifierPlugin = require("webpack-build-notifier");
 var LodashModuleReplacementPlugin = require("lodash-webpack-plugin");
@@ -64,6 +64,12 @@ module.exports = {
     publicPath: isDev ? "http://" + host + ":" + appConfig.getDevServerPort() + "/dist/" : "/dist/"
   },
   resolve: {
+    alias: {
+      leaflet_css: __dirname + "/../node_modules/leaflet/dist/leaflet.css",
+      leaflet_marker: __dirname + "/../node_modules/leaflet/dist/images/marker-icon.png",
+      leaflet_marker_2x: __dirname + "/../node_modules/leaflet/dist/images/marker-icon-2x.png",
+      leaflet_marker_shadow: __dirname + "/../node_modules/leaflet/dist/images/marker-shadow.png"
+    },
     modules: [paths.src, paths.nodeModules],
     extensions: [".json", ".js", ".jsx", ".ts", ".tsx"]
   },
@@ -74,21 +80,23 @@ module.exports = {
         include: [paths.src],
         loader: removeEmpty([
           ifDev("react-hot-loader/webpack"),
-          isProd || process.env.WITH_BABEL?{
-            loader: "babel-loader",
-            options: {
-              presets: [
-                [
-                  "env",
-                  {
-                    targets: {
-                      browsers: SUPPORTED_BROWSERS
-                    }
-                  }
-                ]
-              ]
-            }
-          }:undefined,
+          isProd || process.env.WITH_BABEL
+            ? {
+                loader: "babel-loader",
+                options: {
+                  presets: [
+                    [
+                      "env",
+                      {
+                        targets: {
+                          browsers: SUPPORTED_BROWSERS
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            : undefined,
           {
             loader: "ts-loader",
             options: {
@@ -248,6 +256,10 @@ module.exports = {
       //   loader: "style-loader!css-loader"
       // },
       {
+        test: /\.css$/,
+        loader: "style-loader!css-loader"
+      },
+      {
         test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
         loader: "url-loader",
         options: {
@@ -265,11 +277,13 @@ module.exports = {
     ])
   },
   plugins: removeEmpty([
-    ifDev(new ForkTsCheckerWebpackPlugin({
-      tsconfig: "tsconfig-build.json",
-      watch: "./src/**/**.ts*",
-      workers: 2,
-    })),
+    ifDev(
+      new ForkTsCheckerWebpackPlugin({
+        tsconfig: "tsconfig-build.json",
+        watch: "./src/**/**.ts*",
+        workers: 2
+      })
+    ),
     new webpack.ContextReplacementPlugin(/moment[\\\/]locale$/, /^\.\/(en)$/), //only english locale
     new webpack.LoaderOptionsPlugin({
       minimize: isProd,

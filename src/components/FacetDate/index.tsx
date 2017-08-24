@@ -1,26 +1,25 @@
-import * as React from 'react';
+import * as React from "react";
 
-import * as _ from 'lodash'
-import * as getClassName from 'classnames';
+import * as _ from "lodash";
+import * as getClassName from "classnames";
 // import DatePicker from 'material-ui/DatePicker';
-import {DatePickerProps, DatePicker} from 'material-ui'
+import { DatePickerProps, DatePicker } from "material-ui";
 // import {setActiveClasses,FacetFilter,setFacetFilter} from 'reducers/facets'
 // import {Shape} from 'reducers/schema'
-import * as moment from 'moment'
-module FacetDate {
-  export interface Props  {
+import * as moment from "moment";
+namespace FacetDate {
+  export interface Props {
     // shape:Shape,
-    className?:string,
-    onMinDateChange?:(e:any, d:Date)=>void,
-    onMaxDateChange?:(e:any, d:Date)=>void,
+    className?: string;
+    onMinDateChange?: (e: any, d: Date) => void;
+    onMaxDateChange?: (e: any, d: Date) => void;
     // filter:FacetFilter
     // setFacetFilter:typeof setFacetFilter
   }
 }
-const styles = require('./style.scss');
+const styles = require("./style.scss");
 
-class FacetDate extends React.PureComponent<FacetDate.Props,any> {
-
+class FacetDate extends React.PureComponent<FacetDate.Props, any> {
   // resetDate(whichDate: 'from'|'to') {
   //   if (whichDate === 'from') {
   //     const filter = _.clone(this.props.filter);
@@ -34,45 +33,45 @@ class FacetDate extends React.PureComponent<FacetDate.Props,any> {
   //   }
   // }
   render() {
-    const {className,
+    const {
+      className
       // shape,filter
     } = this.props;
     const enabledStyles = {
       [className]: !!className,
       [styles.dateFacet]: !!styles.dateFacet
-    }
-    const datePickerProps:DatePickerProps = {
-      textFieldStyle:{width: '100%'},
-      style:{width:'100%'},
-      inputStyle:{width:'100%'},
-      fullWidth:true,
-      container:"inline",
-      mode:"landscape",
+    };
+    const datePickerProps: DatePickerProps = {
+      textFieldStyle: { width: "100%" },
+      style: { width: "100%" },
+      inputStyle: { width: "100%" },
+      fullWidth: true,
+      container: "inline",
+      mode: "landscape",
       className: styles.datePicker
-    }
+    };
     return (
       <div className={getClassName(enabledStyles)}>
-          <div className={styles.widgetContainer}>
-            <i className={'fa fa-calendar'}/>
-            <DatePicker
-
-              // id={shape.predicate + 'after'}
-              // minDate={new Date(shape.minValue)}
-              //hmm, this seems to slow down the drawing of the page. No idea why....
-              // maxDate={moment.min(moment(shape.maxValue), (this.props.filter && this.props.filter.lessThan && moment(this.props.filter.lessThan)) || moment(shape.maxValue)).toDate()}
-              floatingLabelText="After"
-              hintText="After"
-              onChange={this.props.onMinDateChange}
-              // value={this.props.filter && this.props.filter.greaterThan && new Date(this.props.filter.greaterThan)}
-              {...datePickerProps}
-              />
-            {
-              // filter && filter.greaterThan && <i className={'fa fa-times'} onClick={() => {this.resetDate('from')}}/>
-            }
-          </div>
-          <div className={styles.widgetContainer}>
-            <i className={'fa fa-calendar'}/>
-            <DatePicker
+        <div className={styles.widgetContainer}>
+          <i className={"fa fa-calendar"} />
+          <DatePicker
+            // id={shape.predicate + 'after'}
+            // minDate={new Date(shape.minValue)}
+            //hmm, this seems to slow down the drawing of the page. No idea why....
+            // maxDate={moment.min(moment(shape.maxValue), (this.props.filter && this.props.filter.lessThan && moment(this.props.filter.lessThan)) || moment(shape.maxValue)).toDate()}
+            floatingLabelText="After"
+            hintText="After"
+            onChange={this.props.onMinDateChange}
+            // value={this.props.filter && this.props.filter.greaterThan && new Date(this.props.filter.greaterThan)}
+            {...datePickerProps}
+          />
+          {
+            // filter && filter.greaterThan && <i className={'fa fa-times'} onClick={() => {this.resetDate('from')}}/>
+          }
+        </div>
+        <div className={styles.widgetContainer}>
+          <i className={"fa fa-calendar"} />
+          <DatePicker
             // id={shape.predicate + 'before'}
             floatingLabelText="Before"
             hintText="Before"
@@ -82,13 +81,13 @@ class FacetDate extends React.PureComponent<FacetDate.Props,any> {
             // maxDate={new Date(shape.maxValue)}
             // value={this.props.filter && this.props.filter.lessThan && new Date(this.props.filter.lessThan)}
             {...datePickerProps}
-            />
-            {
-              // filter && filter.lessThan && <i className={'fa fa-times'} onClick={() => {this.resetDate('to')}}/>
-            }
-          </div>
+          />
+          {
+            // filter && filter.lessThan && <i className={'fa fa-times'} onClick={() => {this.resetDate('to')}}/>
+          }
+        </div>
       </div>
     );
   }
 }
-export default FacetDate
+export default FacetDate;

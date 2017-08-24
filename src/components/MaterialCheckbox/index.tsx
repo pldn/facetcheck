@@ -1,26 +1,25 @@
 //external dependencies
-import * as React from 'react';
+import * as React from "react";
 
-import * as ReduxForm from 'redux-form';
-import { CheckboxProps,Checkbox} from 'material-ui'
+import * as ReduxForm from "redux-form";
+import { CheckboxProps, Checkbox } from "material-ui";
 
-import * as _ from 'lodash'
+import * as _ from "lodash";
 //import own dependencies
-import {
-  // FormField
-} from 'components'
+import // FormField
+"components";
 
+const styles = require("./style.scss");
 
-const styles = require('./style.scss')
-
-
-class MaterialCheckbox extends React.PureComponent<MaterialCheckbox.Props & ReduxForm.WrappedFieldProps<any>,MaterialCheckbox.State> {
-
-  adjustOwnProps():CheckboxProps {
+class MaterialCheckbox extends React.PureComponent<
+  MaterialCheckbox.Props & ReduxForm.WrappedFieldProps<any>,
+  MaterialCheckbox.State
+> {
+  adjustOwnProps(): CheckboxProps {
     //map redux props to material-ui props
-    const props = _.assign<CheckboxProps>({}, this.props, _.omit(this.props.input, ['onChange', 'value']));
+    const props = _.assign<CheckboxProps>({}, this.props, _.omit(this.props.input, ["onChange", "value"]));
 
-    props.checked = (this.props.input.value ?true:false)
+    props.checked = this.props.input.value ? true : false;
     if (this.props.custom && this.props.custom.checkedOnDisabled && this.props.disabled) {
       props.checked = true;
     }
@@ -31,32 +30,32 @@ class MaterialCheckbox extends React.PureComponent<MaterialCheckbox.Props & Redu
     //so, set one ourselves if needed
     //TODO: prepend the name with the name of the form to make it more specific
     if (!props.id) props.id = props.name;
-    return _.omit(props, ['input', 'meta', 'custom'])
+    return _.omit(props, ["input", "meta", "custom"]);
   }
 
   render() {
     // const {meta:{pristine}, input:{value}} = this.props;
-    return <div className={styles.checkbox}>
-          <Checkbox
+    return (
+      <div className={styles.checkbox}>
+        <Checkbox
           {...this.adjustOwnProps()}
           style={{
-            fontSize:'inherit'
+            fontSize: "inherit"
           }}
-          />
-       </div>
+        />
+      </div>
+    );
   }
 }
-module MaterialCheckbox {
-
+namespace MaterialCheckbox {
   export class Field extends ReduxForm.Field<Props & CheckboxProps> {}
-  export interface Props extends CheckboxProps{
-
+  export interface Props extends CheckboxProps {
     //'custom' field are our own prop extensions to the text field props
     //putting this in a separate key, so we can easily remove it when passing it on to the textfield
     custom?: {
-      checkedOnDisabled?:boolean
-    }
-    component:typeof React.Component
+      checkedOnDisabled?: boolean;
+    };
+    component: typeof React.Component;
   }
   export interface State {}
 }

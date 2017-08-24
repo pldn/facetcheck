@@ -4,23 +4,17 @@ const ConfigTemplate_1 = require("@triply/triply-node-utils/build/src/ConfigTemp
 class Config extends ConfigTemplate_1.default {
     setDefaults() {
         this.internalPort = 5000;
-        this.serverConnection = {
-            ssl: true,
-            publicPort: 80,
-            domain: 'triply.cc',
-        };
-        this.serverConnectionFromBrowser = {
-            ssl: true,
-            publicPort: 80,
-            domain: 'triply.cc',
-        };
         this.clientConnection = {
-            ssl: true,
-            publicPort: 80,
-            domain: 'triply.cc',
+            ssl: false,
+            publicPort: 5000,
+            domain: 'localhost',
         };
-        this.onlyLandingPage = false;
-        this.hideLandingPage = false;
+        this.serverConnection = {
+            ssl: false,
+            publicPort: 5000,
+            domain: 'localhost',
+        };
+        this.sparqlEndpoint = 'https://data.labs.pdok.nl/sparql';
     }
     getDevServerPort() {
         return this.clientConnection.publicPort + 5;

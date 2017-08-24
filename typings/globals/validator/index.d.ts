@@ -2,7 +2,6 @@
 // Source: https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/56295f5058cac7ae458540423c50ac2dcf9fc711/validator/validator.d.ts
 declare namespace ValidatorJS {
   interface ValidatorStatic {
-
     /**************
      * Validators *
      **************/
@@ -140,7 +139,7 @@ declare namespace ValidatorJS {
     isVariableWidth(str: string): boolean;
 
     // checks characters if they appear in the whitelist.
-    isWhitelisted(str: string, chars: string|string[]): boolean;
+    isWhitelisted(str: string, chars: string | string[]): boolean;
 
     // check if string matches the pattern.
     matches(str: string, pattern: any, modifiers?: string): boolean;
@@ -278,7 +277,9 @@ declare namespace ValidatorJS {
 
 declare module "validator" {
   let validator: ValidatorJS.ValidatorStatic;
-  namespace validator {}
+  namespace validator {
+
+  }
   export = validator;
 }
 
