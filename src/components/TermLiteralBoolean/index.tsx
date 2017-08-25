@@ -1,34 +1,25 @@
 //external dependencies
 import * as React from "react";
-
 import * as getClassName from "classnames";
-import * as Immutable from 'immutable'
-// import {Table,Button} from 'react-bootstrap';
-//import own dependencies
-// import { ITerm} from 'reducers/data'
-export namespace TermBoolean {
-  export interface Props {
-    className?: string;
-    value: string;
-  }
-}
 
-const styles = require("./style.scss");
-//used for e.g. IRIs and graphnames
-class TermBoolean extends React.PureComponent<TermBoolean.Props, any> {
+import { TermLiteral, TermLiteralDefault } from "components";
+import * as styles from "./style.scss";
+
+@TermLiteral.staticImplements<TermLiteral.TermLiteralRenderer>()
+export /* this statement implements both normal interface & static interface */
+class TermLiteralBoolean extends React.PureComponent<TermLiteral.Props, any> {
+  static shouldRender(props: TermLiteral.Props) {
+    return props.datatype === "http://www.w3.org/2001/XMLSchema#boolean";
+  }
   render() {
-    const { value, className } = this.props;
-    const activeIconStyles = {
-      fa: true,
-      "fa-check": value === "true",
-      "fa-times": value !== "true",
-      [styles.icon]: !!styles.icon
-    };
-    return (
-      <div className={getClassName(styles.boolean, className)}>
-        <i className={getClassName(activeIconStyles)} />
-      </div>
-    );
+    switch (this.props.value) {
+      case "true":
+        return <i title="true" className={getClassName("fa fa-check", styles.boolean, styles.true)} />;
+      case "false":
+        return <i title="false" className={getClassName("fa fa-times", styles.boolean, styles.false)} />;
+      default:
+        return <TermLiteralDefault {...this.props} />;
+    }
   }
 }
-export default TermBoolean;
+export default TermLiteralBoolean;

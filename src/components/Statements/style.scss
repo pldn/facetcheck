@@ -1,0 +1,11 @@
+.statement {
+  display:table-row;
+  .pred {
+    display:table-cell;
+  }
+  .objs {
+    display:table-cell;
+    .obj {
+    }
+  }
+}

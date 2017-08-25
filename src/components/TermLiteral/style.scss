@@ -1,14 +1,19 @@
-.extLink {
-  margin-right:10px;
+@import '../../theme/bootstrap.overrides/variables.scss';
+
+.wrapper {
+  overflow: auto;
+}
+
+.extLink,
+.language {
+  font-size: 12px;
+  color: grey;
+  visibility: hidden;
+  word-break: break-all;
+  overflow: hidden;
+  white-space: normal;
 }
 
 .literal {
-  // max-height: 200px;
-  // overflow: auto;
-  // //we only have 1 icon. if we have more (dynamic) icons
-  // //we might need to disable this
-  // white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  // white-space: pre;//this way, we'll render line breaks in literals properly
+  overflow: auto;
 }

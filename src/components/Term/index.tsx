@@ -4,11 +4,8 @@ import * as React from "react";
 import * as N3 from "n3";
 import * as getClassName from "classnames";
 import * as Immutable from 'immutable'
-// import {Table,Button} from 'react-bootstrap';
 //import own dependencies
-// import { ITerm} from 'reducers/data'
 import { TermLink, TermLiteral, TermGeo } from "components";
-// import {State as LabelsState,getLabel,fetchLabel} from 'reducers/labels'
 export namespace Term {
   export interface Props {
     className?: string;
@@ -20,19 +17,20 @@ export namespace Term {
 }
 
 const styles = require("./style.scss");
-//used for e.g. IRIs and graphnames
 class Term extends React.PureComponent<Term.Props, any> {
   render() {
     const { term, className, context, label } = this.props;
 
     if (TermGeo.acceptsTerm(term, context)) return <TermGeo term={term} context={context} />;
     if (TermLink.acceptsTerm(term, context)) return <TermLink className={className} iri={term} label={label} />;
-    if (TermLiteral.acceptsTerm(term, context))
+    if (N3.Util.isLiteral(term))
       return (
         <TermLiteral
           className={className}
           datatype={N3.Util.getLiteralType(term)}
-          showDatatype={false}
+          // showDatatype={false}
+          termType={"Literal"}
+          language={N3.Util.getLiteralLanguage(term)}
           value={N3.Util.getLiteralValue(term)}
         />
       );

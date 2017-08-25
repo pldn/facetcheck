@@ -7,14 +7,14 @@ class Config extends ConfigTemplate_1.default {
         this.clientConnection = {
             ssl: false,
             publicPort: 5000,
-            domain: 'localhost',
+            domain: "localhost"
         };
         this.serverConnection = {
             ssl: false,
             publicPort: 5000,
-            domain: 'localhost',
+            domain: "localhost"
         };
-        this.sparqlEndpoint = 'https://data.labs.pdok.nl/sparql';
+        this.sparqlEndpoint = "https://data.labs.pdok.nl/sparql";
     }
     getDevServerPort() {
         return this.clientConnection.publicPort + 5;
@@ -26,7 +26,7 @@ class Config extends ConfigTemplate_1.default {
 }
 exports.Config = Config;
 function getCurrentUrl(config, path, queryString) {
-    return Config.prototype.connectionToUrl(config.clientConnection) + (path ? path : '') + (queryString ? queryString : '');
+    return (Config.prototype.connectionToUrl(config.clientConnection) + (path ? path : "") + (queryString ? queryString : ""));
 }
 exports.getCurrentUrl = getCurrentUrl;
 var config;

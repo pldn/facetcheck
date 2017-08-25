@@ -1,6 +1,11 @@
-.icon:global(.fa-check) {
-  color:#3c763d;
+@import '../../theme/bootstrap.overrides/variables.scss';
+
+.boolean {
+  font-size: 120%;
 }
-.icon:global(.fa-times) {
-  color:#F44336;
+.true {
+  color: $brand-success;
+}
+.false {
+  color: $brand-danger;
 }

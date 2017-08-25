@@ -1,0 +1,7 @@
+.dots {
+  cursor: pointer;
+  font-weight: bold;
+  &:hover {
+    text-decoration: none;
+  }
+}

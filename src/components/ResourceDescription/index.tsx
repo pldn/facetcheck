@@ -1,13 +1,12 @@
 //external dependencies
 import * as React from "react";
 import * as getClassNames from "classnames";
-import * as UriJs from "urijs";
+// import * as UriJs from "urijs";
 import * as N3 from "n3";
-import * as _ from "lodash";
 import * as Immutable from 'immutable'
 //import own dependencies
 // import {getLabel,State as LabelsState,fetchLabel} from 'reducers/labels'
-import { Statement } from "components";
+import { Statements } from "components";
 var downloadData = (function() {
   if (__SERVER__) return;
   var a: any = document.createElement("a");
@@ -31,10 +30,8 @@ namespace ResourceDescription {
 
   export interface Props {
     className?: string;
-    // labels: LabelsState,
     forIri: string;
     statements: Immutable.List<N3.Statement>;
-    // fetchLabel: typeof fetchLabel
   }
 }
 
@@ -53,34 +50,30 @@ class ResourceDescription extends React.PureComponent<ResourceDescription.Props,
 
     for (var pred in grouped) {
       rows.push(
-        <Statement
+        <Statements
           key={pred}
-          // labels={this.props.labels}
           predicate={pred}
           objects={grouped[pred]}
           context={this.props.statements}
         />
       );
     }
-    return rows;
+    return <div className={styles.statements}>{rows}</div>;
   }
   downloadLd(format: string, extension: string) {
     var writer = N3.Writer({ format: format });
     this.props.statements.forEach(statement => {
       writer.addTriple(statement);
     });
-    // writer.end((error:any, result:string) => { downloadData(result, getLabel(this.props.labels,this.props.forIri, this.props.fetchLabel) + extension) });
     writer.end((error: any, result: string) => {
       downloadData(
         result,
-        // getLabel(this.props.labels,this.props.forIri) + extension)
         "download"
       );
     });
   }
   render() {
     const {
-      statements,
       forIri,
       className
       // labels,fetchLabel
@@ -90,7 +83,6 @@ class ResourceDescription extends React.PureComponent<ResourceDescription.Props,
       whiteSink: true,
       [className]: !!className
     };
-    // const {meta:{pristine}, input:{value}} = this.props;
     return (
       <div className={getClassNames(style)}>
         <div className={styles.header}>
@@ -99,7 +91,6 @@ class ResourceDescription extends React.PureComponent<ResourceDescription.Props,
           <div className={styles.iri}>
             <a href={forIri} target="_blank">
               {
-                // getLabel(labels,forIri)
                 forIri
               }
             </a>

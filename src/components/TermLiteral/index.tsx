@@ -1,54 +1,95 @@
 //external dependencies
 import * as React from "react";
-
-import * as N3 from "n3";
 import * as getClassName from "classnames";
-import * as Immutable from 'immutable'
-//import own dependencies
-import { TermLiteralBoolean } from "components";
+
+import {
+  TermLiteralBoolean,
+  TermLiteralDefault,
+  TermLiteralString,
+  TermLiteralWkt,
+  TermLiteralNumeric,
+  TermLiteralImage,
+  TermLiteralLink
+} from "components";
+import * as styles from "./style.scss";
+// import * as rowStyles from "components/TriplesTable/style.scss";
 
 export namespace TermLiteral {
   export interface Props {
     className?: string;
+    termType: "NamedNode" | "BlankNode" | "Literal" | "Graph";
     value: string;
-    showDatatype?: boolean;
-    showLanguage?: boolean;
-    datatype?: string;
     language?: string;
+    datatype?: string;
+  }
+  export interface State {
+    showAll: boolean;
+  }
+
+  //Hacky interface so we can define a static function in an interface
+  export interface TermLiteralRenderer {
+    new (props?: TermLiteral.Props): React.PureComponent<TermLiteral.Props, any>;
+    shouldRender(props: TermLiteral.Props): boolean;
   }
 }
 
-const styles = require("./style.scss");
+/**
+ * Order matters! I.e., recommend the last one is a catch-all
+ */
+
 //used for e.g. IRIs and graphnames
-class TermLiteral extends React.PureComponent<TermLiteral.Props, any> {
-  static acceptsTerm(term: string,context: Immutable.List<N3.Statement>) {
-    return N3.Util.isLiteral(term) || N3.Util.isBlank(term);
+export class TermLiteral extends React.PureComponent<TermLiteral.Props, TermLiteral.State> {
+  LiteralRenderers: [TermLiteral.TermLiteralRenderer];
+  //used by subcomponents, so we can have an 'implements' interface that has static methods
+  static staticImplements<T>() {
+    return (constructor: T) => {};
   }
-  render() {
-    const { showDatatype, showLanguage, className, value, datatype, language } = this.props;
-    var useClass = getClassName(styles.literal, className);
-    switch (datatype) {
-      case "http://www.w3.org/2001/XMLSchema#boolean":
-        return <TermLiteralBoolean className={useClass} value={value} />;
-      default:
-        return (
-          <div className={useClass}>
-            <span>
-              {value}
-            </span>
-            {showDatatype &&
-              !language &&
-              <sup>
-                {"^^<" + datatype + ">"}
-              </sup>}
-            {showLanguage &&
-              language &&
-              <span>
-                @{language}
-              </span>}
-          </div>
-        );
+  constructor(props: any) {
+    super(props);
+    this.LiteralRenderers = [
+      TermLiteralString,
+      TermLiteralBoolean,
+      TermLiteralWkt,
+      TermLiteralNumeric,
+      TermLiteralImage,
+      TermLiteralLink,
+      TermLiteralDefault
+    ];
+    this.state = {
+      showAll: false
+    };
+  }
+
+  renderLiteral() {
+    for (const Renderer of this.LiteralRenderers) {
+      if (Renderer.shouldRender(this.props)) return <Renderer {...this.props} />;
     }
+    return null;
+  }
+
+  render() {
+    const { className, datatype, language } = this.props;
+    return (
+      <div className={getClassName(className, styles.wrapper)}>
+        {this.renderLiteral()}
+        {
+        // <div>
+        //   {language
+        //     ? <span className={getClassName(styles.language, rowStyles.rowHover)}>
+        //         @{language}
+        //       </span>
+        //     : <a
+        //         href={datatype}
+        //         className={getClassName(styles.extLink, rowStyles.rowHover)}
+        //         target="_blank"
+        //         title={"Open external link in new window"}
+        //       >
+        //         {datatype}
+        //       </a>}
+        // </div>
+      }
+      </div>
+    );
   }
 }
 export default TermLiteral;
