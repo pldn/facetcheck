@@ -2,9 +2,11 @@
 import * as React from "react";
 import * as getClassNames from "classnames";
 import * as N3 from "n3";
+import * as _ from 'lodash'
 //import own dependencies
 import { Term, TermLink, TermLiteral } from "components";
 import * as Immutable from 'immutable';
+import {Paths} from 'reducers/statements'
 const styles = require("./style.scss");
 namespace Statements {
   export interface GroupedStatements {
@@ -12,9 +14,8 @@ namespace Statements {
   }
 
   export interface Props {
-    context: Immutable.List<N3.Statement>
-    predicate: string;
-    objects: string[];
+    resourceContext: Immutable.List<N3.Statement>
+    paths: Paths
   }
 }
 
@@ -22,25 +23,27 @@ class Statements extends React.PureComponent<Statements.Props, any> {
 
   render() {
     const {
-      predicate,
-      objects
+      paths
       // labels
     } = this.props;
     return (
       <div className={styles.statement}>
         <Term
-          context={this.props.context}
+          resourceContext={this.props.resourceContext}
           className={styles.pred}
-          term={predicate}
+          term={paths[0][0].predicate}
         />
         <div className={styles.objs}>
-          {objects.map(obj =>
-            <Term
-              key={obj}
-              context={this.props.context}
+          {paths.map(path =>
+            {
+
+              return <Term
+              key={JSON.stringify(path)}
+              resourceContext={this.props.resourceContext}
               className={styles.obj}
-              term={obj}
-            />
+              term={_.last(path).object}
+              />
+            }
           )}
         </div>
       </div>

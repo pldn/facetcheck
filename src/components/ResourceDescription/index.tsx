@@ -7,6 +7,7 @@ import * as Immutable from 'immutable'
 //import own dependencies
 // import {getLabel,State as LabelsState,fetchLabel} from 'reducers/labels'
 import { Statements } from "components";
+import {getPaths,Paths,groupPaths} from 'reducers/statements'
 var downloadData = (function() {
   if (__SERVER__) return;
   var a: any = document.createElement("a");
@@ -24,10 +25,23 @@ var downloadData = (function() {
 
 const styles = require("./style.scss");
 namespace ResourceDescription {
-  export interface GroupedStatements {
-    [predicate: string]: string[];
-  }
 
+  export interface StatementContext {
+    path: N3.Statement[],
+    value: string
+  }
+  export interface GroupedStatements {
+    [fingerPrint: string]: StatementContext[];
+  }
+  // statementContext: Statement[
+  // <sub> geo:hasGemeometry _bnode .
+  // _bnode geo:asWkt "wktString"
+  // ],
+  // value: "wktString"
+  // resourceContext: Statement[]
+  //
+  //
+  //
   export interface Props {
     className?: string;
     forIri: string;
@@ -36,25 +50,31 @@ namespace ResourceDescription {
 }
 
 class ResourceDescription extends React.PureComponent<ResourceDescription.Props, any> {
-  groupStatementsByPred(): ResourceDescription.GroupedStatements {
-    return this.props.statements.reduce<ResourceDescription.GroupedStatements>((result, statement) => {
-      if (this.props.forIri !== statement.subject) return result;
-      if (!result[statement.predicate]) result[statement.predicate] = [];
-      result[statement.predicate].push(statement.object);
-      return result;
-    }, {})
+
+
+
+  groupPathsBySignature(paths:Paths) {
+
   }
+
+  // groupStatementsByPred(): ResourceDescription.GroupedStatements {
+  //   return this.props.statements.reduce<ResourceDescription.GroupedStatements>((result, statement) => {
+  //     if (this.props.forIri !== statement.subject) return result;
+  //     if (!result[statement.predicate]) result[statement.predicate] = [];
+  //     result[statement.predicate].push(statement.object);
+  //     return result;
+  //   }, {})
+  // }
   renderStatements() {
-    const grouped = this.groupStatementsByPred();
+    const groupedPaths = groupPaths(getPaths(this.props.statements.toArray(), this.props.forIri));
     const rows: any[] = [];
 
-    for (var pred in grouped) {
+    for (var groupKey  in groupedPaths) {
       rows.push(
         <Statements
-          key={pred}
-          predicate={pred}
-          objects={grouped[pred]}
-          context={this.props.statements}
+          key={groupKey}
+          paths={groupedPaths[groupKey]}
+          resourceContext={this.props.statements}
         />
       );
     }

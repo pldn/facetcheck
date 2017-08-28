@@ -78,6 +78,7 @@ module.exports = {
       {
         test: /\.tsx?$/,
         include: [paths.src],
+        exclude: /__tests__/,
         loader: removeEmpty([
           ifDev("react-hot-loader/webpack"),
           isProd || process.env.WITH_BABEL

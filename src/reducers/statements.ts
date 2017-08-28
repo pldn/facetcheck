@@ -1,34 +1,36 @@
 //external dependencies
-import * as _ from 'lodash'
-import * as N3 from 'n3'
-import SparqlJson from 'helpers/SparqlJson'
-import * as Immutable from 'immutable'
-import ApiClient from 'helpers/ApiClient'
-import {GlobalActions} from 'reducers'
+import * as _ from "lodash";
+import * as N3 from "n3";
+import * as Immutable from "immutable";
+import ApiClient from "helpers/ApiClient";
+import { GlobalActions } from "reducers";
 // import {Actions as FacetActions} from './facets'
 //import own dependencies
 export enum Actions {
-  GET_STATEMENTS = 'facetcheck/statements/GET_STATEMENTS' as any,
-  GET_STATEMENTS_SUCCESS = 'facetcheck/statements/GET_STATEMENTS_SUCCESS' as any,
-  GET_STATEMENTS_FAIL = 'facetcheck/statements/GET_STATEMENTS_FAIL' as any,
+  GET_STATEMENTS = "facetcheck/statements/GET_STATEMENTS" as any,
+  GET_STATEMENTS_SUCCESS = "facetcheck/statements/GET_STATEMENTS_SUCCESS" as any,
+  GET_STATEMENTS_FAIL = "facetcheck/statements/GET_STATEMENTS_FAIL" as any
 }
 const PREFIXES = `
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX brt: <http://brt.basisregistraties.overheid.nl/def/top10nl#>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
-`
+`;
 export type Statement = N3.Statement;
+export type Statements = Immutable.List<Statement>;
 
-
-export var StateRecord = Immutable.Record({
-  resourceDescriptions: Immutable.OrderedMap<string,Immutable.List<Statement>>(),
-  fetchRequests: 0
-},'statements')
+export var StateRecord = Immutable.Record(
+  {
+    resourceDescriptions: Immutable.OrderedMap<string, Statements>(),
+    fetchRequests: 0
+  },
+  "statements"
+);
 export var initialState = new StateRecord();
 export type StateRecordInterface = typeof initialState;
 
-export type ResourceDescriptions = Immutable.OrderedMap<string,Immutable.List<Statement>>
+export type ResourceDescriptions = Immutable.OrderedMap<string, Statements>;
 //
 //
 //
@@ -39,11 +41,11 @@ export type ResourceDescriptions = Immutable.OrderedMap<string,Immutable.List<St
 // }
 
 export interface Action extends GlobalActions<Actions> {
-  forIri: string
+  forIri: string;
   // result?: Job & Models.Dataset,
 }
 
-export function reducer(state = initialState, action:Action) {
+export function reducer(state = initialState, action: Action) {
   // const assign = (modifiedState:State) => _.assign<State>({}, state, modifiedState)
   // const addResourceDescription = (iri:string, descr:N3.Statement[]) => {
   //   const newState = _.assign<State>({}, state);
@@ -53,16 +55,14 @@ export function reducer(state = initialState, action:Action) {
   //   return newState;
   // }
   switch (action.type) {
-
     case Actions.GET_STATEMENTS:
-      return state.update('fetchRequests', num => num+1);
+      return state.update("fetchRequests", num => num + 1);
     case Actions.GET_STATEMENTS_FAIL:
-      return state.update('fetchRequests', num => num-1);
+      return state.update("fetchRequests", num => num - 1);
     case Actions.GET_STATEMENTS_SUCCESS:
-      return state.update('fetchRequests', num => num-1)
-        .update('resourceDescriptions', (resourceDescriptions) => {
-          return resourceDescriptions.set(action.forIri, Immutable.List<Statement>(action.result));
-        })
+      return state.update("fetchRequests", num => num - 1).update("resourceDescriptions", resourceDescriptions => {
+        return resourceDescriptions.set(action.forIri, Immutable.List<Statement>(action.result));
+      });
 
     // case FacetActions.RESET_MATCHING_IRIS:
     //   return assign({resourceDescriptions: {}})
@@ -78,15 +78,13 @@ export function reducer(state = initialState, action:Action) {
     //     }
     //   })
 
-      // return newState;
+    // return newState;
     default:
       return state;
   }
 }
 
-
-
-export function getStatements(resource:string):Action {
+export function getStatements(resource: string): Action {
   var projectPattern = `
     <${resource}> ?x ?y.
     <${resource}> brt:lijnGeometrie ?brtGeo .
@@ -95,7 +93,7 @@ export function getStatements(resource:string):Action {
     ?geo geo:asWKT ?wkt.
     ?y rdfs:label ?label .
 
-  `
+  `;
   var selectPattern = `
   <${resource}> ?x ?y.
   OPTIONAL {
@@ -109,14 +107,125 @@ export function getStatements(resource:string):Action {
     <${resource}> geo:hasGeometry ?geo .
     ?geo geo:asWKT ?wkt.
   }
-  `
-
+  `;
 
   return {
     types: [Actions.GET_STATEMENTS, Actions.GET_STATEMENTS_SUCCESS, Actions.GET_STATEMENTS_FAIL],
-    promise: (client:ApiClient) => client.req({
-      sparqlConstruct: `${PREFIXES} CONSTRUCT { ${projectPattern} } WHERE { ${selectPattern} } `,
-    }),
+    promise: (client: ApiClient) =>
+      client.req({
+        sparqlConstruct: `${PREFIXES} CONSTRUCT { ${projectPattern} } WHERE { ${selectPattern} } `
+      }),
     forIri: resource
   };
-};
+}
+
+export type Path = Statement[];
+export type Paths = Path[];
+
+function expandPaths(statements: Statement[], path: Path): Paths {
+  const toExpand = _.last(path);
+
+  var expandPathWith = statements.filter(
+    statement =>
+      statement.subject === toExpand.object &&
+      //extra check to avoid cyclic recursion
+      !path.find(s => s.subject === statement.object)
+  );
+  if (expandPathWith.length === 0) {
+    return [path];
+  }
+  return expandPathWith.map(statement => _.flatten(expandPaths(statements, path.concat([statement]))));
+}
+export function isBnode(term: string) {
+  return N3.Util.isBlank(term) || (N3.Util.isIRI(term) && term.indexOf(".well-known/genid") >= 0);
+}
+
+/**
+ * Group this bunch of triples by path. I.e., the last triple is always the value, the first triple always contains info
+ * about the iri we're showing in resourceDescription
+ * Example input:
+ * <http://laurens> <http://hasName> _:bnode.
+ * _:bnode. <firstname> "laurens"
+ * _:bnode. <lastname> "rietveld"
+ * <http://laurens> <http://hasAge> "34" .
+ *
+ * Example output:
+ *
+[
+ [
+  {subject: "http://laurens", predicate: "http://hasName", object: "_:bnode"},
+  {subject: "bnode", predicate: "firstname", object: "laurens"},
+ ],
+ [
+  {subject: "http://laurens", predicate: "http://hasName", object: "_:bnode"},
+  {subject: "bnode", predicate: "lastname", object: "rietveld"},
+ ],
+  {subject: "http://laurens", predicate: "http://hasAge", object: "34"},
+ ]
+]
+ */
+export function getPaths(statements: Statement[], forIri: string): Paths {
+  return statements
+    .filter(statement => statement.subject === forIri)
+    .map(statement => expandPaths(statements, [statement]))
+    .reduce<Paths>((result, _path) => {
+      return result.concat(_path);
+    }, []);
+}
+
+export type GroupedPaths = { [groupkey: string]: Paths };
+function getGroupKey(path: Path): string {
+  return path.reduce<string>((result, path) => {
+    return (result += path.predicate);
+  }, "");
+}
+/**
+ * Group paths by 'groupKey'. Values of the grouped paths are rendered together under the same key
+ * Example input:
+ * <http://laurens> <http://hasName> _:bnode.
+ * _:bnode. <firstname> "laurens"
+ * _:bnode. <lastname> "rietveld"
+ * <http://laurens> <http://hasName> _:bnode2.
+ * _:bnode2. <firstname> "laurens2"
+ * _:bnode2. <lastname> "rietveld2"
+ * <http://laurens> <http://hasAge> "34" .
+ *
+ * Example output:
+ *
+{
+ "http://hasNamefirstname": [
+   [
+    {subject: "http://laurens", predicate: "http://hasName", object: "_:bnode"},
+    {subject: "bnode", predicate: "firstname", object: "laurens"},
+   ],
+   [
+    {subject: "http://laurens", predicate: "http://hasName", object: "_:bnode2"},
+    {subject: "bnode2", predicate: "firstname", object: "laurens2"},
+   ],
+ ],
+ "http://hasNamelastname": [
+   [
+    {subject: "http://laurens", predicate: "http://hasName", object: "_:bnode"},
+    {subject: "bnode", predicate: "lastname", object: "rietveld"},
+   ],
+   [
+    {subject: "http://laurens", predicate: "http://hasName", object: "_:bnode2"},
+    {subject: "bnode2", predicate: "lastname", object: "rietveld2"},
+   ],
+ ],
+ "http://hasAge": [
+   [
+    {subject: "http://laurens", predicate: "http://hasAge", object: "34"},
+   ]
+ ],
+}
+ */
+export function groupPaths(paths: Paths): GroupedPaths {
+  return paths.reduce<GroupedPaths>((result, path) => {
+    const key = getGroupKey(path);
+    console.log(key)
+    if (!result[key]) result[key] = [];
+    result[key].push(path);
+    return result;
+  }, {});
+}

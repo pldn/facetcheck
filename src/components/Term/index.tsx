@@ -10,7 +10,7 @@ export namespace Term {
   export interface Props {
     className?: string;
     term: string;
-    context: Immutable.List<N3.Statement>;
+    resourceContext: Immutable.List<N3.Statement>;
     label?: string;
     // fetchLabel: typeof fetchLabel
   }
@@ -19,10 +19,10 @@ export namespace Term {
 const styles = require("./style.scss");
 class Term extends React.PureComponent<Term.Props, any> {
   render() {
-    const { term, className, context, label } = this.props;
+    const { term, className, resourceContext, label } = this.props;
 
-    if (TermGeo.acceptsTerm(term, context)) return <TermGeo term={term} context={context} />;
-    if (TermLink.acceptsTerm(term, context)) return <TermLink className={className} iri={term} label={label} />;
+    if (TermGeo.acceptsTerm(term, resourceContext)) return <TermGeo term={term} context={resourceContext} />;
+    if (TermLink.acceptsTerm(term, resourceContext)) return <TermLink className={className} iri={term} label={label} />;
     if (N3.Util.isLiteral(term))
       return (
         <TermLiteral

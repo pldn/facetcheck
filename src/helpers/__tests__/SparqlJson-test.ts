@@ -4,7 +4,7 @@ import * as _ from "lodash";
 var expect = chai.expect;
 import SparqlJson from "../SparqlJson";
 var example = require("./sparql.json");
-describe.only("SparqlJson", function() {
+describe("SparqlJson", function() {
   var sparql: SparqlJson;
   before(function() {
     sparql = new SparqlJson(example);

@@ -17,11 +17,17 @@
     "watch-server": "better-npm-run watch-server",
     "watch-client": "better-npm-run watch-client",
     "dev": "npm run clean && npm run setup-build-context && concurrently --names \"client,server\" --prefix name \"npm run watch-client\" --prefix-colors \"bgBlue,bgMagenta,bgGreen\" \"npm run watch-server\"",
-    "test": "better-npm-run testLocal",
+    "test": "better-npm-run test",
     "copyAssets": "mkdir -p build/src && rsync -zar  --prune-empty-dirs --include '*/' --exclude '*.ts*' ./src/ ./build/src/",
     "upgrade-interactive": "npm-check --skip-unused -u"
   },
   "betterScripts": {
+    "test": {
+      "command": "mocha $(find ./build/src -name '*-test.js') --require source-map-support/register",
+      "env": {
+        "NODE_PATH": "./build/src"
+      }
+    },
     "compile-config": {
       "command": "ENV=console && node ./bin/config-build"
     },
@@ -92,6 +98,8 @@
   },
   "dependencies": {
     "@triply/triply-node-utils": "^1.0.23",
+    "@types/chai": "^4.0.4",
+    "@types/mocha": "^2.2.42",
     "@types/react": "^15.0.33",
     "@types/react-dom": "^15.5.3",
     "autocast": "^0.0.4",
@@ -99,7 +107,7 @@
     "better-npm-run": "^0.1.0",
     "bootstrap-loader": "^2.1.0",
     "bootstrap-sass": "^3.3.7",
-    "chai": "^4.0.2",
+    "chai": "^4.1.1",
     "classnames": "^2.2.5",
     "clean-webpack-plugin": "^0.1.16",
     "concurrently": "^3.4.0",
@@ -130,7 +138,7 @@
     "lru-memoize": "^1.0.2",
     "material-ui": "^0.19.0",
     "merge2": "^1.0.3",
-    "mocha": "^3.4.2",
+    "mocha": "^3.5.0",
     "moment": "^2.18.1",
     "multireducer": "^3.1.0",
     "n3": "^0.11.1",
