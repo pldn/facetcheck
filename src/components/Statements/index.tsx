@@ -6,7 +6,7 @@ import * as _ from 'lodash'
 //import own dependencies
 import { Term, TermLink, TermLiteral } from "components";
 import * as Immutable from 'immutable';
-import {Paths} from 'reducers/statements'
+import {Paths, getLabel} from 'reducers/statements'
 const styles = require("./style.scss");
 namespace Statements {
   export interface GroupedStatements {
@@ -21,6 +21,15 @@ namespace Statements {
 
 class Statements extends React.PureComponent<Statements.Props, any> {
 
+  renderKey() {
+    const {paths,resourceContext} = this.props;
+    return <Term
+      resourceContext={this.props.resourceContext}
+      className={styles.pred}
+      term={paths[0][0].predicate}
+      label={getLabel(paths[0][0].predicate,resourceContext)}
+    />
+  }
   render() {
     const {
       paths
@@ -28,20 +37,17 @@ class Statements extends React.PureComponent<Statements.Props, any> {
     } = this.props;
     return (
       <div className={styles.statement}>
-        <Term
-          resourceContext={this.props.resourceContext}
-          className={styles.pred}
-          term={paths[0][0].predicate}
-        />
+        {this.renderKey()}
         <div className={styles.objs}>
           {paths.map(path =>
             {
-
+              const last = _.last(path);
+              
               return <Term
               key={JSON.stringify(path)}
               resourceContext={this.props.resourceContext}
               className={styles.obj}
-              term={_.last(path).object}
+              term={last.object}
               />
             }
           )}

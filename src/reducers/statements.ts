@@ -4,6 +4,7 @@ import * as N3 from "n3";
 import * as Immutable from "immutable";
 import ApiClient from "helpers/ApiClient";
 import { GlobalActions } from "reducers";
+const urlParse = require("url-parse");
 // import {Actions as FacetActions} from './facets'
 //import own dependencies
 export enum Actions {
@@ -91,13 +92,16 @@ export function getStatements(resource: string): Action {
     ?brtGeo geo:asWKT ?wkt.
     <${resource}> geo:hasGeometry ?geo .
     ?geo geo:asWKT ?wkt.
-    ?y rdfs:label ?label .
+    ?y rdfs:label ?yLabel .
 
   `;
   var selectPattern = `
   <${resource}> ?x ?y.
   OPTIONAL {
-    ?y rdfs:label ?label
+    ?y rdfs:label ?yLabel
+  }
+  OPTIONAL {
+    ?x rdfs:label ?xLabel
   }
   OPTIONAL {
     <${resource}> brt:lijnGeometrie ?brtGeo .
@@ -122,9 +126,13 @@ export function getStatements(resource: string): Action {
 export type Path = Statement[];
 export type Paths = Path[];
 
+
 function expandPaths(statements: Statement[], path: Path): Paths {
   const toExpand = _.last(path);
-
+  if (toExpand.subject === toExpand.object) {
+    //extra check to avoid cyclic recursion
+    return [path];
+  }
   var expandPathWith = statements.filter(
     statement =>
       statement.subject === toExpand.object &&
@@ -228,4 +236,60 @@ export function groupPaths(paths: Paths): GroupedPaths {
     result[key].push(path);
     return result;
   }, {});
+}
+
+export function getLabel(iri:string, statements: Statements): string {
+  if (!N3.Util.isIRI(iri)) return null;
+  const labelStatement = statements.find(s => s.predicate === 'http://www.w3.org/2000/01/rdf-schema#label' && s.subject === iri);
+  if (labelStatement && N3.Util.isLiteral(labelStatement.object)) return N3.Util.getLiteralValue(labelStatement.object);
+  const lnameInfo = getLocalNameInfo(iri);
+  if (lnameInfo.localName) {
+    return lnameInfo.localName
+  }
+  return null;
+}
+
+
+/**
+ * borrowed from triply-node-utils
+ */
+function getLocalNameInfo(iri: string):{iri:string, localName?:string} {
+  const getLastSlashIndex = (pathname: string, offset?: number): number => {
+    if (offset === undefined) offset = pathname.length;
+    const i = pathname.lastIndexOf("/", offset);
+    if (i >= 0 && i === pathname.length - 1) {
+      //this is the last char. For paths with a trailing slash,
+      //we want the parent pathname as localname, so go back in the string
+      if (offset < 0) return i;
+      return getLastSlashIndex(pathname, offset - 1);
+    }
+    return i;
+  };
+  const parsed = urlParse(iri);
+
+  if (parsed.hash.length > 1) {
+    var hashContent = parsed.hash.substr(1);
+    parsed.set("hash", "#");
+    return {
+      iri: parsed.toString(),
+      localName: hashContent
+    };
+  }
+
+  const i = getLastSlashIndex(parsed.pathname);
+
+  if (i >= 0) {
+    const localName:string = parsed.pathname.substr(i + 1) + parsed.query + parsed.hash;
+    if (localName && localName.length) {
+      parsed.set("pathname", parsed.pathname.substr(0, i + 1));
+      parsed.set("query", "");
+      parsed.set("hash", "");
+      return {
+        iri: parsed.toString(),
+        localName: localName
+      };
+    }
+  }
+
+  return { iri: iri };
 }

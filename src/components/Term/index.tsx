@@ -21,9 +21,9 @@ class Term extends React.PureComponent<Term.Props, any> {
   render() {
     const { term, className, resourceContext, label } = this.props;
 
-    if (TermGeo.acceptsTerm(term, resourceContext)) return <TermGeo term={term} context={resourceContext} />;
-    if (TermLink.acceptsTerm(term, resourceContext)) return <TermLink className={className} iri={term} label={label} />;
-    if (N3.Util.isLiteral(term))
+    // if (TermGeo.acceptsTerm(term, resourceContext)) return <TermGeo term={term} context={resourceContext} />;
+    // if (TermLink.acceptsTerm(term, resourceContext)) return <TermLink className={className} iri={term} label={label} />;
+    if (N3.Util.isLiteral(term)) {
       return (
         <TermLiteral
           className={className}
@@ -34,7 +34,9 @@ class Term extends React.PureComponent<Term.Props, any> {
           value={N3.Util.getLiteralValue(term)}
         />
       );
-    return <div />; //should not happen..
+    } else {
+      return <TermLink className={className} iri={term} label={label} />
+    }
   }
 }
 export default Term;

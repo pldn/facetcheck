@@ -7,7 +7,7 @@ import * as Immutable from 'immutable'
 //import own dependencies
 // import {getLabel,State as LabelsState,fetchLabel} from 'reducers/labels'
 import { Statements } from "components";
-import {getPaths,Paths,groupPaths} from 'reducers/statements'
+import {getPaths,Paths,groupPaths, getLabel} from 'reducers/statements'
 var downloadData = (function() {
   if (__SERVER__) return;
   var a: any = document.createElement("a");
@@ -95,9 +95,11 @@ class ResourceDescription extends React.PureComponent<ResourceDescription.Props,
   render() {
     const {
       forIri,
-      className
+      className,
+      statements,
       // labels,fetchLabel
     } = this.props;
+    const label = getLabel(forIri,statements)
     var style = {
       [styles.resourceDescription]: styles.resourceDescription,
       whiteSink: true,
@@ -111,7 +113,7 @@ class ResourceDescription extends React.PureComponent<ResourceDescription.Props,
           <div className={styles.iri}>
             <a href={forIri} target="_blank">
               {
-                forIri
+                label || forIri
               }
             </a>
           </div>

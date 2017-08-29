@@ -201,6 +201,7 @@
     "typescript": "^2.4.0",
     "urijs": "^1.18.10",
     "url-loader": "^0.5.8",
+    "url-parse": "^1.1.9",
     "webpack": "^3.5.5",
     "webpack-build-notifier": "^0.1.13",
     "webpack-dev-middleware": "^1.10.2",
