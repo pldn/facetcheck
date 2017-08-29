@@ -32,7 +32,8 @@ class Statements extends React.PureComponent<Statements.Props, any> {
   }
   render() {
     const {
-      paths
+      paths,
+      resourceContext
       // labels
     } = this.props;
     return (
@@ -42,7 +43,10 @@ class Statements extends React.PureComponent<Statements.Props, any> {
           {paths.map(path =>
             {
               const last = _.last(path);
-              
+              if (last.predicate === 'http://www.w3.org/2000/01/rdf-schema#label' && path.length > 1) {
+                //want to show the iri here (with the exception of path===1, as we want to show the rdfsLabel relation directly)
+                return <TermLink iri={last.subject} label={getLabel(last.subject, resourceContext)} />
+              }
               return <Term
               key={JSON.stringify(path)}
               resourceContext={this.props.resourceContext}
