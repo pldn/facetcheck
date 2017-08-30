@@ -231,7 +231,6 @@ function getGroupKey(path: Path): string {
 export function groupPaths(paths: Paths): GroupedPaths {
   return paths.reduce<GroupedPaths>((result, path) => {
     const key = getGroupKey(path);
-    console.log(key)
     if (!result[key]) result[key] = [];
     result[key].push(path);
     return result;

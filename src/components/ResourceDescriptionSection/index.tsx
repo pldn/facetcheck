@@ -6,12 +6,12 @@ import * as N3 from "n3";
 import * as Immutable from 'immutable'
 //import own dependencies
 // import {getLabel,State as LabelsState,fetchLabel} from 'reducers/labels'
-import { ResourceDescriptionSection } from "components";
-import {getLabel} from 'reducers/statements'
+import { Statements} from "components";
+import {getPaths,Paths,groupPaths, getLabel} from 'reducers/statements'
 
 
 const styles = require("./style.scss");
-namespace ResourceDescription {
+namespace ResourceDescriptionSection {
 
   export interface StatementContext {
     path: N3.Statement[],
@@ -33,42 +33,37 @@ namespace ResourceDescription {
     className?: string;
     forIri: string;
     statements: Immutable.List<N3.Statement>;
+    level?:number
   }
 }
 
-class ResourceDescription extends React.PureComponent<ResourceDescription.Props, any> {
-
+class ResourceDescriptionSection extends React.PureComponent<ResourceDescriptionSection.Props, any> {
+  static defaultProps:Partial<ResourceDescriptionSection.Props> = {
+    level: 0
+  }
 
 
   render() {
     const {
       forIri,
-      className,
       statements,
-      // labels,fetchLabel
+      level
     } = this.props;
-    const label = getLabel(forIri,statements)
-    var style = {
-      [styles.resourceDescription]: styles.resourceDescription,
-      whiteSink: true,
-      [className]: !!className
-    };
-    return (
-      <div className={getClassNames(style)}>
-        <div className={styles.header}>
+    const groupedPaths = groupPaths(getPaths(statements.toArray(), forIri));
+    const rows: any[] = [];
 
-          <div className={styles.iri}>
-            <a href={forIri} target="_blank">
-              {
-                label || forIri
-              }
-            </a>
-          </div>
-        </div>
-        <ResourceDescriptionSection forIri={forIri} statements={statements}/>
-      </div>
-    );
+    for (var groupKey  in groupedPaths) {
+      rows.push(
+        <Statements
+          key={groupKey}
+          paths={groupedPaths[groupKey]}
+          resourceContext={this.props.statements}
+        />
+      );
+    }
+    return <div className={styles.statements}>{rows}</div>;
+
   }
 }
 
-export default ResourceDescription;
+export default ResourceDescriptionSection;

@@ -15,6 +15,7 @@ export { default as Notification } from "./Notification";
 export { default as Notifications } from "./Notifications";
 export { default as PanelItem } from "./PanelItem";
 export { default as ResourceDescription } from "./ResourceDescription";
+export { default as ResourceDescriptionSection } from "./ResourceDescriptionSection";
 export { default as Statements } from "./Statements";
 export { default as Svg } from "./Svg";
 export { default as Term } from "./Term";
