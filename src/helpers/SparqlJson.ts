@@ -1,4 +1,3 @@
-import * as _ from "lodash";
 export interface Term {
   type: "uri" | "literal" | "bnode";
   value: string;

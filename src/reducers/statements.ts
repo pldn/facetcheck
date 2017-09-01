@@ -112,7 +112,7 @@ export function getStatements(resource: string): Action {
     ?geo geo:asWKT ?wkt.
   }
   `;
-
+  console.log(`${PREFIXES} CONSTRUCT { ${projectPattern} } WHERE { ${selectPattern} } `)
   return {
     types: [Actions.GET_STATEMENTS, Actions.GET_STATEMENTS_SUCCESS, Actions.GET_STATEMENTS_FAIL],
     promise: (client: ApiClient) =>

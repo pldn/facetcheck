@@ -2,7 +2,7 @@
 import * as chai from 'chai';
 var expect = chai.expect;
 import * as statements from '../statements';
-describe.only("Reducers - statements", function() {
+describe("Reducers - statements", function() {
   describe('Get paths from statements', function(){
     const testStatements:statements.Statement[] = [
       {subject:'sub', predicate: 'pred', object:'obj'},
@@ -27,7 +27,7 @@ describe.only("Reducers - statements", function() {
       const paths = statements.getPaths(loopStatements, 'sub');
       expect(paths).to.have.lengthOf(5)
     })
-    it.only('One-off test (skipped by default)', function() {
+    it('One-off test (skipped by default)', function() {
       const paths = statements.getPaths([
   {
     "subject": "https://data.pdok.nl/cbs/2015/id/buurt/BU01060710",

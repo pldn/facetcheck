@@ -1,6 +1,5 @@
 @import '../../theme/bootstrap.overrides/variables.scss';
-
-  .statements {
-    display:table;
-    border-spacing: 10px 10px;
-  }
+.statements {
+  display:flex;
+  flex-wrap:wrap;
+}

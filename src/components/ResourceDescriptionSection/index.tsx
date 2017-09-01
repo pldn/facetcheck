@@ -52,6 +52,7 @@ class ResourceDescriptionSection extends React.PureComponent<ResourceDescription
     const groupedPaths = groupPaths(getPaths(statements.toArray(), forIri));
     const rows: any[] = [];
 
+
     for (var groupKey  in groupedPaths) {
       rows.push(
         <Statements
