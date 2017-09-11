@@ -9,14 +9,14 @@ export default class TreeNode {
   private children: {
     [pred:string]: TreeNode[]
   } = {}
-  private level = 0;
+  private depth = 0;
   /**
    * Private methods
    */
-  private constructor(term:string, statements:N3.Statement[], level:number) {
+  private constructor(term:string, statements:N3.Statement[], depth:number) {
     this.term = term;
     this.statements = statements;
-    this.level = level;
+    this.depth = depth;
   }
 
 
@@ -26,7 +26,7 @@ export default class TreeNode {
   private addChild(predTerm:string, objTerm:string) {
     this.childrenCount++;
     if (!this.children[predTerm]) this.children[predTerm] = [];
-    const obj = TreeNode.fromStatements(objTerm, this.statements, this.level+1);
+    const obj = TreeNode.fromStatements(objTerm, this.statements, this.depth+1);
     obj.setParent(this);
     this.children[predTerm].push(obj)
   }
@@ -51,13 +51,10 @@ export default class TreeNode {
     if (parent) return parent.parentExists(term);
     return false;
   }
-  private getChildren(predicate?:string):TreeNode[] {
+  public getChildren(predicate?:string):TreeNode[] {
     if (!predicate) return _.flatten<TreeNode>(_.values(this.children))
     if (this.children[predicate]) return this.children[predicate];
     return [];
-  }
-  private matches(term:string) {
-    return this.term === term;
   }
   /**
    * Public methods
@@ -65,41 +62,25 @@ export default class TreeNode {
   public getStatements() {
     return this.statements;
   }
-  public find(_pattern:string[] = [], returnLevel = -1):TreeNode[] {
-    const hasMatchesToBeMade = _pattern.find(p => !!p);
-    //we've reached a leaf node. If there are no more matches to be made, just return this one
-    if (this.childrenCount === 0 && (_pattern.length === 0  || !hasMatchesToBeMade)) return [this];
+  public termEquals(term:string) {
+    return this.term === term;
+  }
+  public getDepth() {
+    return this.depth;
+  }
+  public getNquads():Promise<string> {
+    return new Promise<string>((resolve,reject) => {
+      const writer = N3.Writer();
+      this.statements.forEach(s => writer.addTriple(s));
+      writer.end(function(error:Error,result:string) {
+        if (error) return reject(error)
+        resolve(result);
+      })
+    })
+  }
+  public find(pattern?:string[])  {
+    return new Query(this, pattern);
 
-
-    const pattern = _.clone(_pattern)
-    const matchPred = pattern.shift();
-    const matchingPreds = this.getChildren(matchPred);
-    const matchObj = pattern.shift();
-
-    var matchingObjs = matchingPreds;
-    if (matchObj) {
-      matchingObjs = matchingPreds.filter(node => node.matches(matchObj));
-    }
-
-    const results = _.flatten(matchingObjs.map(node => node.find(pattern)))
-
-    if (returnLevel < 0) return results;
-
-    /**
-     * Traverse upwards in the tree to select the node we're interested in
-     */
-    const selectedResults:TreeNode[] = []
-    for (const result of results) {
-      var selectedNode = result;
-
-      for (var l = selectedNode.level; l > returnLevel ; l--) {
-
-        selectedNode = selectedNode.getParent();
-      }
-      selectedResults.push(selectedNode);
-    }
-
-    return selectedResults;
   }
   public getChildrenCount() {
     return this.childrenCount;
@@ -111,21 +92,9 @@ export default class TreeNode {
     return this.term;
   }
   public getLevel() {
-    return this.level;
+    return this.depth;
   }
 
-
-
-  // public getLeafs() {
-  //   if (_.isEmpty(this.children)) {
-  //     return [this];
-  //   }
-  //   var leafs:TreeNode[] = []
-  //   for (const node of this.getChildren()) {
-  //     leafs = leafs.concat(node.getLeafs())
-  //   }
-  //   return leafs;
-  // }
   public toJson():Object {
     return {
       term: this.term,
@@ -137,5 +106,60 @@ export default class TreeNode {
     const tree = new TreeNode(forIri, statements, level);
     tree.populateChildren(statements);
     return tree;
+  }
+}
+
+export class Query {
+  private pattern:string[]
+  private tree:TreeNode
+  private returnOffset = -1
+  constructor(tree:TreeNode, pattern:string[]) {
+    this.pattern = pattern || [];
+    this.tree = tree;
+  }
+
+  private patternHasBoundVariables() {
+
+    return !!this.pattern.find(p => !!p);
+  }
+  public offset(offset:number) {
+    this.returnOffset = offset
+    return this;
+  }
+  public exec():TreeNode[] {
+    const hasMatchesToBeMade = this.patternHasBoundVariables();
+    //we've reached a leaf node. If there are no more matches to be made, just return this one
+    if (this.tree.getChildrenCount() === 0 && (this.pattern.length === 0  || !hasMatchesToBeMade)) return [this.tree];
+
+
+    const pattern = _.clone(this.pattern)
+    const matchPred = pattern.shift();
+    const matchingPreds = this.tree.getChildren(matchPred);
+    const matchObj = pattern.shift();
+
+    var matchingObjs = matchingPreds;
+    if (matchObj) {
+      matchingObjs = matchingPreds.filter(node => node.termEquals(matchObj));
+    }
+
+    const results = _.flatten(matchingObjs.map(node => node.find(pattern).exec()))
+
+    if (this.returnOffset < 0) return results;
+
+    /**
+     * Traverse upwards in the tree to select the node we're interested in
+     */
+    const selectedResults:TreeNode[] = []
+    for (const result of results) {
+      var selectedNode = result;
+
+      for (var l = selectedNode.getDepth(); l > this.returnOffset ; l--) {
+
+        selectedNode = selectedNode.getParent();
+      }
+      selectedResults.push(selectedNode);
+    }
+
+    return selectedResults;
   }
 }

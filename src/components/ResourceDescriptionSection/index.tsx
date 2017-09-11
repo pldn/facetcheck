@@ -49,6 +49,7 @@ class ResourceDescriptionSection extends React.PureComponent<ResourceDescription
     } = this.props;
     // const groupedPaths = groupPaths(getPaths(statements.toArray(), forIri));
     const renderers = selectRenderer(tree);
+    console.log({renderers,tree})
     const rows:any[] = []
     for (const renderer of renderers) {
 

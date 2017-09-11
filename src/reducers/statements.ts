@@ -268,7 +268,7 @@ export var RenderSelectors:RenderSelector[] = [
     return null
   },
   (t) => {
-    const node = t.find([prefixes.geo + 'hasGeometry', null, prefixes.geo + 'asWKT']);
+    const node = t.find([prefixes.geo + 'hasGeometry', null, prefixes.geo + 'asWKT']).exec();
     if (node.length) {
       return <RenderSelection[]>[{
         // value: node[0]
