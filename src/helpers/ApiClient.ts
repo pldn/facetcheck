@@ -135,14 +135,18 @@ export default class ApiClient {
           query: args.sparqlSelect || args.sparqlConstruct
         };
         if (!args.headers) args.headers = {};
-        args.headers["Accept"] = args.sparqlSelect ? "application/sparql-results+json" : "application/n-triples";
+        args.headers["Accept"] = args.sparqlSelect ? "application/sparql-results+json" : "text/turtle";
         if (args.graph) {
           args.body["default-graph-uri"] = args.graph;
         }
         if (args.endpoint) {
           requestTo = args.endpoint;
         } else if (this.config.sparqlEndpoint) {
-          requestTo = this.config.sparqlEndpoint;
+          requestTo = this.config.sparqlEndpoint.url;
+          if (this.config.sparqlEndpoint.token) {
+
+            args.headers["Authorization"] = "Bearer " + this.config.sparqlEndpoint.token
+          }
         }
       }
 
@@ -154,6 +158,7 @@ export default class ApiClient {
       }
       if (args.headers) {
         for (var h in args.headers) {
+
           request.set(h, args.headers[h]);
         }
       }

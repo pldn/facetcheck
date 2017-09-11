@@ -14,7 +14,10 @@ Get most of the config from a server '/info' request. We need some information b
 So, we're putting that part in this config
 **/
 export class Config extends ConfigTemplate {
-  public sparqlEndpoint: string;
+  public sparqlEndpoint: {
+    url: string;
+    token?: string;
+  };
   public internalPort: number;
   public serverConnection: ConnectionConfig;
   public clientConnection: ConnectionConfig;
@@ -31,7 +34,16 @@ export class Config extends ConfigTemplate {
       publicPort: 5000,
       domain: "localhost"
     };
-    this.sparqlEndpoint = "https://data.labs.pdok.nl/sparql";
+    this.sparqlEndpoint = {
+      url: "https://api.krr.triply.cc/datasets/wbeek/geosoup/containers/endpoint1/sparql",
+      token:
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJ1bmtub3duIiwiaXNzIjoidHJpcGx5LmNjIiwianRpIjoiMzk0YTg0MWItNTlmMy00YzhiLWJhOTYtZDc2OWUyZjgzM2E3Iiwic2MiOnsiYWNjIjpbImEiXSwiZHMiOlsiYSJdLCJ1cyI6WyJhIl0sInRvayI6WyJhIl19LCJ1aWQiOiI1OTUwZTNmZmVjZDEwZDAxN2Y2YmNjMjEiLCJpYXQiOjE1MDUxMzMzNzN9.8w9nW9l_LupmgcRnNpn3eDWISUfFcp3-USdqtKuHe4o"
+    };
+    // this.sparqlEndpoint = {
+    //   url: "http://localhost:10081/datasets/Laurens-Rietveld/cvncvm/containers/test/sparql",
+    //   token:
+    //     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJ1bmtub3duIiwiaXNzIjoidHJpcGx5LmNjIiwianRpIjoiYjc5MTdiOTctNzE1Ni00MWE5LThhNTEtOTU5Y2I2OWI4MTI3Iiwic2MiOnsiYWNjIjpbImEiXSwiZHMiOlsiYSJdLCJ1cyI6WyJhIl0sInRvayI6WyJhIl19LCJ1aWQiOiI1OTY3NmI4YjIyNjA0NjAyMWJmMGIzMmYiLCJpYXQiOjE1MDUxMzQ3MTR9.tV7L9ER2ImNQrLcYg_RcPsKlQc1VQBhx0azsCOcd4UE"
+    // };
   }
 
   getDevServerPort() {

@@ -35,7 +35,7 @@ const styles = require("./style.scss");
 @asyncConnect([
   {
     promise: ({ store: { dispatch, getState } }) => {
-      return dispatch(getStatements("https://data.pdok.nl/cbs/2015/id/buurt/BU01060710"));
+      return dispatch(getStatements("https://cultureelerfgoed.nl/id/monument/511321"));
       // return dispatch(getSubclassRelations())
       //     .then(() => dispatch(getMatchingIris(getState().facets)))
       //     .then(() => dispatch(fetchShapes(getState().schema.shapes, getState().facets)))

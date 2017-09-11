@@ -1,29 +1,21 @@
 //external dependencies
 import * as React from "react";
-import * as _ from "lodash";
 const parse = require("wellknown");
 
-import { TermLiteral, TermLiteralDefault,Leaflet } from "components";
-import * as styles from "./style.scss";
+import { TermLiteral, Leaflet } from "components";
 
-export type Coords = [number, number];
-export interface Svg {
-  points: string;
-  minX: number;
-  minY: number;
-  maxX: number;
-  maxY: number;
-}
 const wkt = [
   "https://triply.cc/wkt/multiPolygon",
   "https://triply.cc/wkt/polygon",
-  "http://www.opengis.net/ont/geosparql#wktLiteral"
+  "http://www.opengis.net/ont/geosparql#wktLiteral",
+  "http://www.openlinksw.com/schemas/virtrdf#Geometry"
 ];
 
 @TermLiteral.staticImplements<TermLiteral.TermLiteralRenderer>()
 export /* this statement implements both normal interface & static interface */
 class TermLiteralWktLeaflet extends React.PureComponent<TermLiteral.Props, any> {
   static shouldRender(props: TermLiteral.Props) {
+    console.log(props.datatype)
     return wkt.indexOf(props.datatype) >= 0;
   }
 

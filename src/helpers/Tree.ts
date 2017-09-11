@@ -91,9 +91,9 @@ export default class TreeNode {
     const selectedResults:TreeNode[] = []
     for (const result of results) {
       var selectedNode = result;
-      console.log(selectedNode.level,returnLevel)
+
       for (var l = selectedNode.level; l > returnLevel ; l--) {
-        console.log('resetting selected node')
+
         selectedNode = selectedNode.getParent();
       }
       selectedResults.push(selectedNode);
