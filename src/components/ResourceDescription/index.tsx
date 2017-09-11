@@ -7,6 +7,7 @@ import * as Immutable from 'immutable'
 //import own dependencies
 // import {getLabel,State as LabelsState,fetchLabel} from 'reducers/labels'
 import { ResourceDescriptionSection } from "components";
+import Tree from 'helpers/Tree'
 import {getLabel} from 'reducers/statements'
 
 
@@ -14,7 +15,7 @@ const styles = require("./style.scss");
 namespace ResourceDescription {
 
   export interface StatementContext {
-    path: N3.Statement[],
+    Tree: N3.Statement[],
     value: string
   }
   export interface GroupedStatements {
@@ -31,8 +32,8 @@ namespace ResourceDescription {
   //
   export interface Props {
     className?: string;
-    forIri: string;
-    statements: Immutable.List<N3.Statement>;
+    // forIri: string;
+    tree: Tree;
   }
 }
 
@@ -42,12 +43,14 @@ class ResourceDescription extends React.PureComponent<ResourceDescription.Props,
 
   render() {
     const {
-      forIri,
+      // forIri,
       className,
-      statements,
+      tree,
       // labels,fetchLabel
     } = this.props;
-    const label = getLabel(forIri,statements)
+
+    const rootTerm = tree.getTerm();
+    const label = getLabel(rootTerm,tree)
     var style = {
       [styles.resourceDescription]: styles.resourceDescription,
       whiteSink: true,
@@ -58,14 +61,14 @@ class ResourceDescription extends React.PureComponent<ResourceDescription.Props,
         <div className={styles.header}>
 
           <div className={styles.iri}>
-            <a href={forIri} target="_blank">
+            <a href={rootTerm} target="_blank">
               {
-                label || forIri
+                label || rootTerm
               }
             </a>
           </div>
         </div>
-        <ResourceDescriptionSection forIri={forIri} statements={statements}/>
+        <ResourceDescriptionSection tree={tree}/>
       </div>
     );
   }

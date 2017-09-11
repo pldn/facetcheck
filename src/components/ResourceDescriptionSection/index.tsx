@@ -6,9 +6,9 @@ import * as N3 from "n3";
 import * as Immutable from 'immutable'
 //import own dependencies
 // import {getLabel,State as LabelsState,fetchLabel} from 'reducers/labels'
-import { Statements} from "components";
-import {getPaths,Paths,groupPaths, getLabel} from 'reducers/statements'
-
+import { TermRenderer} from "components";
+import {Paths, getLabel, selectRenderer} from 'reducers/statements'
+import Tree from 'helpers/Tree'
 
 const styles = require("./style.scss");
 namespace ResourceDescriptionSection {
@@ -31,8 +31,7 @@ namespace ResourceDescriptionSection {
   //
   export interface Props {
     className?: string;
-    forIri: string;
-    statements: Immutable.List<N3.Statement>;
+    tree: Tree;
     level?:number
   }
 }
@@ -45,23 +44,33 @@ class ResourceDescriptionSection extends React.PureComponent<ResourceDescription
 
   render() {
     const {
-      forIri,
-      statements,
+      tree,
       level
     } = this.props;
-    const groupedPaths = groupPaths(getPaths(statements.toArray(), forIri));
-    const rows: any[] = [];
+    // const groupedPaths = groupPaths(getPaths(statements.toArray(), forIri));
+    const renderers = selectRenderer(tree);
+    const rows:any[] = []
+    for (const renderer of renderers) {
 
-
-    for (var groupKey  in groupedPaths) {
-      rows.push(
-        <Statements
-          key={groupKey}
-          paths={groupedPaths[groupKey]}
-          resourceContext={this.props.statements}
-        />
-      );
+      rows.push(<TermRenderer
+        key={renderer.label + renderer.values[0].getTerm()}
+        label={renderer.label}
+        values={renderer.values}
+      />)
     }
+
+    // for (var node of tree.getChildren()) {
+    //
+    // }
+    // for (var groupKey  in groupedPaths) {
+    //   rows.push(
+    //     <Statements
+    //       key={groupKey}
+    //       paths={groupedPaths[groupKey]}
+    //       resourceContext={tree}
+    //     />
+    //   );
+    // }
     return <div className={styles.statements}>{rows}</div>;
 
   }

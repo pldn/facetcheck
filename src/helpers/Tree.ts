@@ -5,6 +5,7 @@ export default class TreeNode {
   private childrenCount = 0
   private parent:TreeNode;
   private statements:N3.Statement[]
+  private predicate:string
   private children: {
     [pred:string]: TreeNode[]
   } = {}
@@ -61,6 +62,9 @@ export default class TreeNode {
   /**
    * Public methods
    */
+  public getStatements() {
+    return this.statements;
+  }
   public find(_pattern:string[] = [], returnLevel = -1):TreeNode[] {
     const hasMatchesToBeMade = _pattern.find(p => !!p);
     //we've reached a leaf node. If there are no more matches to be made, just return this one
@@ -109,6 +113,9 @@ export default class TreeNode {
   public getLevel() {
     return this.level;
   }
+
+
+
   // public getLeafs() {
   //   if (_.isEmpty(this.children)) {
   //     return [this];

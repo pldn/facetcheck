@@ -14,7 +14,7 @@ import { ResourceDescription, Svg } from "components";
 import { connect } from "react-redux";
 import { GlobalState } from "reducers";
 // import {getResourceDescription,Statement} from 'reducers/viewer';
-import { ResourceDescriptions } from "reducers/statements";
+import { ResourceDescriptions, getStatementsAsTree } from "reducers/statements";
 // import {State as FacetState,getMatchingIris, facetsChanged,matchingIrisChanged} from 'reducers/facets';
 
 namespace Home {
@@ -65,7 +65,7 @@ class Home extends React.PureComponent<Home.Props, any> {
         return "no descriptions found...";
       }
       // return this.props.resourceDescriptions.mapEntries((forIri, statements) => <ResourceDescription statements={statements} forIri={forIri}/>)
-      return this.props.resourceDescriptions.entrySeq().map(([forIri,statements]) => <ResourceDescription key={forIri} statements={statements} forIri={forIri}/>)
+      return this.props.resourceDescriptions.entrySeq().map(([forIri,statements]) => <ResourceDescription key={forIri} tree={getStatementsAsTree(forIri, statements)}/>)
     };
 
     return (

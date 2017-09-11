@@ -4,7 +4,9 @@ import * as N3 from "n3";
 import * as Immutable from "immutable";
 import ApiClient from "helpers/ApiClient";
 import { GlobalActions } from "reducers";
+import prefixes from 'prefixes'
 const urlParse = require("url-parse");
+import Tree from 'helpers/Tree'
 // import {Actions as FacetActions} from './facets'
 //import own dependencies
 export enum Actions {
@@ -103,14 +105,16 @@ export function getStatements(resource: string): Action {
   OPTIONAL {
     ?x rdfs:label ?xLabel
   }
-  OPTIONAL {
-    <${resource}> brt:lijnGeometrie ?brtGeo .
-    ?brtGeo geo:asWKT ?wkt.
-  }
-  OPTIONAL {
-    <${resource}> geo:hasGeometry ?geo .
-    ?geo geo:asWKT ?wkt.
-  }
+#  OPTIONAL {
+#    <${resource}> brt:lijnGeometrie ?brtGeo .
+#    ?brtGeo geo:asWKT ?wkt.
+#  }
+#  OPTIONAL {
+#    <${resource}> geo:hasGeometry ?geo .
+#    ?geo geo:asWKT ?wkt.
+#  }
+  BIND(<http://triply.cc/.well-known/someid> as ?geo)
+  BIND("POLYGON ((5.3867792636470035 52.15796146765305, 5.386723176954902 52.15796559301798, 5.386691962510279 52.157944462233864, 5.386780418091053 52.157874491098816, 5.38678950768444 52.15787861659122, 5.386810434189914 52.1578620967409, 5.386657562712637 52.15777757357117, 5.386563583308939 52.157831285362654, 5.386560280673758 52.15782901139508, 5.386484846239821 52.157777069636204, 5.386560471095522 52.15773328055808, 5.386558293705004 52.15773057517209, 5.386554640339744 52.1577314649675, 5.386527123351346 52.15770799728109, 5.386564533828652 52.15769059671658, 5.38653628619387 52.15766623023286, 5.386405071815016 52.15772197303087, 5.386368874616448 52.157689040934855, 5.386497151628959 52.15763643496536, 5.386361511184788 52.15749896336344, 5.386461978363418 52.157459425785, 5.38651778642248 52.15752040937915, 5.386559828869124 52.15757012198637, 5.386588061833179 52.15759673545651, 5.386741604748836 52.15772535368668, 5.386942817647274 52.15783118724548, 5.386938696659336 52.15783446785186, 5.3867792636470035 52.15796146765305))"^^<http://www.opengis.net/ont/geosparql#wktLiteral> as ?wkt)
   `;
   console.log(`${PREFIXES} CONSTRUCT { ${projectPattern} } WHERE { ${selectPattern} } `)
   return {
@@ -127,26 +131,26 @@ export type Path = Statement[];
 export type Paths = Path[];
 
 
-function expandPaths(statements: Statement[], path: Path): Paths {
-  const toExpand = _.last(path);
-  if (toExpand.subject === toExpand.object) {
-    //extra check to avoid cyclic recursion
-    return [path];
-  }
-  var expandPathWith = statements.filter(
-    statement =>
-      statement.subject === toExpand.object &&
-      //extra check to avoid cyclic recursion
-      !path.find(s => s.subject === statement.object)
-  );
-  if (expandPathWith.length === 0) {
-    return [path];
-  }
-  return expandPathWith.map(statement => _.flatten(expandPaths(statements, path.concat([statement]))));
-}
-export function isBnode(term: string) {
-  return N3.Util.isBlank(term) || (N3.Util.isIRI(term) && term.indexOf(".well-known/genid") >= 0);
-}
+// function expandPaths(statements: Statement[], path: Path): Paths {
+//   const toExpand = _.last(path);
+//   if (toExpand.subject === toExpand.object) {
+//     //extra check to avoid cyclic recursion
+//     return [path];
+//   }
+//   var expandPathWith = statements.filter(
+//     statement =>
+//       statement.subject === toExpand.object &&
+//       //extra check to avoid cyclic recursion
+//       !path.find(s => s.subject === statement.object)
+//   );
+//   if (expandPathWith.length === 0) {
+//     return [path];
+//   }
+//   return expandPathWith.map(statement => _.flatten(expandPaths(statements, path.concat([statement]))));
+// }
+// export function isBnode(term: string) {
+//   return N3.Util.isBlank(term) || (N3.Util.isIRI(term) && term.indexOf(".well-known/genid") >= 0);
+// }
 
 /**
  * Group this bunch of triples by path. I.e., the last triple is always the value, the first triple always contains info
@@ -172,21 +176,21 @@ export function isBnode(term: string) {
  ]
 ]
  */
-export function getPaths(statements: Statement[], forIri: string): Paths {
-  return statements
-    .filter(statement => statement.subject === forIri)
-    .map(statement => expandPaths(statements, [statement]))
-    .reduce<Paths>((result, _path) => {
-      return result.concat(_path);
-    }, []);
-}
-
-export type GroupedPaths = { [groupkey: string]: Paths };
-function getGroupKey(path: Path): string {
-  return path.reduce<string>((result, path) => {
-    return (result += path.predicate);
-  }, "");
-}
+// export function getPaths(statements: Statement[], forIri: string): Paths {
+//   return statements
+//     .filter(statement => statement.subject === forIri)
+//     .map(statement => expandPaths(statements, [statement]))
+//     .reduce<Paths>((result, _path) => {
+//       return result.concat(_path);
+//     }, []);
+// }
+//
+// export type GroupedPaths = { [groupkey: string]: Paths };
+// function getGroupKey(path: Path): string {
+//   return path.reduce<string>((result, path) => {
+//     return (result += path.predicate);
+//   }, "");
+// }
 /**
  * Group paths by 'groupKey'. Values of the grouped paths are rendered together under the same key
  * Example input:
@@ -228,18 +232,20 @@ function getGroupKey(path: Path): string {
  ],
 }
  */
-export function groupPaths(paths: Paths): GroupedPaths {
-  return paths.reduce<GroupedPaths>((result, path) => {
-    const key = getGroupKey(path);
-    if (!result[key]) result[key] = [];
-    result[key].push(path);
-    return result;
-  }, {});
-}
+// export function groupPaths(paths: Paths): GroupedPaths {
+//   return paths.reduce<GroupedPaths>((result, path) => {
+//     const key = getGroupKey(path);
+//     if (!result[key]) result[key] = [];
+//     result[key].push(path);
+//     return result;
+//   }, {});
+// }
 
-export function getLabel(iri:string, statements: Statements): string {
+
+// export function
+export function getLabel(iri:string, tree:Tree): string {
   if (!N3.Util.isIRI(iri)) return null;
-  const labelStatement = statements.find(s => s.predicate === 'http://www.w3.org/2000/01/rdf-schema#label' && s.subject === iri);
+  const labelStatement = tree.getStatements().find(s => s.predicate === 'http://www.w3.org/2000/01/rdf-schema#label' && s.subject === iri);
   if (labelStatement && N3.Util.isLiteral(labelStatement.object)) return N3.Util.getLiteralValue(labelStatement.object);
   const lnameInfo = getLocalNameInfo(iri);
   if (lnameInfo.localName) {
@@ -248,7 +254,43 @@ export function getLabel(iri:string, statements: Statements): string {
   return null;
 }
 
+export function getStatementsAsTree(forIri:string, statements:Statements) {
+  return Tree.fromStatements(forIri,statements.toArray());
+}
 
+
+export type RenderSelection = {
+  label?:string,
+  values:Tree[]//a node in the tree
+}
+export type RenderSelector = (tree:Tree) => RenderSelection[];
+
+
+export var RenderSelectors:RenderSelector[] = [
+  (tree) => {
+    return null
+  },
+  (t) => {
+    const node = t.find([prefixes.geo + 'hasGeometry', null, prefixes.geo + 'asWKT']);
+    if (node.length) {
+      return <RenderSelection[]>[{
+        // value: node[0]
+        values: node
+      }]
+    }
+  },
+
+]
+export function selectRenderer(tree:Tree, renderSelectors:RenderSelector[] = RenderSelectors):RenderSelection[] {
+  var renderers:RenderSelection[] = [];
+  for (const renderSelector of  renderSelectors) {
+    const renderer = renderSelector(tree);
+    if (renderer && renderer.length) {
+      renderers = renderers.concat(renderer);
+    }
+  }
+  return renderers
+}
 /**
  * borrowed from triply-node-utils
  */

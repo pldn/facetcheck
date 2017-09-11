@@ -5,6 +5,7 @@ import * as N3 from 'n3'
 import * as fs from 'fs-extra'
 import * as path from 'path'
 import Tree from '../Tree'
+import prefixes from 'prefixes'
 describe("Tree", function() {
   var tree:Tree
   before(async function() {
@@ -41,6 +42,10 @@ describe("Tree", function() {
       const match = matches[0];
       expect(match.getTerm().indexOf('http')).to.equal(0)//should be an iri
       expect(match.getChildrenCount()).to.equal(2)
+    })
+    it("Find WKT", function() {
+      var matches = tree.find([prefixes.geo + 'hasGeometry', null, prefixes.geo + 'asWKT']);
+      expect(matches).to.have.lengthOf(1);
     })
   });
 });

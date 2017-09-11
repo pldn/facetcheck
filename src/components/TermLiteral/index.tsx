@@ -6,7 +6,8 @@ import {
   TermLiteralBoolean,
   TermLiteralDefault,
   TermLiteralString,
-  TermLiteralWkt,
+  TermLiteralWktLeaflet,
+  TermLiteralWktSvg,
   TermLiteralNumeric,
   TermLiteralImage,
   TermLiteralLink
@@ -49,7 +50,7 @@ export class TermLiteral extends React.PureComponent<TermLiteral.Props, TermLite
     this.LiteralRenderers = [
       TermLiteralString,
       TermLiteralBoolean,
-      TermLiteralWkt,
+      TermLiteralWktLeaflet,
       TermLiteralNumeric,
       TermLiteralImage,
       TermLiteralLink,

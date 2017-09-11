@@ -1,0 +1,17 @@
+.statement {
+  // border-left: 3px solid #ecf2f5;
+  // padding-left:10px;
+  // margin-left: 10px;
+  // margin-bottom: 20px;
+  // height:100%;
+  // flex-basis:30%;
+
+  //Need to set height/width to 100% for leaflet to work
+  height:100%;
+  width:100%;
+  .title {
+    color: #7e8ba4;
+    letter-spacing: 2px;
+    margin-bottom: 7px;
+  }
+}

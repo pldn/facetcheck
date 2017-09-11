@@ -2,20 +2,15 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import * as N3 from "n3";
-import * as _ from "lodash";
-import * as Bs from "react-bootstrap";
 import * as getClassName from "classnames";
-import * as Immutable from 'immutable'
 // import {Table,Button} from 'react-bootstrap';
-import { Link } from "react-router";
 //import own dependencies
 // import { ITerm} from 'reducers/data'
 export namespace Leaflet {
   export interface Props {
     className?: string;
-    context: Immutable.List<N3.Statement>;
-    term: string;
+    // context: Immutable.List<N3.Statement>;
+    value: string;
   }
 }
 
@@ -26,11 +21,38 @@ if (!__SERVER__) {
   require("leaflet_marker_2x");
   require("leaflet_marker_shadow");
   require("leaflet/dist/leaflet.css");
-  L = require("leaflet");
+  L = require("leaflet");//can't use leaflet higher than 1.0.3, as wicket is not compatible with it
   require("proj4");
   require("proj4leaflet");
   (global as any).Wkt = require("wicket/wicket");
   require("wicket/wicket-leaflet");
+
+  /**
+   * Some monkey patching. The wicket lib is too out-of-date. See
+   https://github.com/arthur-e/Wicket/issues/95
+   */
+  (global as any).Wkt.Wkt.prototype.construct.multipolygon = function(config: any) {
+    // Truncate the coordinates to remove the closing coordinate
+    var coords = this.trunc(this.components),
+      latlngs = this.coordsToLatLngs(coords, 2);
+
+    if (L.multiPolyline) {
+      return L.multiPolyline(latlngs, config);
+    } else {
+      return L.polygon(latlngs, config);
+    }
+  };
+
+  (global as any).Wkt.Wkt.prototype.construct.multilinestring = function(config: any) {
+    var coords = this.components,
+      latlngs = this.coordsToLatLngs(coords, 1);
+
+    if (L.multiPolygon) {
+      return L.multiPolygon(latlngs, config);
+    } else {
+      return L.polygon(latlngs, config);
+    }
+  };
 }
 
 const styles = require("./style.scss");
@@ -39,29 +61,20 @@ const styles = require("./style.scss");
 class Leaflet extends React.PureComponent<Leaflet.Props, any> {
   map: any;
   mapWrapper: any;
-  private getCoordinate(): string {
-    const {term} = this.props
-    if (N3.Util.isLiteral(term)) {
-      switch (N3.Util.getLiteralType(term)) {
-        case "http://www.opengis.net/ont/geosparql#wktLiteral":
-          return term;
-      }
-    }
-    return null;
-  }
 
   /**
   This method should only run from client. leaflet does not support server rendering
 
   **/
   loadLeaflet() {
-    const wktString = this.getCoordinate();
+    const wktString = this.props.value;
     if (!wktString) return;
     var res = [3440.64, 1720.32, 860.16, 430.08, 215.04, 107.52, 53.76, 26.88, 13.44, 6.72, 3.36, 1.68, 0.84, 0.42];
     var scales: number[] = [];
     res.forEach(function(res) {
       scales.push(1 / res);
     });
+
     var k = new L.Proj
       .CRS(
       "EPSG:28992",
@@ -72,12 +85,13 @@ class Leaflet extends React.PureComponent<Leaflet.Props, any> {
         bounds: new L.bounds([-285401.92, 22598.08], [595401.9199999999, 903401.9199999999])
       }
     );
+
     var map = (this.map = L.map(ReactDOM.findDOMNode(this.mapWrapper), {
       crs: k,
       minZoom: 2,
       maxZoom: 13,
       layers: [
-        new L.tileLayer.wms("http://geodata.nationaalgeoregister.nl/tms/1.0.0/brtachtergrondkaart/{z}/{x}/{y}.png", {
+        new L.tileLayer.wms("//geodata.nationaalgeoregister.nl/tms/1.0.0/brtachtergrondkaart/{z}/{x}/{y}.png", {
           tms: true
         })
       ],
@@ -86,7 +100,6 @@ class Leaflet extends React.PureComponent<Leaflet.Props, any> {
 
     var wicket = new (global as any).Wkt.Wkt();
     var feature: any;
-
 
     var myIcon = L.icon({
       // iconUrl: svgURL,
@@ -103,10 +116,12 @@ class Leaflet extends React.PureComponent<Leaflet.Props, any> {
       tooltipAnchor: [16, -28] //
     });
     try {
-      feature = wicket.read(N3.Util.getLiteralValue(wktString)).toObject({ icon: myIcon });
+      feature = wicket.read(wktString).toObject({ icon: myIcon });
     } catch (e) {
-      console.log(e);
+      console.error(e);
+      return;
     }
+
     var features: any[] = [];
     var markerPos;
     if (feature.getBounds) {
@@ -146,15 +161,14 @@ class Leaflet extends React.PureComponent<Leaflet.Props, any> {
   }
 
   render() {
-    const { className, term, context } = this.props;
+    const { className } = this.props;
 
     const style = {
-      [className]: !!className,
+      [className]: !!className
     };
     return (
       <div className={getClassName(style)}>
         <div style={{ width: "auto", height: 400, overflow: "hidden" }} ref={el => (this.mapWrapper = el)} />
-
       </div>
     );
   }

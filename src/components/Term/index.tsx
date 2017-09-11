@@ -6,11 +6,11 @@ import * as getClassName from "classnames";
 import * as Immutable from 'immutable'
 //import own dependencies
 import { TermLink, TermLiteral, TermGeo } from "components";
+import Tree from 'helpers/Tree'
 export namespace Term {
   export interface Props {
     className?: string;
     term: string;
-    resourceContext: Immutable.List<N3.Statement>;
     label?: string;
     // fetchLabel: typeof fetchLabel
   }
@@ -19,7 +19,7 @@ export namespace Term {
 const styles = require("./style.scss");
 class Term extends React.PureComponent<Term.Props, any> {
   render() {
-    const { term, className, resourceContext, label } = this.props;
+    const { term, className, label } = this.props;
 
     // if (TermGeo.acceptsTerm(term, resourceContext)) return <TermGeo term={term} context={resourceContext} />;
     // if (TermLink.acceptsTerm(term, resourceContext)) return <TermLink className={className} iri={term} label={label} />;
@@ -28,7 +28,6 @@ class Term extends React.PureComponent<Term.Props, any> {
         <TermLiteral
           className={className}
           datatype={N3.Util.getLiteralType(term)}
-          // showDatatype={false}
           termType={"Literal"}
           language={N3.Util.getLiteralLanguage(term)}
           value={N3.Util.getLiteralValue(term)}
