@@ -78,8 +78,8 @@ export default class TreeNode {
       })
     })
   }
-  public find(pattern?:string[])  {
-    return new Query(this, pattern);
+  public find(pattern?:string[], root = true)  {
+    return new Query(this, pattern, root);
 
   }
   public getChildrenCount() {
@@ -113,9 +113,12 @@ export class Query {
   private pattern:string[]
   private tree:TreeNode
   private returnOffset = -1
-  constructor(tree:TreeNode, pattern:string[]) {
+  private _limit = -1;
+  private rootQuery = false;
+  constructor(tree:TreeNode, pattern:string[], root:boolean) {
     this.pattern = pattern || [];
     this.tree = tree;
+    this.rootQuery = root;
   }
 
   private patternHasBoundVariables() {
@@ -125,6 +128,17 @@ export class Query {
   public offset(offset:number) {
     this.returnOffset = offset
     return this;
+  }
+  public limit(limit:number) {
+    this._limit = limit;
+    return this;
+  }
+  private postProcessResults(results:TreeNode[]) {
+    if (!this.rootQuery) return results;
+    if (this._limit > 0) {
+      return results.slice(0, this._limit);
+    }
+    return results;
   }
   public exec():TreeNode[] {
     const hasMatchesToBeMade = this.patternHasBoundVariables();
@@ -142,9 +156,8 @@ export class Query {
       matchingObjs = matchingPreds.filter(node => node.termEquals(matchObj));
     }
 
-    const results = _.flatten(matchingObjs.map(node => node.find(pattern).exec()))
-
-    if (this.returnOffset < 0) return results;
+    const results = _.flatten(matchingObjs.map(node => node.find(pattern, false).exec()))
+    if (this.returnOffset < 0) return this.postProcessResults(results);
 
     /**
      * Traverse upwards in the tree to select the node we're interested in
@@ -160,6 +173,7 @@ export class Query {
       selectedResults.push(selectedNode);
     }
 
-    return selectedResults;
+    return this.postProcessResults(selectedResults);
+
   }
 }
