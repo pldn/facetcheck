@@ -25,9 +25,14 @@ class TermRenderer extends React.PureComponent<TermRenderer.Props, any> {
       config,
       label
     } = this.props;
-    console.log(values.map(v => v.getKey()))
+
+    const enabledStyles:{[key:string]:boolean} = {
+      [styles.statement]: !!styles.statement,
+      [styles.dynamic]: config && config.size === 'dynamic',
+      [styles.full]: !config || !config.size || config.size === 'full'
+    }
     return (
-      <div className={styles.statement}>
+      <div className={getClassNames(enabledStyles)}>
         {label && <div className={styles.title}><span>{label}</span></div>}
         <div className={styles.values}>
           {values.map(value =>

@@ -255,12 +255,14 @@ export function getStatementsAsTree(forIri:string, statements:Statements) {
 }
 
 export interface RenderConfiguration {
-  type: 'textarea'
+  type?: 'textarea'
+  size?: 'dynamic' | 'full'
 }
 export interface RenderSelection {
   label?:string,
   values:Tree[]//a node in the tree,
-  config?: RenderConfiguration
+  config?: RenderConfiguration,
+
 }
 export type RenderSelector = (tree:Tree) => RenderSelection[];
 
@@ -303,7 +305,10 @@ const catchAll:RenderSelector = (t) => {
   _.forEach(groupedByPred, (nodes, predicate) => {
     selections.push({
       label: getLabel(predicate,t),
-      values: nodes
+      values: nodes,
+      config: {
+        size: 'dynamic'
+      }
     })
   })
   return selections

@@ -51,7 +51,6 @@ class ResourceDescriptionSection extends React.PureComponent<ResourceDescription
     const renderers = selectRenderer(tree);
     const rows:any[] = []
     for (const renderer of renderers) {
-      console.log(renderer.label + renderer.values.map(node => node.getKey()).join(','))
       rows.push(<TermRenderer
         key={renderer.label + renderer.values.map(node => node.getKey()).join(',')}
         label={renderer.label}
