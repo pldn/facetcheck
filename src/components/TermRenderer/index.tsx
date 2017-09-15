@@ -6,7 +6,7 @@ import * as _ from 'lodash'
 //import own dependencies
 import { Term, TermLink, TermLiteralTextarea } from "components";
 import * as Immutable from 'immutable';
-import {Paths, getLabel,RenderConfiguration} from 'reducers/statements'
+import { getLabel,RenderConfiguration} from 'reducers/statements'
 import Tree from 'helpers/Tree'
 const styles = require("./style.scss");
 namespace TermRenderer {

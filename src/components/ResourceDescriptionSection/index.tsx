@@ -7,7 +7,7 @@ import * as Immutable from 'immutable'
 //import own dependencies
 // import {getLabel,State as LabelsState,fetchLabel} from 'reducers/labels'
 import { TermRenderer} from "components";
-import {Paths, getLabel, selectRenderer} from 'reducers/statements'
+import { getLabel, selectRenderer} from 'reducers/statements'
 import Tree from 'helpers/Tree'
 
 const styles = require("./style.scss");

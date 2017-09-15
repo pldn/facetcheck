@@ -6,6 +6,7 @@ import * as N3 from 'n3'
 //import own dependencies
 import { GlobalState } from "reducers";
 import { getConfig, Config, ConnectionConfig } from "staticConfig";
+import SparqlJson from './SparqlJson'
 import * as parseLinkHeader from "parse-link-header";
 const urlParse = require("url-parse");
 
@@ -124,7 +125,7 @@ export default class ApiClient {
     }
   }
 
-  public req<A extends RequestArguments, R extends ClientResult>(args: A) {
+  public req<A extends RequestArguments, R extends Object>(args: A) {
     return new Promise<R>((resolve, reject) => {
       var requestTo = args.apiUrl ? this.reformatUrlForClient(args.apiUrl) : this.formatUrl(args.url);
       //set params based on sparql-specific settings
@@ -144,7 +145,6 @@ export default class ApiClient {
         } else if (this.config.sparqlEndpoint) {
           requestTo = this.config.sparqlEndpoint.url;
           if (this.config.sparqlEndpoint.token) {
-
             args.headers["Authorization"] = "Bearer " + this.config.sparqlEndpoint.token
           }
         }
@@ -216,15 +216,11 @@ export default class ApiClient {
       request.end((err: Error, res: superagent.Response) => {
         this.removeRequestReference(args.requestTag, uuid);
         const body = getBody(res);
-        // if (res) {
-        //   if (res.text) {
-        //
-        //   } else {
-        //
-        //     body = res.body;
-        //   }
-        // }
+
         if (err || !res) return reject(formatError(err, body));
+        if (args.sparqlSelect) {
+          return resolve(<any>new SparqlJson(body))
+        }
         const meta = {
           status: res.status,
           header: res.header,
