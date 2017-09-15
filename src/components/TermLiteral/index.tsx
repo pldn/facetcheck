@@ -10,9 +10,11 @@ import {
   TermLiteralWktSvg,
   TermLiteralNumeric,
   TermLiteralImage,
-  TermLiteralLink
+  TermLiteralLink,
+  TermLiteralTextarea
 } from "components";
 import * as styles from "./style.scss";
+import {RenderConfiguration} from 'reducers/statements'
 // import * as rowStyles from "components/TriplesTable/style.scss";
 
 export namespace TermLiteral {
@@ -22,6 +24,7 @@ export namespace TermLiteral {
     value: string;
     language?: string;
     datatype?: string;
+    config?:RenderConfiguration
   }
   export interface State {
     showAll: boolean;
@@ -49,6 +52,7 @@ export class TermLiteral extends React.PureComponent<TermLiteral.Props, TermLite
     super(props);
     this.LiteralRenderers = [
       TermLiteralString,
+      TermLiteralTextarea,
       TermLiteralBoolean,
       TermLiteralWktLeaflet,
       TermLiteralNumeric,

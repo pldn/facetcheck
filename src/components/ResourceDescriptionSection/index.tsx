@@ -56,6 +56,7 @@ class ResourceDescriptionSection extends React.PureComponent<ResourceDescription
         key={renderer.label + renderer.values.map(node => node.getKey()).join(',')}
         label={renderer.label}
         values={renderer.values}
+        config={renderer.config}
       />)
     }
 

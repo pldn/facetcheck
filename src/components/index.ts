@@ -31,4 +31,5 @@ export { default as TermGeo } from "./TermGeo";
 export { default as TermLink } from "./TermLink";
 export { default as TermLiteralDefault } from "./TermLiteralDefault";
 export { default as TermLiteralBoolean } from "./TermLiteralBoolean";
+export { default as TermLiteralTextarea } from "./TermLiteralTextarea";
 export { default as TermRenderer } from "./TermRenderer";

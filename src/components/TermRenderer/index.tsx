@@ -4,15 +4,16 @@ import * as getClassNames from "classnames";
 import * as N3 from "n3";
 import * as _ from 'lodash'
 //import own dependencies
-import { Term, TermLink, TermLiteral } from "components";
+import { Term, TermLink, TermLiteralTextarea } from "components";
 import * as Immutable from 'immutable';
-import {Paths, getLabel} from 'reducers/statements'
+import {Paths, getLabel,RenderConfiguration} from 'reducers/statements'
 import Tree from 'helpers/Tree'
 const styles = require("./style.scss");
 namespace TermRenderer {
   export interface Props {
     label: string,
     values: Tree[]
+    config?:RenderConfiguration
   }
 }
 
@@ -21,7 +22,7 @@ class TermRenderer extends React.PureComponent<TermRenderer.Props, any> {
   render() {
     const {
       values,
-      // labels
+      config,
       label
     } = this.props;
     console.log(values.map(v => v.getKey()))
@@ -34,6 +35,7 @@ class TermRenderer extends React.PureComponent<TermRenderer.Props, any> {
               key={value.getKey()}
               className={styles.obj}
               term={value.getTerm()}
+              config={config}
               />
 
           )}

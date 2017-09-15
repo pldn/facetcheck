@@ -254,15 +254,41 @@ export function getStatementsAsTree(forIri:string, statements:Statements) {
   return Tree.fromStatements(forIri,statements.toArray());
 }
 
-
-export type RenderSelection = {
+export interface RenderConfiguration {
+  type: 'textarea'
+}
+export interface RenderSelection {
   label?:string,
-  values:Tree[]//a node in the tree
+  values:Tree[]//a node in the tree,
+  config?: RenderConfiguration
 }
 export type RenderSelector = (tree:Tree) => RenderSelection[];
 
+/**
+ * Render selectors
+ */
 const renderGeometry:RenderSelector = (t) => {
   const node = t.find([prefixes.geo + 'hasGeometry', null, prefixes.geo + 'asWKT']).limit(1).exec();
+  if (node.length) {
+    return <RenderSelection[]>[{
+      // value: node[0]
+      values: node
+    }]
+  }
+}
+const renderDescription:RenderSelector = (t) => {
+  const node = t.find([prefixes.dcterms + 'description', null]).limit(1).exec();
+  if (node.length) {
+    return <RenderSelection[]>[{
+      values: node,
+      config: {
+        type: 'textarea'
+      }
+    }]
+  }
+}
+const renderLabel:RenderSelector = (t) => {
+  const node = t.find([prefixes.rdfs + 'label', null]).limit(1).exec();
   if (node.length) {
     return <RenderSelection[]>[{
       // value: node[0]
@@ -283,9 +309,15 @@ const catchAll:RenderSelector = (t) => {
   return selections
 }
 export var RenderSelectors:RenderSelector[] = [
+  // renderLabel,
+  renderDescription,
   renderGeometry,
   catchAll
 ]
+
+
+
+
 export function selectRenderer(tree:Tree, renderSelectors:RenderSelector[] = RenderSelectors):RenderSelection[] {
   // tree.getNquads().then(console.log)
   var renderers:RenderSelection[] = [];
