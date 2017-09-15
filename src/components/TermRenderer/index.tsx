@@ -30,7 +30,7 @@ class TermRenderer extends React.PureComponent<TermRenderer.Props, any> {
         <div className={styles.values}>
           {values.map(value =>
               <Term
-              key={value.getTerm()}
+              key={value.getKey()}
               className={styles.obj}
               term={value.getTerm()}
               />

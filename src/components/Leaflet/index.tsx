@@ -68,11 +68,9 @@ class Leaflet extends React.PureComponent<Leaflet.Props, any> {
 
   **/
   loadLeaflet() {
-    console.log('loading leaflet')
     var wktString = this.props.value;
     // wktString = polygon; //works fine on OSM and on BRT
     // wktString = multi;//this is chili. gray on brt (correct). works fine on OSM
-    console.log(wktString)
     if (!wktString) return;
     var res = [3440.64, 1720.32, 860.16, 430.08, 215.04, 107.52, 53.76, 26.88, 13.44, 6.72, 3.36, 1.68, 0.84, 0.42];
     var scales: number[] = [];

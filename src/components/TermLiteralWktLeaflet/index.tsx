@@ -15,7 +15,6 @@ const wkt = [
 export /* this statement implements both normal interface & static interface */
 class TermLiteralWktLeaflet extends React.PureComponent<TermLiteral.Props, any> {
   static shouldRender(props: TermLiteral.Props) {
-    console.log(props.datatype)
     return wkt.indexOf(props.datatype) >= 0;
   }
 

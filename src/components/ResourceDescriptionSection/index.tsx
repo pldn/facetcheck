@@ -49,12 +49,11 @@ class ResourceDescriptionSection extends React.PureComponent<ResourceDescription
     } = this.props;
     // const groupedPaths = groupPaths(getPaths(statements.toArray(), forIri));
     const renderers = selectRenderer(tree);
-    console.log({renderers,tree})
     const rows:any[] = []
     for (const renderer of renderers) {
-
+      console.log(renderer.label + renderer.values.map(node => node.getKey()).join(','))
       rows.push(<TermRenderer
-        key={renderer.label + renderer.values[0].getTerm()}
+        key={renderer.label + renderer.values.map(node => node.getKey()).join(',')}
         label={renderer.label}
         values={renderer.values}
       />)
