@@ -24,6 +24,7 @@ class TermRenderer extends React.PureComponent<TermRenderer.Props, any> {
       // labels
       label
     } = this.props;
+    console.log(values.map(v => v.getKey()))
     return (
       <div className={styles.statement}>
         {label && <div className={styles.title}><span>{label}</span></div>}
