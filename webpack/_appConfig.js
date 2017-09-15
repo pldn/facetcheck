@@ -14,7 +14,10 @@ class Config extends ConfigTemplate_1.default {
             publicPort: 5000,
             domain: "localhost"
         };
-        this.sparqlEndpoint = "https://data.labs.pdok.nl/sparql";
+        this.sparqlEndpoint = {
+            url: "https://api.krr.triply.cc/datasets/wbeek/geosoup/containers/endpoint1/sparql",
+            token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJ1bmtub3duIiwiaXNzIjoidHJpcGx5LmNjIiwianRpIjoiMzk0YTg0MWItNTlmMy00YzhiLWJhOTYtZDc2OWUyZjgzM2E3Iiwic2MiOnsiYWNjIjpbImEiXSwiZHMiOlsiYSJdLCJ1cyI6WyJhIl0sInRvayI6WyJhIl19LCJ1aWQiOiI1OTUwZTNmZmVjZDEwZDAxN2Y2YmNjMjEiLCJpYXQiOjE1MDUxMzMzNzN9.8w9nW9l_LupmgcRnNpn3eDWISUfFcp3-USdqtKuHe4o"
+        };
     }
     getDevServerPort() {
         return this.clientConnection.publicPort + 5;
