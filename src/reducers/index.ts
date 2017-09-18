@@ -41,20 +41,13 @@ const transitImmutable = require("transit-immutable-js");
 
 const transitHandler = transitImmutable.withRecords(
   [
-    // accounts.StateRecord,
     app.StateRecord,
-    // auth.StateRecord,
     config.StateRecord,
     facets.StateRecord,
-    // contact.StateRecord,
-    // containerManagement.ContainerManagementRecord,
-    // datasetManagement.StateRecord,
-    // datasets.DatasetRecord,
-    // fileUploads.UploadRecord,
+    facets.FacetConfig,
+    facets.FacetPropertyConfig,
     routing.LocationRecord,
     routing.StateRecord,
-    // socket.StateRecord,
-    // uploading.UploadRecord,
     notifications.NotificationRecord,
     statements.StateRecord
   ],

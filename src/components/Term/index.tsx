@@ -5,7 +5,7 @@ import * as N3 from "n3";
 import * as getClassName from "classnames";
 import * as Immutable from 'immutable'
 //import own dependencies
-import { TermLink, TermLiteral, TermGeo } from "components";
+import { TermLink, TermLiteral} from "components";
 import Tree from 'helpers/Tree'
 import {RenderConfiguration} from  'reducers/statements'
 export namespace Term {

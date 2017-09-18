@@ -91,7 +91,7 @@ class App extends React.PureComponent<IAppProps, any> {
           </Navbar.Header>
         </Navbar>
         <Notifications closeHandler={removeNotification} notifications={notifications} />
-        <Panel className={styles.panel} collapsed={false} />
+        <Panel/>
         <div className={styles.appContent}>
           {this.props.children}
         </div>

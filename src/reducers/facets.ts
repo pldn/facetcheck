@@ -11,46 +11,112 @@ import SparqlJson from 'helpers/SparqlJson'
 export enum Actions {
   GET_MATCHING_IRIS = "facetcheck/facets/GET_MATCHING_IRIS" as any,
   GET_MATCHING_IRIS_SUCCESS = "facetcheck/facets/GET_MATCHING_IRIS_SUCCESS" as any,
-  GET_MATCHING_IRIS_FAIL = "facetcheck/facets/GET_MATCHING_IRIS_FAIL" as any
+  GET_MATCHING_IRIS_FAIL = "facetcheck/facets/GET_MATCHING_IRIS_FAIL" as any,
+  TOGGLE_CLASS = "facetcheck/facets/TOGGLE_CLASS" as any,
+  // GET_FACET_CONFIG = "facetcheck/facets/GET_FACET_CONFIG" as any,
+  // GET_FACET_CONFIG_SUCCESS = "facetcheck/facets/GET_FACET_CONFIG_SUCCESS" as any,
+  // GET_FACET_CONFIG_FAIL = "facetcheck/facets/GET_FACET_CONFIG_FAIL" as any
 }
 
 export type Statement = N3.Statement;
 export type Statements = Immutable.List<Statement>;
 
+
+
+//
+// export type FacetConfig = [
+//   {
+//     classConfig: FacetClassConfig,
+//     facets: FacetPropertyConfig[]
+//   }
+// ]
+//
+// export interface FacetPropertyConfig {
+//
+// }
+// export interface FacetClassConfig {
+//   iri:string,
+//   label: string,
+//   selected: boolean
+// }
+//
+// export var facetConfig:FacetConfig = [
+//   {
+//     classConfig: {
+//       iri: 'https://cultureelerfgoed.nl/vocab/Monument',
+//       label: 'Monument',
+//       selected: true
+//     },
+//     facets: [
+//       {
+//         property: 'bla',
+//
+//       }
+//     ]
+//   }
+// ]
+
+
+export type FacetTypes = 'multiselect' | 'slider' | 'multiselectText'
+export interface FacetPropertyConfigProps {
+  iri: string
+  label: string
+  datatype: string
+  type: FacetTypes
+}
+export var FacetPropertyConfig = Immutable.Record<FacetPropertyConfigProps>(
+  {
+    iri: null,
+    label:null,
+    datatype: null,
+    type:null,
+  },
+  "facetPropertyConfig"
+)
+
+export interface FacetConfigProps {
+  iri: string
+  label: string
+  selected: boolean,
+  facets: Immutable.OrderedMap<string, Immutable.Record.Inst<FacetPropertyConfigProps>>
+}
+export var FacetConfig = Immutable.Record<FacetConfigProps>(
+  {
+    iri: null,
+    label: null,
+    selected: false,
+    facets: Immutable.OrderedMap()
+  },
+  "facetConfig"
+)
+export type FacetsConfig = Immutable.OrderedMap<string, Immutable.Record.Inst<Partial<FacetConfigProps>>>
 export var StateRecord = Immutable.Record(
   {
     matchingIris: Immutable.List<string>(),
-    fetchResources: 0
+    activeClasses: Immutable.List<string>(),
+
+    fetchResources: 0,
+    config: <FacetsConfig>Immutable.OrderedMap<string, Immutable.Record.Inst<Partial<FacetConfigProps>>>()
   },
   "facets"
 );
-export var initialState = new StateRecord();
+export var initialState = new StateRecord().update('config',config => {
+  return config.set('https://cultureelerfgoed.nl/vocab/Monument', new FacetConfig({
+    iri: 'https://cultureelerfgoed.nl/vocab/Monument',
+    label: 'Monument',
+    selected: true,
+    // facets: null
+  }))
+});
 export type StateRecordInterface = typeof initialState;
 
-export type ResourceDescriptions = Immutable.OrderedMap<string, Statements>;
-//
-//
-//
-// const initialState:State = {
-//   lastAddedIri: null,
-//   resourceDescriptions: {},
-//   fetchingResourceDescriptions: 0
-// }
-
 export interface Action extends GlobalActions<Actions> {
-  forIri: string;
-  // result?: Job & Models.Dataset,
+  checked?: boolean,
+  className?: string
 }
 
+
 export function reducer(state = initialState, action: Action) {
-  // const assign = (modifiedState:State) => _.assign<State>({}, state, modifiedState)
-  // const addResourceDescription = (iri:string, descr:N3.Statement[]) => {
-  //   const newState = _.assign<State>({}, state);
-  //   newState.lastAddedIri = iri;
-  //   newState.resourceDescriptions[iri] = descr;
-  //   newState.fetchingResourceDescriptions = state.fetchingResourceDescriptions - 1;
-  //   return newState;
-  // }
   switch (action.type) {
     case Actions.GET_MATCHING_IRIS:
       return state.update("fetchResources", num => num + 1);
@@ -58,22 +124,8 @@ export function reducer(state = initialState, action: Action) {
       return state.update("fetchResources", num => num - 1);
     case Actions.GET_MATCHING_IRIS_SUCCESS:
       return state.update("fetchResources", num => num - 1).set("matchingIris", Immutable.List(action.result))
-
-    // case FacetActions.RESET_MATCHING_IRIS:
-    //   return assign({resourceDescriptions: {}})
-    // case FacetActions.GET_MATCHING_IRIS_SUCCESS:
-    //   //remove resource descriptions that we shouldnt show.
-    //   //saves mem as well
-    //   if (!action.result || !action.result.length) return state;
-    //   const newState = _.assign<State>({}, state);
-    //   newState.resourceDescriptions = {};
-    //   _.keys(state.resourceDescriptions).forEach(iri => {
-    //     if (action.result.indexOf(iri) >= 0) {
-    //       newState.resourceDescriptions[iri] = state.resourceDescriptions[iri]
-    //     }
-    //   })
-
-    // return newState;
+    case Actions.TOGGLE_CLASS:
+      return state.setIn(<[keyof StateRecordInterface, string, keyof FacetConfigProps]>['config', action.className, 'selected'], action.checked)
     default:
       return state;
   }
@@ -156,6 +208,13 @@ export function facetsToQuery(state:GlobalState) {
   `
 }
 
+export function toggleClass (className:string, checked:boolean):Action {
+  return {
+    type: Actions.TOGGLE_CLASS,
+    className: className,
+    checked: checked
+  };
+};
 
 export function getMatchingIris(state:GlobalState):any {
 

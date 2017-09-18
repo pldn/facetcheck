@@ -243,7 +243,7 @@ export var RenderSelectors:RenderSelector[] = [
 
 
 export function selectRenderer(tree:Tree, renderSelectors:RenderSelector[] = RenderSelectors):RenderSelection[] {
-  // tree.getNquads().then(console.log)
+  tree.getNquads().then(console.log)
   var renderers:RenderSelection[] = [];
   for (const renderSelector of  renderSelectors) {
     const renderer = renderSelector(tree);

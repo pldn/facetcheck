@@ -13,6 +13,7 @@ import { toggleDsPanelCollapseLg } from "reducers/app";
 import { asyncConnect, IAsyncConnect } from "redux-connect";
 // import ResourceTreeItem from 'helpers/ResourceTreeItem'
 import { GlobalState } from "reducers";
+import {FacetsConfig,toggleClass} from 'reducers/facets'
 // import {State as SchemaState} from 'reducers/schema'
 // import {getLabel, State as LabelsState} from 'reducers/labels'
 // import { State as FacetState,ActiveClasses,setActiveClasses,getSelectedClasses,setFacetFilter} from 'reducers/facets'
@@ -26,22 +27,18 @@ import {
 import {} from "containers";
 
 namespace Panel {
-  export interface Props extends IComponentProps {
-    collapsed?: boolean;
-    className?: string;
-    currentClass?: string;
-    toggleDsPanelCollapseLg?: typeof toggleDsPanelCollapseLg;
-    subClassRelations?: Object;
-    // labels?:LabelsState
-    // facets?:FacetState,
-    // setActiveClasses?: typeof setActiveClasses,
-    // shapes?:Shapes,
-    // setFacetFilter? : typeof setFacetFilter,
-    refreshingShapes?: boolean;
+  export interface OwnProps extends IComponentProps {
   }
+  export interface DispatchProps {
+    toggleClass: typeof toggleClass
+  }
+  export interface PropsFromState {
+    facets: FacetsConfig
+  }
+
   export interface State {
-    // subclassTree: ResourceTreeItem
   }
+  export type Props = OwnProps & DispatchProps & PropsFromState;
 }
 
 const styles = require("./style.scss");
@@ -69,67 +66,44 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
     subclassTree: null
   };
 
-  componentWillMount() {
-    //assuming schema is static
-    // if (!this.state.subclassTree && _.size(this.props.subClassRelations as any)) this.setState({subclassTree: ResourceTreeItem.fromJson(this.props.subClassRelations)})
-  }
 
-  // getClassOptions():FacetMultiSelect.Option[]  {
-  // if (!this.state.subclassTree) return [];
-  // const getOptions = (item:ResourceTreeItem):FacetMultiSelect.Option[] => {
-  //   //get first root node with more than 1 child
-  //   if (item.children.length === 0) return [];
-  //   if (item.children.length === 1) return getOptions(item.children[0])
-  //   return item.children.map(child => ({
-  //     label: getLabel(this.props.labels, child.iri),
-  //     value: child.iri,
-  //     link: child.iri
-  //   }))
-  //   }
-  //   return getOptions(this.state.subclassTree)
-  // }
+
   render() {
     const {
-      refreshingShapes,
+      // refreshingShapes,
       // shapes,
-      className,
-      toggleDsPanelCollapseLg,
-      collapsed,
-      currentClass,
-      subClassRelations
+      // className,
+      // toggleDsPanelCollapseLg,
+      // collapsed,
+      // currentClass,
+      // subClassRelations
       // labels,facets
+      facets
     } = this.props;
     //assuming schema is static
 
     const classNames: { [className: string]: boolean } = {
-      [styles.panel]: true
+      [styles.panel]: true,
+      [styles.main]: true
       // [styles.collapsed]: collapsed
     };
-
+    // const classes = _.keys(facetConfig);
     // const currentPath = "/" + currentAccount.accountName + '/' + currentDs.name + '/';
     return (
-      <div className={getClassName(className, classNames)}>
-        {/*header
-        <div className={getClassName(styles.header, styles.section)}>
-          <div className={styles.headerTitle}>
-            <LinkContainer onlyActiveOnIndex to={''}><PanelItem icon="fa-home" name={currentClass}/></LinkContainer>
-          </div>
-          <LinkContainer  to={'settings'}>
-            <Button bsStyle="link" className={getClassName(styles.config, 'resetButton', styles.hideCollapsed)}>
-                <i className="fa fa-gear"></i>
-            </Button>
-          </LinkContainer>
+      <div className={getClassName(classNames)}>
 
-          <LinkContainer  to={'settings'}>
-            <PanelItem icon="fa-gear" name="Config" className={styles.onlyShowCollapsed}/>
-          </LinkContainer>
-
-        </div>
-        */}
-
-        {/*main*/}
-        <div className={styles.main}>
-          PANEL
+        <div className={styles.section}>
+          <div className={styles.sectionHeader}>Classes</div>
+          <FacetMultiSelect
+            options={facets.valueSeq().toArray().map(val => {
+              return {
+                value: val.iri,
+                label: val.label,
+                checked: val.selected,
+              }
+            })}
+            onChange={this.props.toggleClass}
+            />
           {
             //   this.state.subclassTree &&
             // <div className={getClassName(styles.section, styles.staticFacets)}>
@@ -167,4 +141,32 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
     );
   }
 }
-export default Panel;
+// export default Panel;
+
+
+
+
+export default connect<GlobalState, Panel.PropsFromState, Panel.DispatchProps, Panel.OwnProps>(
+  (state, ownProps) => {
+    return {
+      facets: state.facets.config
+      // addedDsName: state.datasetManagement.added,
+      // datasets: state.datasetManagement.list,
+      // fetchingList: state.datasetManagement.fetchingList,
+      // fetchingListError: state.datasetManagement.fetchingListError,
+      // currentAccount: state.accounts.current,
+      // acl: Acl.Get(state.auth.user),
+      // nextPage: state.datasetManagement.nextPage,
+      // orgMembers: state.accounts.current && state.orgs.members.get(state.accounts.current.accountName),
+      // orgs: state.accounts.current && state.orgs.orgs.get(state.accounts.current.accountName)
+    };
+  },
+  //dispatch
+  {
+    toggleClass:toggleClass
+    // addDataset,
+    // getDatasets,
+    // impersonateTo,
+    // pushState: reactRouterRedux.push
+  }
+)(Panel);

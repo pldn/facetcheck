@@ -27,7 +27,6 @@ export { default as TermLiteralWktLeaflet } from "./TermLiteralWktLeaflet";
 export { default as TermLiteralNumeric } from "./TermLiteralNumeric";
 export { default as TermLiteralImage } from "./TermLiteralImage";
 export { default as TermLiteralLink } from "./TermLiteralLink";
-export { default as TermGeo } from "./TermGeo";
 export { default as TermLink } from "./TermLink";
 export { default as TermLiteralDefault } from "./TermLiteralDefault";
 export { default as TermLiteralBoolean } from "./TermLiteralBoolean";

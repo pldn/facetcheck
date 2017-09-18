@@ -43,7 +43,7 @@ module.exports = {
     // hooking into 'js' extension require()s isn't the best solution
     // and I'm leaving this comment here in case anyone finds a better idea.
     style_modules: {
-      extensions: ["less", "scss"],
+      extensions: ["less", "scss", "css"],
       filter: function(module, regex, options, log) {
         if (options.development) {
           // in development mode there's webpack "style-loader",

@@ -65,10 +65,10 @@ module.exports = {
   },
   resolve: {
     alias: {
-      leaflet_css: __dirname + "/../node_modules/leaflet/dist/leaflet.css",
-      leaflet_marker: __dirname + "/../node_modules/leaflet/dist/images/marker-icon.png",
-      leaflet_marker_2x: __dirname + "/../node_modules/leaflet/dist/images/marker-icon-2x.png",
-      leaflet_marker_shadow: __dirname + "/../node_modules/leaflet/dist/images/marker-shadow.png"
+      // leaflet_css: __dirname + "/../node_modules/leaflet/dist/leaflet.css",
+      // leaflet_marker: __dirname + "/../node_modules/leaflet/dist/images/marker-icon.png",
+      // leaflet_marker_2x: __dirname + "/../node_modules/leaflet/dist/images/marker-icon-2x.png",
+      // leaflet_marker_shadow: __dirname + "/../node_modules/leaflet/dist/images/marker-shadow.png"
     },
     modules: [paths.src, paths.nodeModules],
     extensions: [".json", ".js", ".jsx", ".ts", ".tsx"]
@@ -250,16 +250,32 @@ module.exports = {
           mimetype: "application/font-woff"
         }
       },
-      //Adding this will mess-up css loading of YASGUI in dev mode
-      //Dont think we actually need this css loader for other items, so just turn leave it off
+      // //Adding this will mess-up css loading of YASGUI in dev mode
+      // //Dont think we actually need this css loader for other items, so just turn leave it off
+      // // {
+      // //   test: /\.css$/,
+      // //   loader: "style-loader!css-loader"
+      // // },
       // {
       //   test: /\.css$/,
       //   loader: "style-loader!css-loader"
       // },
       {
-        test: /\.css$/,
-        loader: "style-loader!css-loader"
-      },
+       test: /\.css$/,
+       use: [
+         "style-loader",
+         {
+           loader: "css-loader",
+           options: {
+             modules: true, // default is false
+             sourceMap: true,
+             importLoaders: 1,
+             localIdentName: "[name]--[local]--[hash:base64:8]"
+           }
+         },
+         "postcss-loader"
+       ]
+     },
       {
         test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
         loader: "url-loader",
