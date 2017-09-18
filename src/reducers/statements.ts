@@ -7,12 +7,20 @@ import { GlobalActions } from "reducers";
 import {default as prefixes, getAsString} from 'prefixes'
 const urlParse = require("url-parse");
 import Tree from 'helpers/Tree'
+import {Actions as FacetsActions} from './facets'
+import * as ReduxObservable from "redux-observable";
+import * as Redux from "redux";
+import {GlobalState} from './'
+import * as RX from "rxjs";
+import "rxjs";
+
 // import {Actions as FacetActions} from './facets'
 //import own dependencies
 export enum Actions {
   GET_STATEMENTS = "facetcheck/statements/GET_STATEMENTS" as any,
   GET_STATEMENTS_SUCCESS = "facetcheck/statements/GET_STATEMENTS_SUCCESS" as any,
-  GET_STATEMENTS_FAIL = "facetcheck/statements/GET_STATEMENTS_FAIL" as any
+  GET_STATEMENTS_FAIL = "facetcheck/statements/GET_STATEMENTS_FAIL" as any,
+  MARK_FOR_FETCHING_OR_DELETION = "facetcheck/statements/MARK_FOR_FETCHING_OR_DELETION" as any,
 }
 
 export type Statement = N3.Statement;
@@ -21,7 +29,8 @@ export type Statements = Immutable.List<Statement>;
 export var StateRecord = Immutable.Record(
   {
     resourceDescriptions: Immutable.OrderedMap<string, Statements>(),
-    fetchRequests: 0
+    fetchRequests: 0,
+    fetchQueue: Immutable.List<string>()
   },
   "statements"
 );
@@ -31,19 +40,31 @@ export type StateRecordInterface = typeof initialState;
 export type ResourceDescriptions = Immutable.OrderedMap<string, Statements>;
 
 export interface Action extends GlobalActions<Actions> {
-  forIri: string;
+  forIri?: string;
+  toRemove?:string[],
+  toFetch?:string[]
 }
 
 export function reducer(state = initialState, action: Action) {
   switch (action.type) {
     case Actions.GET_STATEMENTS:
-      return state.update("fetchRequests", num => num + 1);
+      return state.update("fetchRequests", num => num + 1).update('fetchQueue', list => list.delete(list.indexOf(action.forIri)));;
     case Actions.GET_STATEMENTS_FAIL:
       return state.update("fetchRequests", num => num - 1);
     case Actions.GET_STATEMENTS_SUCCESS:
       return state.update("fetchRequests", num => num - 1).update("resourceDescriptions", resourceDescriptions => {
         return resourceDescriptions.set(action.forIri, Immutable.List<Statement>(action.result));
-      });
+      })
+    case Actions.MARK_FOR_FETCHING_OR_DELETION:
+      if (action.toRemove && action.toRemove.length) {
+        state =  state.update("resourceDescriptions", resourceDescriptions => {
+          return resourceDescriptions.deleteAll(action.toRemove);
+        });
+      }
+      if (action.toFetch && action.toFetch.length) {
+        state = state.set('fetchQueue', Immutable.List(action.toFetch))
+      }
+      return state;
 
 
     // return newState;
@@ -51,7 +72,54 @@ export function reducer(state = initialState, action: Action) {
       return state;
   }
 }
+export type Action$ = ReduxObservable.ActionsObservable<any>;
+// export type Action$ = ReduxObservable.ActionsObservable<any>;
+export type Store = Redux.Store<GlobalState>;
+export var epics: [(action: Action$, store: Store) => any] = [
 
+  /**
+   * Do some bookkeeping on which descriptions to remove, and which ones to fetch
+   */
+  (action$: Action$, store: Store) => {
+    return action$.ofType(FacetsActions.GET_MATCHING_IRIS_SUCCESS)
+      .map(action => action.result)
+      .map((statements:string[]) => {
+        const existingStatements = store.getState().statements.resourceDescriptions.keySeq().toArray();
+        const toRemove = _.difference(existingStatements, statements);
+        const toFetch = statements.filter(s => {
+          return existingStatements.indexOf(s) < 0;
+        })
+        return markForFetchingOrDeletion(toRemove,toFetch)
+    })
+  },
+  //Toggle fetching of first statement (all subsequent requests are sent when the first statement if fetched)
+  (action$: Action$, store: Store) => {
+    return action$.ofType(Actions.MARK_FOR_FETCHING_OR_DELETION)
+      .map(action => action.toFetch)
+      .filter((toFetch:string[]) => toFetch.length > 0)
+      .map((toFetch:string[]) => {
+        return getStatements(toFetch.shift())
+    })
+  },
+  //Fetch new statement from queue list when we've finished fetching
+  (action$: Action$, store: Store) => {
+    return action$.ofType(Actions.GET_STATEMENTS_SUCCESS)
+      .map((action:any) => {
+        return store.getState().statements.fetchQueue;
+      })
+      .filter((fetchQueue:Immutable.List<string>) => fetchQueue.size > 0)
+      .map((fetchQueue:Immutable.List<string>) => getStatements(fetchQueue.first()))
+  },
+
+]
+
+export function markForFetchingOrDeletion(toRemove:string[], toFetch:string[]):Action {
+  return {
+    type: Actions.MARK_FOR_FETCHING_OR_DELETION,
+    toRemove,
+    toFetch
+  }
+}
 export function getStatements(resource: string): Action {
   var projectPattern = `
     <${resource}> ?x ?y.

@@ -139,11 +139,14 @@ const appReducer = Redux.combineReducers(
 );
 export var rootEpic = ReduxObservable
   .combineEpics
-  // ...socket.epics,
-  // ...datasets.epics,
-  // datasetManagement.epic,
-  // graphs.epic,
-  ();
+  (
+    ...statements.epics
+    // ...socket.epics,
+    // ...datasets.epics,
+    // datasetManagement.epic,
+    // graphs.epic,
+
+  );
 
 //define some action properties that are exposed via our mw
 export interface _GlobalActions<A = any> {
