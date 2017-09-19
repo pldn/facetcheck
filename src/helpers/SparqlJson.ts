@@ -25,8 +25,9 @@ export default class SparqlJson {
   getValuesForVar(varname: string): string[] {
     if (this.sparqlJson.head.vars.indexOf(varname) < 0) return [];
     return this.sparqlJson.results.bindings.map(binding => {
+      if (!binding || !binding[varname]) return undefined;
       return binding[varname].value;
-    });
+    }).filter(val => !!val);
   }
   getValuesAndDtypeForVar(varname: string): { value: string; datatype?: string }[] {
     if (this.sparqlJson.head.vars.indexOf(varname) < 0) return [];
