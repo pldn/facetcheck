@@ -13,7 +13,7 @@ import { toggleDsPanelCollapseLg } from "reducers/app";
 import { asyncConnect, IAsyncConnect } from "redux-connect";
 // import ResourceTreeItem from 'helpers/ResourceTreeItem'
 import { GlobalState } from "reducers";
-import {FacetsConfig,toggleClass} from 'reducers/facets'
+import {FacetsConfig,toggleClass, CLASSES,FACETS,SelectedClasses,FacetsProps} from 'reducers/facets'
 // import {State as SchemaState} from 'reducers/schema'
 // import {getLabel, State as LabelsState} from 'reducers/labels'
 // import { State as FacetState,ActiveClasses,setActiveClasses,getSelectedClasses,setFacetFilter} from 'reducers/facets'
@@ -33,7 +33,8 @@ namespace Panel {
     toggleClass: typeof toggleClass
   }
   export interface PropsFromState {
-    facets: FacetsConfig
+    selectedClasses: SelectedClasses,
+    facetProps: FacetsProps
   }
 
   export interface State {
@@ -42,23 +43,7 @@ namespace Panel {
 }
 
 const styles = require("./style.scss");
-const mapStateToProps = (state: GlobalState, ownProps: Panel.Props) => {
-  return {
-    // activeClasses: state.facets.activeClasses,
-    // subClassRelations: state.schema.subclassRelations,
-    // labels: state.labels,
-    // facets: state.facets,
-    // shapes: state.schema.shapes,
-    // refreshingShapes: state.schema.gettingShapes
-  };
-};
-const mapDispatchToProps: MapDispatchToPropsObject = {
-  toggleDsPanelCollapseLg
-  // setActiveClasses,
-  // setFacetFilter,
-};
 
-@(connect as any)(mapStateToProps, mapDispatchToProps)
 class Panel extends React.PureComponent<Panel.Props, Panel.State> {
   //cant use base component that does shallow compare, as the panels won't update with a new active state.
   //might be because react-router-bootstrap clones its children?
@@ -78,7 +63,8 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
       // currentClass,
       // subClassRelations
       // labels,facets
-      facets
+      facetProps,
+      selectedClasses
     } = this.props;
     //assuming schema is static
 
@@ -95,13 +81,13 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
         <div className={styles.section}>
           <div className={styles.sectionHeader}>Classes</div>
           <FacetMultiSelect
-            options={facets.valueSeq().toArray().map(val => {
+            options={selectedClasses.map((val,key) => {
               return {
-                value: val.iri,
-                label: val.label,
-                checked: val.selected,
+                value: key,
+                label: CLASSES[key].label,
+                checked: val,
               }
-            })}
+            }).valueSeq().toArray()}
             onChange={this.props.toggleClass}
             />
           {
@@ -149,7 +135,8 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
 export default connect<GlobalState, Panel.PropsFromState, Panel.DispatchProps, Panel.OwnProps>(
   (state, ownProps) => {
     return {
-      facets: state.facets.config
+      selectedClasses: state.facets.selectedClasses,
+      facetProps: state.facets.facetProps
       // addedDsName: state.datasetManagement.added,
       // datasets: state.datasetManagement.list,
       // fetchingList: state.datasetManagement.fetchingList,

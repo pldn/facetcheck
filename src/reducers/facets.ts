@@ -57,7 +57,43 @@ export type Statements = Immutable.List<Statement>;
 // ]
 
 
+export interface ClassProps {
+  default:boolean,
+  iri:string,
+  label:string,
+  facets:string[]
+}
+export var CLASSES:{[className:string]: ClassProps} = {
+  'https://cultureelerfgoed.nl/vocab/Monument': {
+    default: true,//default
+    iri: 'https://cultureelerfgoed.nl/vocab/Monument',
+    label: 'Monument',
+    facets: ['https://cultureelerfgoed.nl/vocab/province']
+  }
+}
 export type FacetTypes = 'multiselect' | 'slider' | 'multiselectText'
+export interface FacetProps {
+  iri:string,
+  label:string,
+  datatype: string,
+  facetType: FacetTypes,
+  getBgp: (values:string[]) => string
+}
+export var FACETS:{[property:string] : FacetProps} = {
+  'https://cultureelerfgoed.nl/vocab/province': {
+    iri: 'https://cultureelerfgoed.nl/vocab/province',
+    label: 'Provincie',
+    datatype: <string>null,
+    facetType: 'multiselect',
+    getBgp: (values:string[]) => {
+      return ''
+    }
+  }
+}
+
+
+
+
 export interface FacetPropertyConfigProps {
   iri: string
   label: string
@@ -75,39 +111,41 @@ export var FacetPropertyConfig = Immutable.Record<FacetPropertyConfigProps>(
 )
 
 export interface FacetConfigProps {
-  iri: string
-  label: string
-  selected: boolean,
-  facets: Immutable.OrderedMap<string, Immutable.Record.Inst<FacetPropertyConfigProps>>
+  iri: string,
+  minValue: any,
+  maxValue:any,
+  values:any
 }
 export var FacetConfig = Immutable.Record<FacetConfigProps>(
   {
     iri: null,
-    label: null,
-    selected: false,
-    facets: Immutable.OrderedMap()
+    minValue: null,
+    maxValue:null,
+    values:null
   },
   "facetConfig"
 )
 export type FacetsConfig = Immutable.OrderedMap<string, Immutable.Record.Inst<Partial<FacetConfigProps>>>
+export type SelectedClasses = Immutable.OrderedMap<string, boolean>
+export type FacetsProps = Immutable.OrderedMap<string,Immutable.Record.Inst<FacetConfigProps>>
 export var StateRecord = Immutable.Record(
   {
     matchingIris: Immutable.List<string>(),
-    activeClasses: Immutable.List<string>(),
-
     fetchResources: 0,
-    config: <FacetsConfig>Immutable.OrderedMap<string, Immutable.Record.Inst<Partial<FacetConfigProps>>>()
+    selectedClasses: <SelectedClasses>Immutable.OrderedMap<string, boolean>().withMutations(m => {
+      //populate selectedClasses (taken from object here, so no guarantees on sorting)
+      for (const c of Object.keys(CLASSES)) {
+        m.set(c, CLASSES[c].default)
+      }
+      return m
+    }),
+    facetProps: <FacetsProps>Immutable.OrderedMap<string,Immutable.Record.Inst<FacetConfigProps>>()
   },
   "facets"
 );
-export var initialState = new StateRecord().update('config',config => {
-  return config.set('https://cultureelerfgoed.nl/vocab/Monument', new FacetConfig({
-    iri: 'https://cultureelerfgoed.nl/vocab/Monument',
-    label: 'Monument',
-    selected: true,
-    // facets: null
-  }))
-});
+export var initialState = new StateRecord();
+
+
 export type StateRecordInterface = typeof initialState;
 
 export interface Action extends GlobalActions<Actions> {
@@ -125,7 +163,7 @@ export function reducer(state = initialState, action: Action) {
     case Actions.GET_MATCHING_IRIS_SUCCESS:
       return state.update("fetchResources", num => num - 1).set("matchingIris", Immutable.List(action.result))
     case Actions.TOGGLE_CLASS:
-      return state.setIn(<[keyof StateRecordInterface, string, keyof FacetConfigProps]>['config', action.className, 'selected'], action.checked)
+      return state.setIn(<[keyof StateRecordInterface, string]>['selectedClasses', action.className], action.checked)
     default:
       return state;
   }
