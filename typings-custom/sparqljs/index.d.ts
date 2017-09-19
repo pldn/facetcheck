@@ -38,6 +38,7 @@ declare module "sparqljs" {
       distinct?: boolean,
       prefixes?: Prefixes,
       group?: QueryGroup[]
+      limit?:number
       queryType: "SELECT" | "CONSTRUCT" | "DESCRIBE" | "ASK",
       variables: string[],
       where: QueryPattern[]

@@ -4,7 +4,9 @@ import * as N3 from "n3";
 import * as Immutable from "immutable";
 import ApiClient from "helpers/ApiClient";
 import { GlobalActions, GlobalState } from "reducers";
-import {default as prefixes, getAsString} from 'prefixes'
+import {default as prefixes, getAsString, prefix} from 'prefixes'
+import SparqlBuilder from 'helpers/SparqlBuilder'
+import * as sparqljs from 'sparqljs'
 import SparqlJson from 'helpers/SparqlJson'
 // import {Actions as FacetActions} from './facets'
 //import own dependencies
@@ -171,7 +173,28 @@ export function reducer(state = initialState, action: Action) {
 
 
 export function facetsToQuery(state:GlobalState) {
-  var facetPatterns:string[] = [];
+
+
+  const sparqlBuilder = SparqlBuilder.get(prefixes);
+  sparqlBuilder.vars('?_r')
+  sparqlBuilder.limit(20)
+
+  /**
+   * Add classes
+   */
+   const unions:sparqljs.QueryPattern[] = [];
+   for (const [className, selected] of state.facets.selectedClasses) {
+     if (selected) unions.push({type: 'bgp', triples: [{
+       subject: '?_r',
+       predicate: prefix('rdf', 'type'),
+       object: className
+     }]})
+   }
+   sparqlBuilder.addUnions(unions)
+
+   return sparqlBuilder.toString();
+
+  // var facetPatterns:string[] = [];
   // for (var pred in state.facetFilters) {
   //   var filter = state.facetFilters[pred];
   //   if (filter.values) {
@@ -238,12 +261,12 @@ export function facetsToQuery(state:GlobalState) {
   //     { ${classClausString} }
   //   } LIMIT 20
   // `
-  return `${getAsString()}
-  SELECT ?_r WHERE {
-    BIND(<https://cultureelerfgoed.nl/id/monument/511321> as ?_r)
-  } LIMIT 20
+  // return `${getAsString()}
+  // SELECT ?_r WHERE {
+  //   BIND(<https://cultureelerfgoed.nl/id/monument/511321> as ?_r)
+  // } LIMIT 20
 
-  `
+  // `
 }
 
 export function toggleClass (className:string, checked:boolean):Action {

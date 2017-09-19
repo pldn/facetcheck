@@ -6,6 +6,7 @@ export default class SparqlBuilder {
     prefixes: {},
     queryType: 'SELECT',
     variables: ['*'],
+    limit: 10,
     where: []
   };
   private constructor(query?: sparqlJs.Query) {
@@ -22,12 +23,20 @@ export default class SparqlBuilder {
     this.query.distinct = true;
     return this;
   }
+  public limit(limit:number) {
+    this.query.limit = limit;
+  }
+  public vars(...vars: string[]) {
+    this.query.variables = vars;
+    return this;
+  }
   public addUnions(patterns:sparqlJs.QueryPattern[]) {
-    this.query.where.push({
+    if (patterns && patterns.length) this.query.where.push({
       type: 'union',
       patterns: patterns
 
     })
+
     return this;
   }
   static fromQueryString(qString:string, prefixes?:sparqlJs.Prefixes) {
