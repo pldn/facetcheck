@@ -4,6 +4,12 @@ import * as N3 from "n3";
 import * as Immutable from "immutable";
 import ApiClient from "helpers/ApiClient";
 import { GlobalActions, GlobalState } from "reducers";
+
+import * as ReduxObservable from "redux-observable";
+import * as Redux from "redux";
+import * as RX from "rxjs";
+
+
 import {default as prefixes, getAsString, prefix} from 'prefixes'
 import SparqlBuilder from 'helpers/SparqlBuilder'
 import * as sparqljs from 'sparqljs'
@@ -171,13 +177,27 @@ export function reducer(state = initialState, action: Action) {
   }
 }
 
+export type Action$ = ReduxObservable.ActionsObservable<any>;
+// export type Action$ = ReduxObservable.ActionsObservable<any>;
+export type Store = Redux.Store<GlobalState>;
+export var epics: [(action: Action$, store: Store) => any] = [
 
+  /**
+   * Do some bookkeeping on which descriptions to remove, and which ones to fetch
+   */
+  (action$: Action$, store: Store) => {
+    return action$.ofType(Actions.TOGGLE_CLASS)
+      .map((_any:any) => {
+        return getMatchingIris(store.getState())
+    })
+  },
+]
 export function facetsToQuery(state:GlobalState) {
 
 
   const sparqlBuilder = SparqlBuilder.get(prefixes);
   sparqlBuilder.vars('?_r')
-  sparqlBuilder.limit(20)
+  sparqlBuilder.limit(2)
 
   /**
    * Add classes
@@ -278,13 +298,12 @@ export function toggleClass (className:string, checked:boolean):Action {
 };
 
 export function getMatchingIris(state:GlobalState):any {
-
+  console.log('get matching iris')
     return {
       types: [Actions.GET_MATCHING_IRIS, Actions.GET_MATCHING_IRIS_SUCCESS, Actions.GET_MATCHING_IRIS_FAIL],
       promise: (client:ApiClient) => client.req<any, SparqlJson>({
         sparqlSelect: facetsToQuery(state),
       }).then((sparql) => {
-        console.log(sparql)
         return sparql.getValuesForVar('_r');
       })
     };

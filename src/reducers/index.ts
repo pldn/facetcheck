@@ -133,6 +133,7 @@ const appReducer = Redux.combineReducers(
 export var rootEpic = ReduxObservable
   .combineEpics
   (
+    ...facets.epics,
     ...statements.epics
     // ...socket.epics,
     // ...datasets.epics,

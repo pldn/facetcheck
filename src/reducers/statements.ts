@@ -48,6 +48,7 @@ export interface Action extends GlobalActions<Actions> {
 export function reducer(state = initialState, action: Action) {
   switch (action.type) {
     case Actions.GET_STATEMENTS:
+      console.log('fetch queue',action.forIri, state.fetchQueue.size)
       return state.update("fetchRequests", num => num + 1).update('fetchQueue', list => list.delete(list.indexOf(action.forIri)));;
     case Actions.GET_STATEMENTS_FAIL:
       return state.update("fetchRequests", num => num - 1);
@@ -102,6 +103,14 @@ export var epics: [(action: Action$, store: Store) => any] = [
     })
   },
   //Fetch new statement from queue list when we've finished fetching
+  (action$: Action$, store: Store) => {
+    return action$.ofType(Actions.GET_STATEMENTS_SUCCESS)
+      .map((action:any) => {
+        return store.getState().statements.fetchQueue;
+      })
+      .filter((fetchQueue:Immutable.List<string>) => fetchQueue.size > 0)
+      .map((fetchQueue:Immutable.List<string>) => getStatements(fetchQueue.first()))
+  },
   (action$: Action$, store: Store) => {
     return action$.ofType(Actions.GET_STATEMENTS_SUCCESS)
       .map((action:any) => {
@@ -242,7 +251,6 @@ export var RenderSelectors:RenderSelector[] = [
 
 
 export function selectRenderer(tree:Tree, renderSelectors:RenderSelector[] = RenderSelectors):RenderSelection[] {
-  tree.getNquads().then(console.log)
   var renderers:RenderSelection[] = [];
   for (const renderSelector of  renderSelectors) {
     const renderer = renderSelector(tree);
