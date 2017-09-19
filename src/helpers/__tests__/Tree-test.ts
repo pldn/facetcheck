@@ -53,7 +53,7 @@ describe("Tree", function() {
       var matches = pdokTree.find([prefixes.geo + 'hasGeometry', null, prefixes.geo + 'asWKT']).exec();
       expect(matches).to.have.lengthOf(1);
     })
-    it.only("Find WKT with limit", function() {
+    it("Find WKT with limit", function() {
       var matches = geosoupTree.find([prefixes.geo + 'hasGeometry', null, prefixes.geo + 'asWKT']).limit(1).exec();//actually has 2 matches
       expect(matches).to.have.lengthOf(1);
     })

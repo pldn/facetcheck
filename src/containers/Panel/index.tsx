@@ -27,8 +27,8 @@ import {
 import {} from "containers";
 
 namespace Panel {
-  export interface OwnProps extends IComponentProps {
-  }
+  // export interface OwnProps extends IComponentProps {
+  // }
   export interface DispatchProps {
     toggleClass: typeof toggleClass
   }
@@ -39,7 +39,7 @@ namespace Panel {
 
   export interface State {
   }
-  export type Props = OwnProps & DispatchProps & PropsFromState;
+  export type Props =  DispatchProps & PropsFromState;
 }
 
 const styles = require("./style.scss");
@@ -132,7 +132,7 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
 
 
 
-export default connect<GlobalState, Panel.PropsFromState, Panel.DispatchProps, Panel.OwnProps>(
+export default connect<GlobalState, Panel.PropsFromState, Panel.DispatchProps, {}>(
   (state, ownProps) => {
     return {
       selectedClasses: state.facets.selectedClasses,
