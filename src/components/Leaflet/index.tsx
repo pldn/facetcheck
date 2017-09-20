@@ -98,10 +98,12 @@ class Leaflet extends React.PureComponent<Leaflet.Props, any> {
         }),
         // new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {minZoom: 2, maxZoom: 13, attribution: ''})
       ],
-      attributionControl: false
+      attributionControl: false,
+      scrollWheelZoom: false,
     }));
 
-
+    map.on('focus', function() { map.scrollWheelZoom.enable(); });
+    map.on('blur', function() { map.scrollWheelZoom.disable(); });
 
 
     var wicket = new (global as any).Wkt.Wkt();
