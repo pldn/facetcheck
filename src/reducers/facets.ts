@@ -9,11 +9,10 @@ import * as ReduxObservable from "redux-observable";
 import * as Redux from "redux";
 import * as RX from "rxjs";
 
-
-import {default as prefixes, getAsString, prefix} from 'prefixes'
-import SparqlBuilder from 'helpers/SparqlBuilder'
-import * as sparqljs from 'sparqljs'
-import SparqlJson from 'helpers/SparqlJson'
+import { default as prefixes, getAsString, prefix } from "prefixes";
+import SparqlBuilder from "helpers/SparqlBuilder";
+import * as sparqljs from "sparqljs";
+import SparqlJson from "helpers/SparqlJson";
 // import {Actions as FacetActions} from './facets'
 //import own dependencies
 export enum Actions {
@@ -21,6 +20,9 @@ export enum Actions {
   GET_MATCHING_IRIS_SUCCESS = "facetcheck/facets/GET_MATCHING_IRIS_SUCCESS" as any,
   GET_MATCHING_IRIS_FAIL = "facetcheck/facets/GET_MATCHING_IRIS_FAIL" as any,
   TOGGLE_CLASS = "facetcheck/facets/TOGGLE_CLASS" as any,
+  FETCH_FACET_PROPS = "facetcheck/facets/FETCH_FACET_PROPS" as any,
+  FETCH_FACET_PROPS_SUCCESS = "facetcheck/facets/FETCH_FACET_PROPS_SUCCESS" as any,
+  FETCH_FACET_PROPS_FAIL = "facetcheck/facets/FETCH_FACET_PROPS_FAIL" as any
   // GET_FACET_CONFIG = "facetcheck/facets/GET_FACET_CONFIG" as any,
   // GET_FACET_CONFIG_SUCCESS = "facetcheck/facets/GET_FACET_CONFIG_SUCCESS" as any,
   // GET_FACET_CONFIG_FAIL = "facetcheck/facets/GET_FACET_CONFIG_FAIL" as any
@@ -29,113 +31,65 @@ export enum Actions {
 export type Statement = N3.Statement;
 export type Statements = Immutable.List<Statement>;
 
-
-
-//
-// export type FacetConfig = [
-//   {
-//     classConfig: FacetClassConfig,
-//     facets: FacetPropertyConfig[]
-//   }
-// ]
-//
-// export interface FacetPropertyConfig {
-//
-// }
-// export interface FacetClassConfig {
-//   iri:string,
-//   label: string,
-//   selected: boolean
-// }
-//
-// export var facetConfig:FacetConfig = [
-//   {
-//     classConfig: {
-//       iri: 'https://cultureelerfgoed.nl/vocab/Monument',
-//       label: 'Monument',
-//       selected: true
-//     },
-//     facets: [
-//       {
-//         property: 'bla',
-//
-//       }
-//     ]
-//   }
-// ]
-
-
 export interface ClassProps {
-  default:boolean,
-  iri:string,
-  label:string,
-  facets:string[]
+  default: boolean;
+  iri: string;
+  label: string;
+  facets: string[];
 }
-export var CLASSES:{[className:string]: ClassProps} = {
-  'https://cultureelerfgoed.nl/vocab/Monument': {
-    default: true,//default
-    iri: 'https://cultureelerfgoed.nl/vocab/Monument',
-    label: 'Monument',
-    facets: ['https://cultureelerfgoed.nl/vocab/province']
+export var CLASSES: { [className: string]: ClassProps } = {
+  "https://cultureelerfgoed.nl/vocab/Monument": {
+    default: true, //default
+    iri: "https://cultureelerfgoed.nl/vocab/Monument",
+    label: "Monument",
+    facets: ["https://cultureelerfgoed.nl/vocab/province"]
+  },
+  "https://data.pdok.nl/cbs/vocab/Gemeente": {
+    default: false, //default
+    iri: "https://data.pdok.nl/cbs/vocab/Gemeente",
+    label: "Gemeente",
+    facets: ["https://cultureelerfgoed.nl/vocab/province"]
   }
-}
-export type FacetTypes = 'multiselect' | 'slider' | 'multiselectText'
+};
+export type FacetTypes = "multiselect" | "slider" | "multiselectText";
 export interface FacetProps {
-  iri:string,
-  label:string,
-  datatype: string,
-  facetType: FacetTypes,
-  getBgp: (values:string[]) => string
+  iri: string;
+  label: string;
+  datatype: string;
+  facetType: FacetTypes;
+  getBgp: (values: string[]) => string;
 }
-export var FACETS:{[property:string] : FacetProps} = {
-  'https://cultureelerfgoed.nl/vocab/province': {
-    iri: 'https://cultureelerfgoed.nl/vocab/province',
-    label: 'Provincie',
+export var FACETS: { [property: string]: FacetProps } = {
+  "https://cultureelerfgoed.nl/vocab/province": {
+    iri: "https://cultureelerfgoed.nl/vocab/province",
+    label: "Provincie",
     datatype: <string>null,
-    facetType: 'multiselect',
-    getBgp: (values:string[]) => {
-      return ''
+    facetType: "multiselect",
+    getBgp: (values: string[]) => {
+      return "";
     }
   }
+};
+
+export interface FacetValuesProps {
+  iri: string;
+  minValue: any;
+  maxValue: any;
+  values: any;
 }
-
-
-
-
-export interface FacetPropertyConfigProps {
-  iri: string
-  label: string
-  datatype: string
-  type: FacetTypes
-}
-export var FacetPropertyConfig = Immutable.Record<FacetPropertyConfigProps>(
-  {
-    iri: null,
-    label:null,
-    datatype: null,
-    type:null,
-  },
-  "facetPropertyConfig"
-)
-
-export interface FacetConfigProps {
-  iri: string,
-  minValue: any,
-  maxValue:any,
-  values:any
-}
-export var FacetConfig = Immutable.Record<FacetConfigProps>(
+export var FacetValues = Immutable.Record<FacetValuesProps>(
   {
     iri: null,
     minValue: null,
-    maxValue:null,
-    values:null
+    maxValue: null,
+    values: null
   },
-  "facetConfig"
-)
-export type FacetsConfig = Immutable.OrderedMap<string, Immutable.Record.Inst<Partial<FacetConfigProps>>>
-export type SelectedClasses = Immutable.OrderedMap<string, boolean>
-export type FacetsProps = Immutable.OrderedMap<string,Immutable.Record.Inst<FacetConfigProps>>
+  "facetValues"
+);
+export type FacetValues = Immutable.Record.Inst<Partial<FacetValuesProps>>;
+export type FacetsValues = Immutable.OrderedMap<string, FacetValues>;
+export type SelectedClasses = Immutable.OrderedMap<string, boolean>;
+export type FacetsProps = Immutable.OrderedMap<string, Immutable.Record.Inst<FacetValuesProps>>;
 export var StateRecord = Immutable.Record(
   {
     matchingIris: Immutable.List<string>(),
@@ -143,24 +97,22 @@ export var StateRecord = Immutable.Record(
     selectedClasses: <SelectedClasses>Immutable.OrderedMap<string, boolean>().withMutations(m => {
       //populate selectedClasses (taken from object here, so no guarantees on sorting)
       for (const c of Object.keys(CLASSES)) {
-        m.set(c, CLASSES[c].default)
+        m.set(c, CLASSES[c].default);
       }
-      return m
+      return m;
     }),
-    facetProps: <FacetsProps>Immutable.OrderedMap<string,Immutable.Record.Inst<FacetConfigProps>>()
+    facetsValues: <FacetsProps>Immutable.OrderedMap<string, Immutable.Record.Inst<FacetValuesProps>>()
   },
   "facets"
 );
 export var initialState = new StateRecord();
 
-
 export type StateRecordInterface = typeof initialState;
 
 export interface Action extends GlobalActions<Actions> {
-  checked?: boolean,
-  className?: string
+  checked?: boolean;
+  className?: string;
 }
-
 
 export function reducer(state = initialState, action: Action) {
   switch (action.type) {
@@ -169,9 +121,9 @@ export function reducer(state = initialState, action: Action) {
     case Actions.GET_MATCHING_IRIS_FAIL:
       return state.update("fetchResources", num => num - 1);
     case Actions.GET_MATCHING_IRIS_SUCCESS:
-      return state.update("fetchResources", num => num - 1).set("matchingIris", Immutable.List(action.result))
+      return state.update("fetchResources", num => num - 1).set("matchingIris", Immutable.List(action.result));
     case Actions.TOGGLE_CLASS:
-      return state.setIn(<[keyof StateRecordInterface, string]>['selectedClasses', action.className], action.checked)
+      return state.setIn(<[keyof StateRecordInterface, string]>["selectedClasses", action.className], action.checked);
     default:
       return state;
   }
@@ -181,38 +133,33 @@ export type Action$ = ReduxObservable.ActionsObservable<any>;
 // export type Action$ = ReduxObservable.ActionsObservable<any>;
 export type Store = Redux.Store<GlobalState>;
 export var epics: [(action: Action$, store: Store) => any] = [
-
   /**
    * Do some bookkeeping on which descriptions to remove, and which ones to fetch
    */
   (action$: Action$, store: Store) => {
-    return action$.ofType(Actions.TOGGLE_CLASS)
-      .map((_any:any) => {
-        return getMatchingIris(store.getState())
-    })
-  },
-]
-export function facetsToQuery(state:GlobalState) {
-
-
+    return action$.ofType(Actions.TOGGLE_CLASS).map((_any: any) => {
+      return getMatchingIris(store.getState());
+    });
+  }
+];
+export function facetsToQuery(state: GlobalState) {
   const sparqlBuilder = SparqlBuilder.get(prefixes);
-  sparqlBuilder.vars('?_r')
-  sparqlBuilder.limit(2)
+  sparqlBuilder
+    .vars("?_r")
+    .limit(2)
+    .distinct();
 
   /**
    * Add classes
    */
-   const unions:sparqljs.QueryPattern[] = [];
-   for (const [className, selected] of state.facets.selectedClasses) {
-     if (selected) unions.push({type: 'bgp', triples: [{
-       subject: '?_r',
-       predicate: prefix('rdf', 'type'),
-       object: className
-     }]})
-   }
-   sparqlBuilder.addUnions(unions)
+  sparqlBuilder.hasClasses(
+    ...state.facets.selectedClasses
+      .filter(val => val)
+      .keySeq()
+      .toArray()
+  );
 
-   return sparqlBuilder.toString();
+  return sparqlBuilder.toString();
 
   // var facetPatterns:string[] = [];
   // for (var pred in state.facetFilters) {
@@ -289,24 +236,72 @@ export function facetsToQuery(state:GlobalState) {
   // `
 }
 
-export function toggleClass (className:string, checked:boolean):Action {
+export function toggleClass(className: string, checked: boolean): Action {
   return {
     type: Actions.TOGGLE_CLASS,
     className: className,
     checked: checked
   };
-};
+}
 
-export function getMatchingIris(state:GlobalState):any {
-  console.log('get matching iris')
-    return {
-      types: [Actions.GET_MATCHING_IRIS, Actions.GET_MATCHING_IRIS_SUCCESS, Actions.GET_MATCHING_IRIS_FAIL],
-      promise: (client:ApiClient) => client.req<any, SparqlJson>({
-        sparqlSelect: facetsToQuery(state),
-      }).then((sparql) => {
-        return sparql.getValuesForVar('_r');
-      })
-    };
+export function getMatchingIris(state: GlobalState): any {
+  console.log("get matching iris");
+  return {
+    types: [Actions.GET_MATCHING_IRIS, Actions.GET_MATCHING_IRIS_SUCCESS, Actions.GET_MATCHING_IRIS_FAIL],
+    promise: (client: ApiClient) =>
+      client
+        .req<any, SparqlJson>({
+          sparqlSelect: facetsToQuery(state)
+        })
+        .then(sparql => {
+          return sparql.getValuesForVar("_r");
+        })
+  };
+}
 
+export function getFacetProps(forProp: string) {
+  // const sparqlBuilder = SparqlBuilder.get(prefixes);
+  // sparqlBuilder.distinct();
+  // const facetConf = FACETS[forProp]
+  // if (!facetConf) {
+  //   throw new Error('Could not find facet config for ' + forProp)
+  // }
+  // if (facetConf.facetType === 'multiselect') {
+  //   sparqlBuilder.vars('?_r').limit(100);
+  //
+  //
+  // } else {
+  //   throw new Error('Unknown facet type ' + facetConf.facetType)
+  // }
+  // return {
+  //   types: [Actions.FETCH_FACET_PROPS, Actions.FETCH_FACET_PROPS_SUCCESS, Actions.FETCH_FACET_PROPS_FAIL],
+  //   promise: (client:ApiClient) => client.req<any, SparqlJson>({
+  //     sparqlSelect: facetsToQuery(state),
+  //   }).then((sparql) => {
+  //     return sparql.getValuesForVar('_r');
+  //   })
+  // };
+}
 
-};
+// export function getFacets(state:GlobalState):FacetValues[] {
+//
+//   var props:string[] = [];
+//   for (const [className,selected] of state.facets.selectedClasses) {
+//     if (selected) {
+//       props = props.concat(CLASSES[className].facets)
+//     }
+//   }
+//   props = _.uniq(props);
+//
+//
+//   return props.map(p => {
+//     if (state.facets.facetsValues.has(p)) {
+//       return state.facets.facetsValues(p)
+//     }
+//
+//   })
+//
+//
+//   const facets:FacetValues[] = [];
+//   return facets;
+// }

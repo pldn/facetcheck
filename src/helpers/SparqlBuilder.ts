@@ -1,5 +1,5 @@
 import * as sparqlJs from 'sparqljs'
-
+import {default as prefixes, getAsString, prefix} from 'prefixes'
 
 export default class SparqlBuilder {
   private query:sparqlJs.Query = {
@@ -19,16 +19,29 @@ export default class SparqlBuilder {
     return g.stringify(this.query);
   }
 
-  public distinct() {
-    this.query.distinct = true;
+  public distinct(distinct = true) {
+    this.query.distinct = distinct;
     return this;
   }
   public limit(limit:number) {
     this.query.limit = limit;
+    return this;
   }
   public vars(...vars: string[]) {
     this.query.variables = vars;
     return this;
+  }
+
+  public hasClasses(...classes:string[]) {
+    return this.addUnions(classes.map<sparqlJs.QueryPattern>(c => {
+      return {type: 'bgp',
+      triples: [{
+        subject: '?_r',
+        predicate: prefix('rdf', 'type'),
+        object: c
+      }]
+      }
+    }))
   }
   public addUnions(patterns:sparqlJs.QueryPattern[]) {
     if (patterns && patterns.length) this.query.where.push({

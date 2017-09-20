@@ -13,7 +13,7 @@ import { toggleDsPanelCollapseLg } from "reducers/app";
 import { asyncConnect, IAsyncConnect } from "redux-connect";
 // import ResourceTreeItem from 'helpers/ResourceTreeItem'
 import { GlobalState } from "reducers";
-import {FacetsConfig,toggleClass, CLASSES,FACETS,SelectedClasses,FacetsProps} from 'reducers/facets'
+import {FacetsValues,toggleClass, CLASSES,FACETS,SelectedClasses,FacetsProps} from 'reducers/facets'
 // import {State as SchemaState} from 'reducers/schema'
 // import {getLabel, State as LabelsState} from 'reducers/labels'
 // import { State as FacetState,ActiveClasses,setActiveClasses,getSelectedClasses,setFacetFilter} from 'reducers/facets'
@@ -34,7 +34,7 @@ namespace Panel {
   }
   export interface PropsFromState {
     selectedClasses: SelectedClasses,
-    facetProps: FacetsProps
+    facetsValues: FacetsProps
   }
 
   export interface State {
@@ -63,7 +63,7 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
       // currentClass,
       // subClassRelations
       // labels,facets
-      facetProps,
+      facetsValues,
       selectedClasses
     } = this.props;
     //assuming schema is static
@@ -90,20 +90,6 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
             }).valueSeq().toArray()}
             onChange={this.props.toggleClass}
             />
-          {
-            //   this.state.subclassTree &&
-            // <div className={getClassName(styles.section, styles.staticFacets)}>
-            //   <div className={styles.sectionHeader}>
-            //     Classes
-            //   </div>
-            //   <FacetMultiSelect
-            //   onChange={this.props.setActiveClasses}
-            //   activeValues={facets.activeClasses}
-            //   options={this.getClassOptions()}
-            //   forShape={null}
-            //   />
-            // </div>
-          }
           {
             //   getShapesForClasses(getSelectedClasses(facets),shapes).map((shape) => {
             //   return <Facet
@@ -136,7 +122,7 @@ export default connect<GlobalState, Panel.PropsFromState, Panel.DispatchProps, {
   (state, ownProps) => {
     return {
       selectedClasses: state.facets.selectedClasses,
-      facetProps: state.facets.facetProps
+      facetsValues: state.facets.facetsValues
       // addedDsName: state.datasetManagement.added,
       // datasets: state.datasetManagement.list,
       // fetchingList: state.datasetManagement.fetchingList,
