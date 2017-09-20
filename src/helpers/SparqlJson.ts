@@ -40,9 +40,6 @@ export default class SparqlJson {
     });
   }
   getValuesForVars(...varnames: string[]): string[][] {
-    for (var i = 0; i < varnames.length; i++) {
-      if (this.sparqlJson.head.vars.indexOf(varnames[i]) < 0) return [];
-    }
     return this.sparqlJson.results.bindings.map(binding => {
       var values: string[] = [];
       varnames.forEach(varname => {

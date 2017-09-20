@@ -13,7 +13,7 @@ import * as getClassName from "classnames";
 // import {Account} from 'reducers/accounts'
 import { getPageMetadata } from "reducers/config";
 // import {getSubclassRelations,fetchShapes} from 'reducers/schema'
-import {getMatchingIris} from 'reducers/facets'
+import { getMatchingIris, queueFacetUpdates } from "reducers/facets";
 import { getStatements } from "reducers/statements";
 import { GlobalState } from "reducers";
 
@@ -35,19 +35,7 @@ const styles = require("./style.scss");
 @asyncConnect([
   {
     promise: ({ store: { dispatch, getState } }) => {
-      return dispatch(getMatchingIris(getState()))
-      // return dispatch(getStatements("https://cultureelerfgoed.nl/id/monument/511321"));
-      // return dispatch(getSubclassRelations())
-      //     .then(() => dispatch(getMatchingIris(getState().facets)))
-      //     .then(() => dispatch(fetchShapes(getState().schema.shapes, getState().facets)))
-      //     .then(() => {
-      //       const state:GlobalState = getState();
-      //       const promises:Promise<any>[] = [];
-      //       state.facets.matchingIris.forEach((iri) => {
-      //         if (state.viewer.resourceDescriptions[iri] === undefined) promises.push(dispatch(getResourceDescription(iri)));
-      //       })
-      //       return Promise.all(promises)
-      //     })
+      return Promise.all([dispatch(getMatchingIris(getState())), dispatch(queueFacetUpdates(getState()))]);
     }
   } as IAsyncConnect<any>
 ])

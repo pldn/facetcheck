@@ -22,7 +22,8 @@ export enum Actions {
   TOGGLE_CLASS = "facetcheck/facets/TOGGLE_CLASS" as any,
   FETCH_FACET_PROPS = "facetcheck/facets/FETCH_FACET_PROPS" as any,
   FETCH_FACET_PROPS_SUCCESS = "facetcheck/facets/FETCH_FACET_PROPS_SUCCESS" as any,
-  FETCH_FACET_PROPS_FAIL = "facetcheck/facets/FETCH_FACET_PROPS_FAIL" as any
+  FETCH_FACET_PROPS_FAIL = "facetcheck/facets/FETCH_FACET_PROPS_FAIL" as any,
+  QUEUE_FACET_UPDATE = "facetcheck/facets/QUEUE_FACET_UPDATE" as any
   // GET_FACET_CONFIG = "facetcheck/facets/GET_FACET_CONFIG" as any,
   // GET_FACET_CONFIG_SUCCESS = "facetcheck/facets/GET_FACET_CONFIG_SUCCESS" as any,
   // GET_FACET_CONFIG_FAIL = "facetcheck/facets/GET_FACET_CONFIG_FAIL" as any
@@ -52,21 +53,25 @@ export var CLASSES: { [className: string]: ClassProps } = {
   }
 };
 export type FacetTypes = "multiselect" | "slider" | "multiselectText";
+
 export interface FacetProps {
   iri: string;
   label: string;
-  datatype: string;
+  // datatype: string;
   facetType: FacetTypes;
-  getBgp: (values: string[]) => string;
+  getFacetValues: (iri: string, state: GlobalState) => string;
+  // getFacetFilter: () => {
+  //
+  // }
+  // getBgp: (values: string[]) => string;
 }
 export var FACETS: { [property: string]: FacetProps } = {
   "https://cultureelerfgoed.nl/vocab/province": {
     iri: "https://cultureelerfgoed.nl/vocab/province",
     label: "Provincie",
-    datatype: <string>null,
     facetType: "multiselect",
-    getBgp: (values: string[]) => {
-      return "";
+    getFacetValues: (iri, state) => {
+      return `SELECT DISTINCT ?_value ?_valueLabel ?_maxValue ?_minValue WHERE { ?_r <${iri}> ?_value. ?_value a <http://www.gemeentegeschiedenis.nl/provincie>. OPTIONAL{?_value rdfs:label ?_valueLabel}} LIMIT 100`;
     }
   }
 };
@@ -94,6 +99,7 @@ export var StateRecord = Immutable.Record(
   {
     matchingIris: Immutable.List<string>(),
     fetchResources: 0,
+    updateFacetInfoQueue: Immutable.List<string>(),
     selectedClasses: <SelectedClasses>Immutable.OrderedMap<string, boolean>().withMutations(m => {
       //populate selectedClasses (taken from object here, so no guarantees on sorting)
       for (const c of Object.keys(CLASSES)) {
@@ -112,6 +118,13 @@ export type StateRecordInterface = typeof initialState;
 export interface Action extends GlobalActions<Actions> {
   checked?: boolean;
   className?: string;
+  facetName?: string;
+  result?: {
+    minValue?: string;
+    maxValue?: string;
+    values?: string;
+  };
+  facetQueue?: string[];
 }
 
 export function reducer(state = initialState, action: Action) {
@@ -124,6 +137,23 @@ export function reducer(state = initialState, action: Action) {
       return state.update("fetchResources", num => num - 1).set("matchingIris", Immutable.List(action.result));
     case Actions.TOGGLE_CLASS:
       return state.setIn(<[keyof StateRecordInterface, string]>["selectedClasses", action.className], action.checked);
+    case Actions.QUEUE_FACET_UPDATE:
+      return state.set("updateFacetInfoQueue", Immutable.List(action.facetQueue));
+    case Actions.FETCH_FACET_PROPS:
+      return state.update("updateFacetInfoQueue", list => list.delete(list.indexOf(action.facetName)));
+    case Actions.FETCH_FACET_PROPS_SUCCESS:
+      // return state.updateIn('facetsValues', list => list.delete(list.indexOf(action.facetName)));;
+      return state.update("facetsValues", facet => {
+        return facet.update(action.facetName, new FacetValues(), _vals => {
+          return _vals.withMutations(vals => {
+            vals.set("iri", action.facetName);
+            if (action.result.minValue) vals.set("minValue", action.result.minValue);
+            if (action.result.maxValue) vals.set("maxValue", action.result.maxValue);
+            if (action.result.values) vals.set("values", action.result.values);
+            return vals;
+          });
+        });
+      });
     default:
       return state;
   }
@@ -133,12 +163,16 @@ export type Action$ = ReduxObservable.ActionsObservable<any>;
 // export type Action$ = ReduxObservable.ActionsObservable<any>;
 export type Store = Redux.Store<GlobalState>;
 export var epics: [(action: Action$, store: Store) => any] = [
-  /**
-   * Do some bookkeeping on which descriptions to remove, and which ones to fetch
-   */
   (action$: Action$, store: Store) => {
-    return action$.ofType(Actions.TOGGLE_CLASS).map((_any: any) => {
-      return getMatchingIris(store.getState());
+    return action$.ofType(Actions.TOGGLE_CLASS).map((action: Action) => {
+      store.dispatch(getMatchingIris(store.getState()));
+      store.dispatch(queueFacetUpdates(store.getState(), action.className));
+      return () => {}; //empty action
+    });
+  },
+  (action$: Action$, store: Store) => {
+    return action$.ofType(Actions.QUEUE_FACET_UPDATE).map((action: Action) => {
+      return store.dispatch(getFacetProps(store.getState(), action.facetQueue.shift()));
     });
   }
 ];
@@ -152,12 +186,7 @@ export function facetsToQuery(state: GlobalState) {
   /**
    * Add classes
    */
-  sparqlBuilder.hasClasses(
-    ...state.facets.selectedClasses
-      .filter(val => val)
-      .keySeq()
-      .toArray()
-  );
+  sparqlBuilder.hasClasses(...getSelectedClasses(state));
 
   return sparqlBuilder.toString();
 
@@ -258,29 +287,68 @@ export function getMatchingIris(state: GlobalState): any {
         })
   };
 }
+export function getSelectedClasses(state: GlobalState) {
+  return state.facets.selectedClasses
+    .filter(val => val)
+    .keySeq()
+    .toArray();
+}
 
-export function getFacetProps(forProp: string) {
-  // const sparqlBuilder = SparqlBuilder.get(prefixes);
-  // sparqlBuilder.distinct();
-  // const facetConf = FACETS[forProp]
-  // if (!facetConf) {
-  //   throw new Error('Could not find facet config for ' + forProp)
-  // }
-  // if (facetConf.facetType === 'multiselect') {
-  //   sparqlBuilder.vars('?_r').limit(100);
-  //
-  //
-  // } else {
-  //   throw new Error('Unknown facet type ' + facetConf.facetType)
-  // }
-  // return {
-  //   types: [Actions.FETCH_FACET_PROPS, Actions.FETCH_FACET_PROPS_SUCCESS, Actions.FETCH_FACET_PROPS_FAIL],
-  //   promise: (client:ApiClient) => client.req<any, SparqlJson>({
-  //     sparqlSelect: facetsToQuery(state),
-  //   }).then((sparql) => {
-  //     return sparql.getValuesForVar('_r');
-  //   })
-  // };
+export function queueFacetUpdates(state: GlobalState, ...forClasses: string[]): Action {
+  if (!forClasses || forClasses.length === 0) forClasses = getSelectedClasses(state);
+  var facets: string[] = [];
+  for (const forClass of forClasses) {
+    const classConf = CLASSES[forClass];
+    if (!classConf) {
+      throw new Error("Could not find class config for " + forClass);
+    }
+    facets = facets.concat(classConf.facets);
+  }
+  return {
+    type: Actions.QUEUE_FACET_UPDATE,
+    facetQueue: _.uniq(facets)
+  };
+}
+export function getFacetProps(state: GlobalState, forProp: string): Action {
+  const facetConf = FACETS[forProp];
+  if (!facetConf) {
+    throw new Error("Could not find facet config for " + forProp);
+  }
+
+  const sparqlBuilder = SparqlBuilder.fromQueryString(FACETS[forProp].getFacetValues(forProp, state));
+  sparqlBuilder.distinct();
+  if (facetConf.facetType === "multiselect") {
+    sparqlBuilder.vars("?_value").limit(100);
+  } else {
+    throw new Error("Unknown facet type " + facetConf.facetType);
+  }
+  sparqlBuilder.hasClasses(...getSelectedClasses(state));
+  console.log(sparqlBuilder.toString());
+  return {
+    types: [Actions.FETCH_FACET_PROPS, Actions.FETCH_FACET_PROPS_SUCCESS, Actions.FETCH_FACET_PROPS_FAIL],
+    facetName: forProp,
+    promise: (client: ApiClient) =>
+      client
+        .req<any, SparqlJson>({
+          sparqlSelect: sparqlBuilder.toString()
+        })
+        .then(sparql => {
+          const values: string[] = [];
+          var minValue: string;
+          var maxValue: string;
+          const result = sparql.getValuesForVars("_value", "_minValue", "_maxValue");
+          for (const [_value, _minValue, _maxValue] of result) {
+            if (_value) values.push(_value);
+            if (_minValue) minValue = _minValue;
+            if (_maxValue) maxValue = _maxValue;
+          }
+          return {
+            minValue,
+            maxValue,
+            values
+          };
+        })
+  };
 }
 
 // export function getFacets(state:GlobalState):FacetValues[] {

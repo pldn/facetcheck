@@ -52,8 +52,8 @@ export default class SparqlBuilder {
 
     return this;
   }
-  static fromQueryString(qString:string, prefixes?:sparqlJs.Prefixes) {
-    const parser = new sparqlJs.Parser(prefixes, 'https://triply.cc/base');
+  static fromQueryString(qString:string, _prefixes?:sparqlJs.Prefixes) {
+    const parser = new sparqlJs.Parser({...prefixes, ..._prefixes}, 'https://triply.cc/base');
     return new SparqlBuilder(parser.parse(qString))
   }
   static get(prefixes?:sparqlJs.Prefixes) {
