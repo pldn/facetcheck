@@ -12,7 +12,7 @@ import * as RX from "rxjs";
 import { default as prefixes, getAsString, prefix } from "prefixes";
 import SparqlBuilder from "helpers/SparqlBuilder";
 import * as sparqljs from "sparqljs";
-import {default as SparqlJson, Term as SparqlTerm} from "helpers/SparqlJson";
+import { default as SparqlJson, Term as SparqlTerm } from "helpers/SparqlJson";
 // import {Actions as FacetActions} from './facets'
 //import own dependencies
 export enum Actions {
@@ -24,7 +24,7 @@ export enum Actions {
   FETCH_FACET_PROPS_SUCCESS = "facetcheck/facets/FETCH_FACET_PROPS_SUCCESS" as any,
   FETCH_FACET_PROPS_FAIL = "facetcheck/facets/FETCH_FACET_PROPS_FAIL" as any,
   QUEUE_FACET_UPDATE = "facetcheck/facets/QUEUE_FACET_UPDATE" as any,
-  SET_FACET_VALUE = "facetcheck/facets/SET_FACET_VALUE" as any,
+  SET_FACET_VALUE = "facetcheck/facets/SET_FACET_VALUE" as any
   // GET_FACET_CONFIG = "facetcheck/facets/GET_FACET_CONFIG" as any,
   // GET_FACET_CONFIG_SUCCESS = "facetcheck/facets/GET_FACET_CONFIG_SUCCESS" as any,
   // GET_FACET_CONFIG_FAIL = "facetcheck/facets/GET_FACET_CONFIG_FAIL" as any
@@ -55,8 +55,8 @@ export var CLASSES: { [className: string]: ClassProps } = {
 };
 export type FacetTypes = "multiselect" | "slider" | "multiselectText";
 export interface FacetValue extends Partial<SparqlTerm> {
-  value:string
-  label?:string
+  value: string;
+  label?: string;
 }
 export interface FacetProps {
   iri: string;
@@ -64,6 +64,7 @@ export interface FacetProps {
   // datatype: string;
   facetType: FacetTypes;
   getFacetValues: (iri: string, state: GlobalState) => string;
+  facetToQueryPatterns: (values: FacetValue[] | { minValue: FacetValue; maxValue: FacetValue }) => string[];
   // getFacetFilter: () => {
   //
   // }
@@ -77,12 +78,20 @@ export var FACETS: { [property: string]: FacetProps } = {
     getFacetValues: (iri, state) => {
       return `
       SELECT DISTINCT ?_value ?_valueLabel WHERE {
-        ?_r <${iri}> ?_value. ?_value a <http://www.gemeentegeschiedenis.nl/provincie>.
+        ?_r <${iri}> ?_value.
+        ?_value a <http://www.gemeentegeschiedenis.nl/provincie>.
         OPTIONAL{
           ?_value rdfs:label ?_valueLabel .
           FILTER(datatype(?_valueLabel) = xsd:string)
         }
       } LIMIT 100`;
+    },
+    facetToQueryPatterns: values => {
+      if (values instanceof Array) {
+        return values.map(v => `?_r <https://cultureelerfgoed.nl/vocab/province> <${v.value}> .`)
+      } else {
+        throw new Error("not implemented yet");
+      }
     }
   }
 };
@@ -92,9 +101,9 @@ export interface FacetValuesProps {
   minValue: FacetValue;
   maxValue: FacetValue;
   values: FacetValue[];
-  selectedValues: Immutable.Set<string>,
-  selectedMinValue: string,
-  selectedMaxValue: string
+  selectedValues: Immutable.Set<string>;
+  selectedMinValue: string;
+  selectedMaxValue: string;
 }
 export var FacetValues = Immutable.Record<FacetValuesProps>(
   {
@@ -137,15 +146,14 @@ export interface Action extends GlobalActions<Actions> {
   className?: string;
   facetName?: string;
   result?: {
-
     minValue?: FacetValue;
     maxValue?: FacetValue;
     values?: FacetValue[];
   } & string[];
   facetQueue?: string[];
-  facetValueKey?: string
-  minValue?:string,
-  maxValue?:string
+  facetValueKey?: string;
+  minValue?: string;
+  maxValue?: string;
 }
 
 export function reducer(state = initialState, action: Action) {
@@ -164,14 +172,14 @@ export function reducer(state = initialState, action: Action) {
           return _vals.withMutations(vals => {
             if (action.facetValueKey) {
               if (action.checked) {
-                vals.update('selectedValues', (selected) => selected.add(action.facetValueKey))
+                vals.update("selectedValues", selected => selected.add(action.facetValueKey));
               } else {
-                vals.update('selectedValues', (selected) => selected.remove(action.facetValueKey))
+                vals.update("selectedValues", selected => selected.remove(action.facetValueKey));
               }
             } else {
               //assuming multi-select
-              vals.set('selectedMaxValue', action.maxValue)
-              vals.set('selectedMinValue', action.minValue)
+              vals.set("selectedMaxValue", action.maxValue);
+              vals.set("selectedMinValue", action.minValue);
             }
             return vals;
           });
@@ -203,6 +211,7 @@ export type Action$ = ReduxObservable.ActionsObservable<any>;
 // export type Action$ = ReduxObservable.ActionsObservable<any>;
 export type Store = Redux.Store<GlobalState>;
 export var epics: [(action: Action$, store: Store) => any] = [
+  //update matching iris when classes change
   (action$: Action$, store: Store) => {
     return action$.ofType(Actions.TOGGLE_CLASS).map((action: Action) => {
       store.dispatch(getMatchingIris(store.getState()));
@@ -210,12 +219,22 @@ export var epics: [(action: Action$, store: Store) => any] = [
       return () => {}; //empty action
     });
   },
+  //update matching iris when facets change
+  (action$: Action$, store: Store) => {
+    return action$.ofType(Actions.SET_FACET_VALUE).map((action: Action) => {
+      store.dispatch(getMatchingIris(store.getState()));
+      return () => {}; //empty action
+    });
+  },
+
+  //update facet information
   (action$: Action$, store: Store) => {
     return action$.ofType(Actions.QUEUE_FACET_UPDATE).map((action: Action) => {
       return store.dispatch(getFacetProps(store.getState(), action.facetQueue.shift()));
     });
   }
 ];
+
 export function facetsToQuery(state: GlobalState) {
   const sparqlBuilder = SparqlBuilder.get(prefixes);
   sparqlBuilder
@@ -226,7 +245,50 @@ export function facetsToQuery(state: GlobalState) {
   /**
    * Add classes
    */
-  sparqlBuilder.hasClasses(...getSelectedClasses(state));
+  const selectedClasses = getSelectedClasses(state);
+  sparqlBuilder.hasClasses(...selectedClasses);
+
+  /**
+   * Get facets we might need to integrate in this query
+   */
+  var facetsToCheck: string[] = [];
+  for (const className of selectedClasses) {
+    facetsToCheck = facetsToCheck.concat(CLASSES[className].facets);
+  }
+  facetsToCheck = _.uniq(facetsToCheck).filter(f => {
+    const facetsValues = state.facets.facetsValues.get(f);
+    if (!facetsValues) return false;
+    return !!facetsValues.selectedMaxValue || !!facetsValues.selectedMinValue || !!facetsValues.selectedValues.size;
+  });
+
+  var queryPatterns:sparqljs.QueryPattern[] = [];
+  for (const facetIri of facetsToCheck) {
+    const facetConfig = FACETS[facetIri];
+    const facetsValues = state.facets.facetsValues.get(facetIri);
+    var bgp: string;
+    if (facetsValues.selectedValues.size) {
+      bgp =  '{' + facetConfig.facetToQueryPatterns(facetsValues.values.filter(v => facetsValues.selectedValues.has(v.value)))
+        .map(pattern => {
+          if (pattern.trim()[0] !== '{') {
+            return `{ ${pattern} }`
+          }
+          return pattern
+        })
+        .join(' } UNION {') + '}';
+    } else {
+      //assuming min/max
+      // bgp = facetConfig.facetToQueryPatterns({
+      //   minValue: facetsValues.values.find(v => v.value === facetsValues.selectedMinValue),
+      //   maxValue: facetsValues.values.find(v => v.value === facetsValues.selectedMaxValue)
+      // });
+    }
+    console.log(bgp)
+    queryPatterns = queryPatterns.concat(SparqlBuilder.getQueryPattern(bgp));
+
+
+  }
+
+  sparqlBuilder.addQueryPatterns(queryPatterns)
 
   return sparqlBuilder.toString();
 
@@ -312,33 +374,38 @@ export function toggleClass(className: string, checked: boolean): Action {
     checked: checked
   };
 }
-export function setFacetMultiselectValue(facetProp:string, multiSelectKey: string, checked:boolean): Action {
+export function setFacetMultiselectValue(facetProp: string, multiSelectKey: string, checked: boolean): Action {
   return {
     type: Actions.SET_FACET_VALUE,
     facetName: facetProp,
     facetValueKey: multiSelectKey,
-    checked: checked,
-
+    checked: checked
   };
 }
-export function setFacetsetFacetMinMaxValue(facetProp:string, min: string, max:string): Action {
+export function setFacetsetFacetMinMaxValue(facetProp: string, min: string, max: string): Action {
   return {
     type: Actions.SET_FACET_VALUE,
     facetName: facetProp,
     minValue: min,
-    maxValue:max,
-
+    maxValue: max
   };
 }
 
+var lastExecutedQuery: string;
 export function getMatchingIris(state: GlobalState): any {
   console.log("get matching iris");
+  const query = facetsToQuery(state);
+  if (lastExecutedQuery === query) {
+    //return a no-op. no use executing this query again (I think...)
+    return () => {};
+  }
+  lastExecutedQuery = query;
   return {
     types: [Actions.GET_MATCHING_IRIS, Actions.GET_MATCHING_IRIS_SUCCESS, Actions.GET_MATCHING_IRIS_FAIL],
     promise: (client: ApiClient) =>
       client
         .req<any, SparqlJson>({
-          sparqlSelect: facetsToQuery(state)
+          sparqlSelect: query
         })
         .then(sparql => {
           return sparql.getValuesForVar("_r");
@@ -384,7 +451,6 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
   sparqlBuilder.hasClasses(...getSelectedClasses(state));
   console.log(sparqlBuilder.toString());
 
-
   return {
     types: [Actions.FETCH_FACET_PROPS, Actions.FETCH_FACET_PROPS_SUCCESS, Actions.FETCH_FACET_PROPS_FAIL],
     facetName: forProp,
@@ -402,8 +468,8 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
             if (binding._value) {
               values.push({
                 ...binding._value,
-                label: binding._valueLabel ? binding._valueLabel.value: undefined
-              })
+                label: binding._valueLabel ? binding._valueLabel.value : undefined
+              });
             }
             if (binding._minValue) minValue = binding._minValue;
             if (binding._maxValue) maxValue = binding._maxValue;

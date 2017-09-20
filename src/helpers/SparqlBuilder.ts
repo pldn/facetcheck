@@ -43,6 +43,13 @@ export default class SparqlBuilder {
       }
     }))
   }
+  public addQueryPatterns(patterns: sparqlJs.QueryPattern[]) {
+    if (!patterns || patterns.length <= 0) return this;
+    console.log('before', this.query)
+    this.query.where = this.query.where.concat(patterns);
+    console.log('after', this.query)
+    return this;
+  }
   public addUnions(patterns:sparqlJs.QueryPattern[]) {
     if (patterns && patterns.length) this.query.where.push({
       type: 'union',
@@ -55,6 +62,13 @@ export default class SparqlBuilder {
   static fromQueryString(qString:string, _prefixes?:sparqlJs.Prefixes) {
     const parser = new sparqlJs.Parser({...prefixes, ..._prefixes}, 'https://triply.cc/base');
     return new SparqlBuilder(parser.parse(qString))
+  }
+  static getQueryPattern(bgpString:string, _prefixes?:sparqlJs.Prefixes) {
+    bgpString = bgpString.trim();
+    if (bgpString[0] !== '{') throw new Error(`Expected a BGP clause. Did you forget to enclose the BGP in parenthesis? ('{' and '}'). The string I received: ${bgpString}`)
+    const parser = new sparqlJs.Parser({...prefixes, ..._prefixes}, 'https://triply.cc/base');
+    const parsed = parser.parse(`SELECT * WHERE { ${bgpString} }`)
+    return parsed.where[0]
   }
   static get(prefixes?:sparqlJs.Prefixes) {
     const builder = new SparqlBuilder();
