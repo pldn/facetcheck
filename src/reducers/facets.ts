@@ -44,7 +44,7 @@ export var CLASSES: { [className: string]: ClassProps } = {
     default: true, //default
     iri: "https://cultureelerfgoed.nl/vocab/Monument",
     label: "Monument",
-    facets: ["https://cultureelerfgoed.nl/vocab/province"]
+    facets: ["https://cultureelerfgoed.nl/vocab/province", "http://schema.org/dateCreated"]
   },
   "https://data.pdok.nl/cbs/vocab/Gemeente": {
     default: false, //default
@@ -93,7 +93,28 @@ export var FACETS: { [property: string]: FacetProps } = {
         throw new Error("not implemented yet");
       }
     }
-  }
+  },
+  "http://schema.org/dateCreated": {
+    iri: "http://schema.org/dateCreated",
+    label: "Gemaakt op",
+    facetType: "slider",
+    getFacetValues: (iri, state) => {
+      return `
+      SELECT DISTINCT (MIN(xsd:integer(?value)) as ?_minValue) (MAX(xsd:integer(?value)) as ?_maxValue) WHERE {
+        ?_r <${iri}> ?value.
+        FILTER(strlen(?value) = 4)
+        FILTER(REGEX(?value, '^\\\\d{4}$'))
+
+      } LIMIT 1`;
+    },
+    facetToQueryPatterns: values => {
+      if (values instanceof Array) {
+        return values.map(v => `?_r <https://cultureelerfgoed.nl/vocab/province> <${v.value}> .`)
+      } else {
+        throw new Error("not implemented yet");
+      }
+    }
+  },
 };
 
 export interface FacetValuesProps {
@@ -227,10 +248,22 @@ export var epics: [(action: Action$, store: Store) => any] = [
     });
   },
 
-  //update facet information
+  //update facet information when facets are added to the queue
   (action$: Action$, store: Store) => {
     return action$.ofType(Actions.QUEUE_FACET_UPDATE).map((action: Action) => {
       return store.dispatch(getFacetProps(store.getState(), action.facetQueue.shift()));
+    });
+  },
+  //update facet information when another one finished
+  (action$: Action$, store: Store) => {
+    return action$.ofType(Actions.FETCH_FACET_PROPS_SUCCESS)
+      .filter(() => {
+        return !!store.getState().facets.updateFacetInfoQueue.size
+      }).map((action: Action) => {
+      const state = store.getState();
+      if (state.facets.updateFacetInfoQueue.size) {
+        return store.dispatch(getFacetProps(state, state.facets.updateFacetInfoQueue.first()));
+      }
     });
   }
 ];
@@ -282,7 +315,6 @@ export function facetsToQuery(state: GlobalState) {
       //   maxValue: facetsValues.values.find(v => v.value === facetsValues.selectedMaxValue)
       // });
     }
-    console.log(bgp)
     queryPatterns = queryPatterns.concat(SparqlBuilder.getQueryPattern(bgp));
 
 
@@ -393,7 +425,6 @@ export function setFacetsetFacetMinMaxValue(facetProp: string, min: string, max:
 
 var lastExecutedQuery: string;
 export function getMatchingIris(state: GlobalState): any {
-  console.log("get matching iris");
   const query = facetsToQuery(state);
   if (lastExecutedQuery === query) {
     //return a no-op. no use executing this query again (I think...)
@@ -440,16 +471,18 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
   if (!facetConf) {
     throw new Error("Could not find facet config for " + forProp);
   }
-
+  console.log(FACETS[forProp].getFacetValues(forProp, state))
   const sparqlBuilder = SparqlBuilder.fromQueryString(FACETS[forProp].getFacetValues(forProp, state));
+
   sparqlBuilder.distinct();
   if (facetConf.facetType === "multiselect") {
-    sparqlBuilder.vars("?_value", "?_valueLabel").limit(100);
+    sparqlBuilder.limit(100);
+  } else if (facetConf.facetType === 'slider') {
+    sparqlBuilder.limit(1);
   } else {
     throw new Error("Unknown facet type " + facetConf.facetType);
   }
   sparqlBuilder.hasClasses(...getSelectedClasses(state));
-  console.log(sparqlBuilder.toString());
 
   return {
     types: [Actions.FETCH_FACET_PROPS, Actions.FETCH_FACET_PROPS_SUCCESS, Actions.FETCH_FACET_PROPS_FAIL],

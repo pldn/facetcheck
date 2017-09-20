@@ -45,9 +45,7 @@ export default class SparqlBuilder {
   }
   public addQueryPatterns(patterns: sparqlJs.QueryPattern[]) {
     if (!patterns || patterns.length <= 0) return this;
-    console.log('before', this.query)
     this.query.where = this.query.where.concat(patterns);
-    console.log('after', this.query)
     return this;
   }
   public addUnions(patterns:sparqlJs.QueryPattern[]) {
