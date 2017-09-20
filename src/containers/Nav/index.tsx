@@ -67,8 +67,7 @@ class App extends React.PureComponent<IAppProps, any> {
   }
 
   render() {
-    const { params, notifications, removeNotification } = this.props;
-    const accountLink = "/" + params.account;
+    const {  notifications, removeNotification } = this.props;
 
     const enabledStyles = {
       // 'collapsed': panelCollapsed,

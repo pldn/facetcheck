@@ -2,18 +2,13 @@
 import * as React from "react";
 // import * as Helmet from 'react-helmet';
 import * as _ from "lodash";
-import { Button } from "react-bootstrap";
-import { LinkContainer } from "react-router-bootstrap";
 import { connect, MapDispatchToPropsObject } from "react-redux";
 import * as getClassName from "classnames";
 //import own dependencies
-import { IComponentProps } from "containers";
-import { toggleDsPanelCollapseLg } from "reducers/app";
-// import {getSubclassRelations} from 'reducers/schema'
 import { asyncConnect, IAsyncConnect } from "redux-connect";
 // import ResourceTreeItem from 'helpers/ResourceTreeItem'
 import { GlobalState } from "reducers";
-import {FacetsValues,toggleClass, CLASSES,FACETS,SelectedClasses,FacetsProps} from 'reducers/facets'
+import {FacetsValues,toggleClass, CLASSES,FACETS,SelectedClasses,FacetsProps,setFacetMultiselectValue} from 'reducers/facets'
 // import {State as SchemaState} from 'reducers/schema'
 // import {getLabel, State as LabelsState} from 'reducers/labels'
 // import { State as FacetState,ActiveClasses,setActiveClasses,getSelectedClasses,setFacetFilter} from 'reducers/facets'
@@ -31,6 +26,7 @@ namespace Panel {
   // }
   export interface DispatchProps {
     toggleClass: typeof toggleClass
+    setFacetMultiselectValue: typeof setFacetMultiselectValue
   }
   export interface PropsFromState {
     selectedClasses: SelectedClasses,
@@ -45,36 +41,59 @@ namespace Panel {
 const styles = require("./style.scss");
 
 class Panel extends React.PureComponent<Panel.Props, Panel.State> {
-  //cant use base component that does shallow compare, as the panels won't update with a new active state.
-  //might be because react-router-bootstrap clones its children?
-  state: Panel.State = {
-    subclassTree: null
-  };
 
+  renderFacets() {
+    const {facetsValues} = this.props;
+    return facetsValues.valueSeq().map((facet) => {
+      const iri = facet.iri;
+      const staticFacetConfig = FACETS[iri];
+      if (!staticFacetConfig) throw new Error('Missing facet config for ' + iri);
+      if (staticFacetConfig.facetType === 'multiselect') {
+        return <div key={iri} className={styles.section}>
+          <div className={styles.sectionHeader}>{staticFacetConfig.label}</div>
 
+          <FacetMultiSelect
 
+          options={facet.values.map((val) => {
+            return {
+              value: val.value,
+              label: val.label,
+              checked: facet.selectedValues.has(val.value)
+            }
+          })}
+          onChange={(valueKey, checked) => {
+            this.props.setFacetMultiselectValue(iri, valueKey, checked)
+          }}
+          />
+          </div>
+      }
+      return null;
+
+    })
+    // return null;
+  }
+
+    //   getShapesForClasses(getSelectedClasses(facets),shapes).map((shape) => {
+    //   return <Facet
+    //     key={shape.predicate}
+    //     disabled={refreshingShapes}
+    //     setFacetFilter={this.props.setFacetFilter}
+    //     filter={facets.facetFilters[shape.predicate] }
+    //     label={getLabel(labels, shape.predicate)}
+    //     shape={shape}
+    //     labels={labels}
+    //     />
+    // })
   render() {
     const {
-      // refreshingShapes,
-      // shapes,
-      // className,
-      // toggleDsPanelCollapseLg,
-      // collapsed,
-      // currentClass,
-      // subClassRelations
-      // labels,facets
-      facetsValues,
+
       selectedClasses
     } = this.props;
-    //assuming schema is static
 
     const classNames: { [className: string]: boolean } = {
       [styles.panel]: true,
       [styles.main]: true
-      // [styles.collapsed]: collapsed
     };
-    // const classes = _.keys(facetConfig);
-    // const currentPath = "/" + currentAccount.accountName + '/' + currentDs.name + '/';
     return (
       <div className={getClassName(classNames)}>
 
@@ -90,25 +109,11 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
             }).valueSeq().toArray()}
             onChange={this.props.toggleClass}
             />
-          {
-            //   getShapesForClasses(getSelectedClasses(facets),shapes).map((shape) => {
-            //   return <Facet
-            //     key={shape.predicate}
-            //     disabled={refreshingShapes}
-            //     setFacetFilter={this.props.setFacetFilter}
-            //     filter={facets.facetFilters[shape.predicate] }
-            //     label={getLabel(labels, shape.predicate)}
-            //     shape={shape}
-            //     labels={labels}
-            //     />
-            // })
-          }
+
+
         </div>
-        {/**
-        <Button className={getClassName('resetButton', styles.toggler, styles.footer)} onClick={toggleDsPanelCollapse}>
-          <i className={getClassName({fa:true, 'fa-chevron-left': !collapsed, 'fa-chevron-right': collapsed})}></i>
-        </Button>
-        **/}
+        {this.renderFacets()}
+
       </div>
     );
   }
@@ -136,7 +141,8 @@ export default connect<GlobalState, Panel.PropsFromState, Panel.DispatchProps, {
   },
   //dispatch
   {
-    toggleClass:toggleClass
+    toggleClass:toggleClass,
+    setFacetMultiselectValue: setFacetMultiselectValue
     // addDataset,
     // getDatasets,
     // impersonateTo,

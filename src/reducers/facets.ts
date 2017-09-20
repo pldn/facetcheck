@@ -23,7 +23,8 @@ export enum Actions {
   FETCH_FACET_PROPS = "facetcheck/facets/FETCH_FACET_PROPS" as any,
   FETCH_FACET_PROPS_SUCCESS = "facetcheck/facets/FETCH_FACET_PROPS_SUCCESS" as any,
   FETCH_FACET_PROPS_FAIL = "facetcheck/facets/FETCH_FACET_PROPS_FAIL" as any,
-  QUEUE_FACET_UPDATE = "facetcheck/facets/QUEUE_FACET_UPDATE" as any
+  QUEUE_FACET_UPDATE = "facetcheck/facets/QUEUE_FACET_UPDATE" as any,
+  SET_FACET_VALUE = "facetcheck/facets/SET_FACET_VALUE" as any,
   // GET_FACET_CONFIG = "facetcheck/facets/GET_FACET_CONFIG" as any,
   // GET_FACET_CONFIG_SUCCESS = "facetcheck/facets/GET_FACET_CONFIG_SUCCESS" as any,
   // GET_FACET_CONFIG_FAIL = "facetcheck/facets/GET_FACET_CONFIG_FAIL" as any
@@ -74,7 +75,14 @@ export var FACETS: { [property: string]: FacetProps } = {
     label: "Provincie",
     facetType: "multiselect",
     getFacetValues: (iri, state) => {
-      return `SELECT DISTINCT ?_value ?_valueLabel WHERE { ?_r <${iri}> ?_value. ?_value a <http://www.gemeentegeschiedenis.nl/provincie>. OPTIONAL{?_value rdfs:label ?_valueLabel . FILTER(datatype(?_valueLabel) = xsd:string)}} LIMIT 100`;
+      return `
+      SELECT DISTINCT ?_value ?_valueLabel WHERE {
+        ?_r <${iri}> ?_value. ?_value a <http://www.gemeentegeschiedenis.nl/provincie>.
+        OPTIONAL{
+          ?_value rdfs:label ?_valueLabel .
+          FILTER(datatype(?_valueLabel) = xsd:string)
+        }
+      } LIMIT 100`;
     }
   }
 };
@@ -84,13 +92,19 @@ export interface FacetValuesProps {
   minValue: FacetValue;
   maxValue: FacetValue;
   values: FacetValue[];
+  selectedValues: Immutable.Set<string>,
+  selectedMinValue: string,
+  selectedMaxValue: string
 }
 export var FacetValues = Immutable.Record<FacetValuesProps>(
   {
     iri: null,
     minValue: null,
     maxValue: null,
-    values: null
+    values: null,
+    selectedValues: Immutable.Set<string>(),
+    selectedMinValue: null,
+    selectedMaxValue: null
   },
   "facetValues"
 );
@@ -129,6 +143,9 @@ export interface Action extends GlobalActions<Actions> {
     values?: FacetValue[];
   } & string[];
   facetQueue?: string[];
+  facetValueKey?: string
+  minValue?:string,
+  maxValue?:string
 }
 
 export function reducer(state = initialState, action: Action) {
@@ -141,6 +158,25 @@ export function reducer(state = initialState, action: Action) {
       return state.update("fetchResources", num => num - 1).set("matchingIris", Immutable.List(action.result));
     case Actions.TOGGLE_CLASS:
       return state.setIn(<[keyof StateRecordInterface, string]>["selectedClasses", action.className], action.checked);
+    case Actions.SET_FACET_VALUE:
+      return state.update("facetsValues", facet => {
+        return facet.update(action.facetName, new FacetValues(), _vals => {
+          return _vals.withMutations(vals => {
+            if (action.facetValueKey) {
+              if (action.checked) {
+                vals.update('selectedValues', (selected) => selected.add(action.facetValueKey))
+              } else {
+                vals.update('selectedValues', (selected) => selected.remove(action.facetValueKey))
+              }
+            } else {
+              //assuming multi-select
+              vals.set('selectedMaxValue', action.maxValue)
+              vals.set('selectedMinValue', action.minValue)
+            }
+            return vals;
+          });
+        });
+      });
     case Actions.QUEUE_FACET_UPDATE:
       return state.set("updateFacetInfoQueue", Immutable.List(action.facetQueue));
     case Actions.FETCH_FACET_PROPS:
@@ -274,6 +310,24 @@ export function toggleClass(className: string, checked: boolean): Action {
     type: Actions.TOGGLE_CLASS,
     className: className,
     checked: checked
+  };
+}
+export function setFacetMultiselectValue(facetProp:string, multiSelectKey: string, checked:boolean): Action {
+  return {
+    type: Actions.SET_FACET_VALUE,
+    facetName: facetProp,
+    facetValueKey: multiSelectKey,
+    checked: checked,
+
+  };
+}
+export function setFacetsetFacetMinMaxValue(facetProp:string, min: string, max:string): Action {
+  return {
+    type: Actions.SET_FACET_VALUE,
+    facetName: facetProp,
+    minValue: min,
+    maxValue:max,
+
   };
 }
 
