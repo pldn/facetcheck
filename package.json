@@ -154,6 +154,7 @@
     "proj4": "^2.3.17",
     "proj4leaflet": "^1.0.1",
     "raw-loader": "^0.5.1",
+    "rc-slider": "^8.3.1",
     "react": "^15.5.4",
     "react-a11y": "^0.3.3",
     "react-addons-shallow-compare": "^15.5.2",

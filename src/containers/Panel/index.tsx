@@ -17,7 +17,8 @@ import {
   // DataAdd
   PanelItem,
   FacetMultiSelect,
-  Facet
+  Facet,
+  FacetSlider
 } from "components";
 import {} from "containers";
 
@@ -65,6 +66,12 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
             this.props.setFacetMultiselectValue(iri, valueKey, checked)
           }}
           />
+          </div>
+      } else if(staticFacetConfig.facetType === 'slider') {
+
+        return <div key={iri} className={styles.section}>
+          <div className={styles.sectionHeader}>{staticFacetConfig.label}</div>
+            <FacetSlider min={+facet.minValue.value} max={+facet.maxValue.value} onChange={() => {console.log}}/>
           </div>
       }
       return null;

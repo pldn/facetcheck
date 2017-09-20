@@ -471,7 +471,6 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
   if (!facetConf) {
     throw new Error("Could not find facet config for " + forProp);
   }
-  console.log(FACETS[forProp].getFacetValues(forProp, state))
   const sparqlBuilder = SparqlBuilder.fromQueryString(FACETS[forProp].getFacetValues(forProp, state));
 
   sparqlBuilder.distinct();

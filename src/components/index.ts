@@ -5,6 +5,7 @@ export { default as Ellipsis } from "./Ellipsis";
 export { default as Facet } from "./Facet";
 export { default as FacetDate } from "./FacetDate";
 export { default as FacetMultiSelect } from "./FacetMultiSelect";
+export { default as FacetSlider } from "./FacetSlider";
 export { default as HamburgerBtn } from "./HamburgerBtn";
 export { default as Leaflet } from "./Leaflet";
 export { default as MaterialCheckbox } from "./MaterialCheckbox";
