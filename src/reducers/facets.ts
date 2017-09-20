@@ -12,7 +12,7 @@ import * as RX from "rxjs";
 import { default as prefixes, getAsString, prefix } from "prefixes";
 import SparqlBuilder from "helpers/SparqlBuilder";
 import * as sparqljs from "sparqljs";
-import SparqlJson from "helpers/SparqlJson";
+import {default as SparqlJson, Term as SparqlTerm} from "helpers/SparqlJson";
 // import {Actions as FacetActions} from './facets'
 //import own dependencies
 export enum Actions {
@@ -53,7 +53,10 @@ export var CLASSES: { [className: string]: ClassProps } = {
   }
 };
 export type FacetTypes = "multiselect" | "slider" | "multiselectText";
-
+export interface FacetValue extends Partial<SparqlTerm> {
+  value:string
+  label?:string
+}
 export interface FacetProps {
   iri: string;
   label: string;
@@ -71,16 +74,16 @@ export var FACETS: { [property: string]: FacetProps } = {
     label: "Provincie",
     facetType: "multiselect",
     getFacetValues: (iri, state) => {
-      return `SELECT DISTINCT ?_value ?_valueLabel ?_maxValue ?_minValue WHERE { ?_r <${iri}> ?_value. ?_value a <http://www.gemeentegeschiedenis.nl/provincie>. OPTIONAL{?_value rdfs:label ?_valueLabel}} LIMIT 100`;
+      return `SELECT DISTINCT ?_value ?_valueLabel WHERE { ?_r <${iri}> ?_value. ?_value a <http://www.gemeentegeschiedenis.nl/provincie>. OPTIONAL{?_value rdfs:label ?_valueLabel . FILTER(datatype(?_valueLabel) = xsd:string)}} LIMIT 100`;
     }
   }
 };
 
 export interface FacetValuesProps {
   iri: string;
-  minValue: any;
-  maxValue: any;
-  values: any;
+  minValue: FacetValue;
+  maxValue: FacetValue;
+  values: FacetValue[];
 }
 export var FacetValues = Immutable.Record<FacetValuesProps>(
   {
@@ -120,10 +123,11 @@ export interface Action extends GlobalActions<Actions> {
   className?: string;
   facetName?: string;
   result?: {
-    minValue?: string;
-    maxValue?: string;
-    values?: string;
-  };
+
+    minValue?: FacetValue;
+    maxValue?: FacetValue;
+    values?: FacetValue[];
+  } & string[];
   facetQueue?: string[];
 }
 
@@ -309,6 +313,7 @@ export function queueFacetUpdates(state: GlobalState, ...forClasses: string[]): 
     facetQueue: _.uniq(facets)
   };
 }
+
 export function getFacetProps(state: GlobalState, forProp: string): Action {
   const facetConf = FACETS[forProp];
   if (!facetConf) {
@@ -318,12 +323,14 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
   const sparqlBuilder = SparqlBuilder.fromQueryString(FACETS[forProp].getFacetValues(forProp, state));
   sparqlBuilder.distinct();
   if (facetConf.facetType === "multiselect") {
-    sparqlBuilder.vars("?_value").limit(100);
+    sparqlBuilder.vars("?_value", "?_valueLabel").limit(100);
   } else {
     throw new Error("Unknown facet type " + facetConf.facetType);
   }
   sparqlBuilder.hasClasses(...getSelectedClasses(state));
   console.log(sparqlBuilder.toString());
+
+
   return {
     types: [Actions.FETCH_FACET_PROPS, Actions.FETCH_FACET_PROPS_SUCCESS, Actions.FETCH_FACET_PROPS_FAIL],
     facetName: forProp,
@@ -333,14 +340,19 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
           sparqlSelect: sparqlBuilder.toString()
         })
         .then(sparql => {
-          const values: string[] = [];
-          var minValue: string;
-          var maxValue: string;
-          const result = sparql.getValuesForVars("_value", "_minValue", "_maxValue");
-          for (const [_value, _minValue, _maxValue] of result) {
-            if (_value) values.push(_value);
-            if (_minValue) minValue = _minValue;
-            if (_maxValue) maxValue = _maxValue;
+          const values: FacetValue[] = [];
+          var minValue: FacetValue;
+          var maxValue: FacetValue;
+          const result = sparql.getValues();
+          for (const binding of result) {
+            if (binding._value) {
+              values.push({
+                ...binding._value,
+                label: binding._valueLabel ? binding._valueLabel.value: undefined
+              })
+            }
+            if (binding._minValue) minValue = binding._minValue;
+            if (binding._maxValue) maxValue = binding._maxValue;
           }
           return {
             minValue,

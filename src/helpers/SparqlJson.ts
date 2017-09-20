@@ -39,6 +39,9 @@ export default class SparqlJson {
       return obj;
     });
   }
+  getValues() {
+    return this.sparqlJson.results.bindings;
+  }
   getValuesForVars(...varnames: string[]): string[][] {
     return this.sparqlJson.results.bindings.map(binding => {
       var values: string[] = [];

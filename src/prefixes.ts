@@ -5,6 +5,7 @@ var prefixes = {
   geo: 'http://www.opengis.net/ont/geosparql#',
   dcterms: 'http://purl.org/dc/terms/',
   brt: 'http://brt.basisregistraties.overheid.nl/def/top10nl#',
+  xsd: 'http://www.w3.org/2001/XMLSchema#'
 }
 
 export default prefixes;
