@@ -64,7 +64,7 @@ export interface FacetProps {
   // datatype: string;
   facetType: FacetTypes;
   getFacetValues: (iri: string, state: GlobalState) => string;
-  facetToQueryPatterns: (values: FacetValue[] | { minValue: FacetValue; maxValue: FacetValue }) => string[];
+  facetToQueryPatterns: (values: {values?: FacetValue[], minValue?: FacetValue, maxValue?:FacetValue}) => string[];
   // getFacetFilter: () => {
   //
   // }
@@ -87,10 +87,8 @@ export var FACETS: { [property: string]: FacetProps } = {
       } LIMIT 100`;
     },
     facetToQueryPatterns: values => {
-      if (values instanceof Array) {
-        return values.map(v => `?_r <https://cultureelerfgoed.nl/vocab/province> <${v.value}> .`)
-      } else {
-        throw new Error("not implemented yet");
+      if (values.values instanceof Array) {
+        return values.values.map(v => `?_r <https://cultureelerfgoed.nl/vocab/province> <${v.value}> .`)
       }
     }
   },
@@ -108,10 +106,11 @@ export var FACETS: { [property: string]: FacetProps } = {
       } LIMIT 1`;
     },
     facetToQueryPatterns: values => {
-      if (values instanceof Array) {
-        return values.map(v => `?_r <https://cultureelerfgoed.nl/vocab/province> <${v.value}> .`)
-      } else {
-        throw new Error("not implemented yet");
+      if (values.minValue || values.minValue) {
+        var pattern = `?_r <http://schema.org/dateCreated> ?createdAt . `
+        if (values.minValue) pattern += `FILTER(xsd:integer(?createdAt) >= ${values.minValue}) `
+        if (values.maxValue) pattern += `FILTER(xsd:integer(?createdAt) <= ${values.maxValue}) `
+        return [pattern];
       }
     }
   },
@@ -300,7 +299,7 @@ export function facetsToQuery(state: GlobalState) {
     const facetsValues = state.facets.facetsValues.get(facetIri);
     var bgp: string;
     if (facetsValues.selectedValues.size) {
-      bgp =  '{' + facetConfig.facetToQueryPatterns(facetsValues.values.filter(v => facetsValues.selectedValues.has(v.value)))
+      bgp =  '{' + facetConfig.facetToQueryPatterns({values:facetsValues.values.filter(v => facetsValues.selectedValues.has(v.value))})
         .map(pattern => {
           if (pattern.trim()[0] !== '{') {
             return `{ ${pattern} }`
@@ -310,18 +309,24 @@ export function facetsToQuery(state: GlobalState) {
         .join(' } UNION {') + '}';
     } else {
       //assuming min/max
-      // bgp = facetConfig.facetToQueryPatterns({
-      //   minValue: facetsValues.values.find(v => v.value === facetsValues.selectedMinValue),
-      //   maxValue: facetsValues.values.find(v => v.value === facetsValues.selectedMaxValue)
-      // });
+      const patterns = facetConfig.facetToQueryPatterns(<any>{
+        //first do a check whether selected value is same as the outer-bound value. If it is, there is no use having it in this check
+        minValue: facetsValues.selectedMinValue && facetsValues.selectedMinValue !== facetsValues.minValue.value ? facetsValues.selectedMinValue : undefined,
+        maxValue: facetsValues.selectedMaxValue && facetsValues.selectedMaxValue !== facetsValues.maxValue.value ? facetsValues.selectedMaxValue : undefined,
+      })
+      if (patterns && patterns.length) {
+        bgp = '{' + patterns.join('}{') + '}';
+      }
     }
-    queryPatterns = queryPatterns.concat(SparqlBuilder.getQueryPattern(bgp));
+    if (bgp) {
+      queryPatterns = queryPatterns.concat(SparqlBuilder.getQueryPattern(bgp));
+    }
 
 
   }
 
   sparqlBuilder.addQueryPatterns(queryPatterns)
-
+  console.log(sparqlBuilder.toString())
   return sparqlBuilder.toString();
 
   // var facetPatterns:string[] = [];
@@ -482,7 +487,6 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
     throw new Error("Unknown facet type " + facetConf.facetType);
   }
   sparqlBuilder.hasClasses(...getSelectedClasses(state));
-
   return {
     types: [Actions.FETCH_FACET_PROPS, Actions.FETCH_FACET_PROPS_SUCCESS, Actions.FETCH_FACET_PROPS_FAIL],
     facetName: forProp,
