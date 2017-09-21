@@ -8,7 +8,7 @@ import * as getClassName from "classnames";
 import { asyncConnect, IAsyncConnect } from "redux-connect";
 // import ResourceTreeItem from 'helpers/ResourceTreeItem'
 import { GlobalState } from "reducers";
-import {FacetsValues,toggleClass, CLASSES,FACETS,SelectedClasses,FacetsProps,setFacetMultiselectValue} from 'reducers/facets'
+import {FacetsValues,toggleClass, CLASSES,FACETS,SelectedClasses,FacetsProps,setFacetMultiselectValue,setFacetsetFacetMinMaxValue} from 'reducers/facets'
 // import {State as SchemaState} from 'reducers/schema'
 // import {getLabel, State as LabelsState} from 'reducers/labels'
 // import { State as FacetState,ActiveClasses,setActiveClasses,getSelectedClasses,setFacetFilter} from 'reducers/facets'
@@ -28,6 +28,7 @@ namespace Panel {
   export interface DispatchProps {
     toggleClass: typeof toggleClass
     setFacetMultiselectValue: typeof setFacetMultiselectValue
+    setFacetsetFacetMinMaxValue: typeof setFacetsetFacetMinMaxValue
   }
   export interface PropsFromState {
     selectedClasses: SelectedClasses,
@@ -71,7 +72,10 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
 
         return <div key={iri} className={styles.section}>
           <div className={styles.sectionHeader}>{staticFacetConfig.label}</div>
-            <FacetSlider min={+facet.minValue.value} max={+facet.maxValue.value} onChange={() => {console.log}}/>
+            <FacetSlider
+              min={+facet.minValue.value}
+              max={+facet.maxValue.value}
+              onChange={(min,max) => {this.props.setFacetsetFacetMinMaxValue(iri, ""+min,""+max)}}/>
           </div>
       }
       return null;
@@ -149,7 +153,8 @@ export default connect<GlobalState, Panel.PropsFromState, Panel.DispatchProps, {
   //dispatch
   {
     toggleClass:toggleClass,
-    setFacetMultiselectValue: setFacetMultiselectValue
+    setFacetMultiselectValue: setFacetMultiselectValue,
+    setFacetsetFacetMinMaxValue:setFacetsetFacetMinMaxValue
     // addDataset,
     // getDatasets,
     // impersonateTo,

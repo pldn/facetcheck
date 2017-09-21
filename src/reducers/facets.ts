@@ -96,7 +96,7 @@ export var FACETS: { [property: string]: FacetProps } = {
   },
   "http://schema.org/dateCreated": {
     iri: "http://schema.org/dateCreated",
-    label: "Gemaakt op",
+    label: "Bouwjaar",
     facetType: "slider",
     getFacetValues: (iri, state) => {
       return `
