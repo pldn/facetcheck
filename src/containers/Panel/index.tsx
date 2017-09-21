@@ -8,7 +8,8 @@ import * as getClassName from "classnames";
 import { asyncConnect, IAsyncConnect } from "redux-connect";
 // import ResourceTreeItem from 'helpers/ResourceTreeItem'
 import { GlobalState } from "reducers";
-import {FacetsValues,toggleClass, CLASSES,FACETS,SelectedClasses,FacetsProps,setFacetMultiselectValue,setFacetsetFacetMinMaxValue} from 'reducers/facets'
+import {FacetsValues,toggleClass,SelectedClasses,FacetsProps,setFacetMultiselectValue,setFacetsetFacetMinMaxValue} from 'reducers/facets'
+import {CLASSES,FACETS} from 'facetConf'
 // import {State as SchemaState} from 'reducers/schema'
 // import {getLabel, State as LabelsState} from 'reducers/labels'
 // import { State as FacetState,ActiveClasses,setActiveClasses,getSelectedClasses,setFacetFilter} from 'reducers/facets'
