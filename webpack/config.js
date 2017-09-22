@@ -224,11 +224,16 @@ module.exports = {
         test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
         loader: "file-loader"
       },
+      {
+        test: /\.raw\..*$/,
+        loader: 'raw-loader'
+      },
       // "url" loader works just like "file" loader but it also embeds
       // assets smaller than specified size as data URLs to avoid requests.
       {
         test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
         loader: "url-loader",
+        exclude: /\.raw\./,
         options: {
           limit: 1000,
           mimetype: "image/svg+xml"

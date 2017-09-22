@@ -31,7 +31,8 @@ module.exports = {
     },
     svg: {
       extension: "svg",
-      parser: WebpackIsomorphicToolsPlugin.url_loader_parser
+      exclude: [/\.raw\.svg$/],
+      parser: WebpackIsomorphicToolsPlugin.url_loader_parser,
     },
     // this whole "bootstrap" asset type is only used once in development mode.
     // the only place it's used is the Html.js file
