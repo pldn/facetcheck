@@ -6,6 +6,7 @@ export var CLASSES: { [className: string]: ClassProps } = {
     iri: "https://cultureelerfgoed.nl/vocab/Monument",
     label: "Monument",
     facets: ["https://cultureelerfgoed.nl/vocab/province", "http://schema.org/dateCreated"],
+    // widgets: ['leaflet', 'textarea'],
     resourceDescriptionQuery: function(iri:string) {
       var projectPattern = `
         <${iri}> ?x ?y.
@@ -76,7 +77,7 @@ export var FACETS: { [property: string]: FacetProps } = {
   "https://cultureelerfgoed.nl/vocab/province": {
     iri: "https://cultureelerfgoed.nl/vocab/province",
     label: "Provincie",
-    facetType: "multiselect",
+    facetType: "nlProvinces",
     getFacetValues: (iri, state) => {
       return `
       SELECT DISTINCT ?_value ?_valueLabel WHERE {

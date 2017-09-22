@@ -41,7 +41,7 @@ export interface ClassProps {
   resourceDescriptionQuery: (iri:string)=>string
 }
 
-export type FacetTypes = "multiselect" | "slider" | "multiselectText";
+export type FacetTypes = "multiselect" | "slider" | "nlProvinces" | "multiselectText";
 export interface FacetValue extends Partial<SparqlTerm> {
   value: string;
   label?: string;
@@ -362,7 +362,7 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
   const sparqlBuilder = SparqlBuilder.fromQueryString(FACETS[forProp].getFacetValues(forProp, state));
 
   sparqlBuilder.distinct();
-  if (facetConf.facetType === "multiselect") {
+  if (facetConf.facetType === "multiselect" || facetConf.facetType === "nlProvinces") {
     sparqlBuilder.limit(100);
   } else if (facetConf.facetType === 'slider') {
     sparqlBuilder.limit(1);

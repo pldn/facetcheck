@@ -18,6 +18,7 @@ import {
   // DataAdd
   PanelItem,
   FacetMultiSelect,
+  FacetProvinces,
   Facet,
   FacetSlider
 } from "components";
@@ -78,8 +79,25 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
               max={+facet.maxValue.value}
               onChange={(min,max) => {this.props.setFacetsetFacetMinMaxValue(iri, ""+min,""+max)}}/>
           </div>
+      } else if (staticFacetConfig.facetType === 'nlProvinces') {
+        return <div key={iri} className={styles.section}>
+          <div className={styles.sectionHeader}>{staticFacetConfig.label}</div>
+          <FacetProvinces
+
+          options={facet.values.map((val) => {
+            return {
+              value: val.value,
+              label: val.label,
+              checked: facet.selectedValues.has(val.value)
+            }
+          })}
+          onChange={(valueKey, checked) => {
+            this.props.setFacetMultiselectValue(iri, valueKey, checked)
+          }}
+          />
+          </div>
       }
-      return null;
+      throw new Error('Unsupported facettype ' + staticFacetConfig.facetType)
 
     })
     // return null;

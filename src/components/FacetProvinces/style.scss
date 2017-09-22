@@ -1,26 +1,18 @@
 @import '../../theme/bootstrap.overrides/variables.scss';
-@import '../../containers/Nav/vars.scss';
-.multiSelect {
-  padding-left: 0px;
-  label {
-    white-space:normal;
-    text-align: justify;
+.provinces {
+  width:120px;
+  path:hover {
+    stroke: #002868 !important;
+    stroke-width:2px;
+    stroke-linejoin: round;
+    fill: #002868 !important;
+    cursor: pointer;
   }
-}
-.option {
-
-  // position:relative;
-  &.withBottomSpace {
-    margin-bottom:10px;
+  path:global(.selected) {
+    stroke: #002868 !important;
+    stroke-width:2px;
+    stroke-linejoin: round;
+    fill: #002868 !important;
+    cursor: pointer;
   }
-  &.hasLink label {
-    z-index:1000 !important;//consequence: clicking the label won't change the checkbox
-    //but, this way we can add urls to the labels
-  }
-}
-.counter {
-  color:gray;
-  font-size:80%;
-  // cursor:default;
-  // position:absolute;
 }
