@@ -5,13 +5,69 @@ export var CLASSES: { [className: string]: ClassProps } = {
     default: true, //default
     iri: "https://cultureelerfgoed.nl/vocab/Monument",
     label: "Monument",
-    facets: ["https://cultureelerfgoed.nl/vocab/province", "http://schema.org/dateCreated"]
+    facets: ["https://cultureelerfgoed.nl/vocab/province", "http://schema.org/dateCreated"],
+    resourceDescriptionQuery: function(iri:string) {
+      var projectPattern = `
+        <${iri}> ?x ?y.
+        <${iri}> brt:lijnGeometrie ?brtGeo .
+        ?brtGeo geo:asWKT ?wkt.
+        <${iri}> geo:hasGeometry ?geo .
+        ?geo geo:asWKT ?wkt.
+        ?y rdfs:label ?yLabel .
+
+      `;
+      var selectPattern = `
+      <${iri}> ?x ?y.
+      OPTIONAL {
+        ?y rdfs:label ?yLabel
+      }
+      OPTIONAL {
+        ?x rdfs:label ?xLabel
+      }
+
+      OPTIONAL {
+        <${iri}> geo:hasGeometry ?geo .
+        ?geo geo:asWKT ?wkt.
+      }
+
+      `;
+      return `CONSTRUCT { ${projectPattern} } WHERE { ${selectPattern} } `
+
+    }
   },
   "https://data.pdok.nl/cbs/vocab/Gemeente": {
     default: false, //default
     iri: "https://data.pdok.nl/cbs/vocab/Gemeente",
     label: "Gemeente",
-    facets: ["https://cultureelerfgoed.nl/vocab/province"]
+    facets: ["https://cultureelerfgoed.nl/vocab/province"],
+    resourceDescriptionQuery: function(iri:string) {
+      var projectPattern = `
+        <${iri}> ?x ?y.
+        <${iri}> brt:lijnGeometrie ?brtGeo .
+        ?brtGeo geo:asWKT ?wkt.
+        <${iri}> geo:hasGeometry ?geo .
+        ?geo geo:asWKT ?wkt.
+        ?y rdfs:label ?yLabel .
+
+      `;
+      var selectPattern = `
+      <${iri}> ?x ?y.
+      OPTIONAL {
+        ?y rdfs:label ?yLabel
+      }
+      OPTIONAL {
+        ?x rdfs:label ?xLabel
+      }
+
+      OPTIONAL {
+        <${iri}> geo:hasGeometry ?geo .
+        ?geo geo:asWKT ?wkt.
+      }
+
+      `;
+      return `CONSTRUCT { ${projectPattern} } WHERE { ${selectPattern} } `
+
+    }
   }
 };
 

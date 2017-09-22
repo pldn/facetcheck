@@ -32,12 +32,13 @@ export enum Actions {
 
 export type Statement = N3.Statement;
 export type Statements = Immutable.List<Statement>;
-
+export type FacetToClassMapping = {[iri:string]:string}
 export interface ClassProps {
   default: boolean;
   iri: string;
   label: string;
   facets: string[];
+  resourceDescriptionQuery: (iri:string)=>string
 }
 
 export type FacetTypes = "multiselect" | "slider" | "multiselectText";
@@ -85,7 +86,7 @@ export type SelectedClasses = Immutable.OrderedMap<string, boolean>;
 export type FacetsProps = Immutable.OrderedMap<string, Immutable.Record.Inst<FacetValuesProps>>;
 export var StateRecord = Immutable.Record(
   {
-    matchingIris: Immutable.List<string>(),
+    matchingIris: Immutable.OrderedMap<string,string>(),//matched IRI -> className of that iri
     fetchResources: 0,
     updateFacetInfoQueue: Immutable.List<string>(),
     selectedClasses: <SelectedClasses>Immutable.OrderedMap<string, boolean>().withMutations(m => {
@@ -111,7 +112,8 @@ export interface Action extends GlobalActions<Actions> {
     minValue?: FacetValue;
     maxValue?: FacetValue;
     values?: FacetValue[];
-  } & string[];
+
+  } & FacetToClassMapping
   facetQueue?: string[];
   facetValueKey?: string;
   minValue?: string;
@@ -125,7 +127,7 @@ export function reducer(state = initialState, action: Action) {
     case Actions.GET_MATCHING_IRIS_FAIL:
       return state.update("fetchResources", num => num - 1);
     case Actions.GET_MATCHING_IRIS_SUCCESS:
-      return state.update("fetchResources", num => num - 1).set("matchingIris", Immutable.List(action.result));
+      return state.update("fetchResources", num => num - 1).set("matchingIris", Immutable.OrderedMap<string,string>(<any>action.result));
     case Actions.TOGGLE_CLASS:
       return state.setIn(<[keyof StateRecordInterface, string]>["selectedClasses", action.className], action.checked);
     case Actions.SET_FACET_VALUE:
@@ -212,7 +214,7 @@ export var epics: [(action: Action$, store: Store) => any] = [
 export function facetsToQuery(state: GlobalState) {
   const sparqlBuilder = SparqlBuilder.get(prefixes);
   sparqlBuilder
-    .vars("?_r")
+    .vars("?_r", "?_type")
     .limit(2)
     .distinct();
 
@@ -221,6 +223,10 @@ export function facetsToQuery(state: GlobalState) {
    */
   const selectedClasses = getSelectedClasses(state);
   sparqlBuilder.hasClasses(...selectedClasses);
+  //also return which classes match. That way, we know for this particular IRI how to render it
+  //as one iri can have multiple classes, we have to join this variable with the list of selected classes when
+  //we get the query result
+  sparqlBuilder.addQueryPatterns([{type: 'bgp', triples: [{subject:'?_r', predicate:prefix('rdf','type'), object:'?_type'}]}])
 
   /**
    * Get facets we might need to integrate in this query
@@ -270,80 +276,6 @@ export function facetsToQuery(state: GlobalState) {
   sparqlBuilder.addQueryPatterns(queryPatterns)
   console.log(sparqlBuilder.toString())
   return sparqlBuilder.toString();
-
-  // var facetPatterns:string[] = [];
-  // for (var pred in state.facetFilters) {
-  //   var filter = state.facetFilters[pred];
-  //   if (filter.values) {
-  //     var useFilterComparison = false;
-  //     if (filter.datatype === 'http://www.w3.org/2001/XMLSchema#float') {
-  //       //can't match on lexical form, but have to do comparison in filter
-  //       // is expensive, but now other way
-  //       useFilterComparison = true;
-  //     }
-  //     //consider multiple checked values for a pred 'or's'
-  //     //I.e., for these, we want unions
-  //     facetPatterns.push('{ ' + filter.values.map((val) => {
-  //       if (useFilterComparison) {
-  //         return `
-  //         ?iri <${pred}> ?val .
-  //         FILTER(?val = "${val.value}"^^<${filter.datatype}>)
-  //         `
-  //       } else {
-  //         if (filter.isLiteral) {
-  //           return `
-  //           ?iri <${pred}> "${val.value}"^^<${filter.datatype}> .
-  //           `
-  //         } else {
-  //           return `
-  //           ?iri <${pred}> <${val.value}> .
-  //           `
-  //         }
-  //       }
-  //     }).join('} UNION {') + ' } ');
-  //   }
-  //   if (filter.greaterThan) {
-  //     facetPatterns.push(`
-  //       {?iri <${pred}> ?date . FILTER(?date >= "${filter.greaterThan}"^^<${filter.datatype}> )}`)
-  //   }
-  //   if (filter.lessThan) {
-  //     facetPatterns.push(`
-  //       {?iri <${pred}> ?date . FILTER(?date <= "${filter.lessThan}"^^<${filter.datatype}> )}`)
-  //   }
-  // }
-  // var facetClauses = '';
-  // if (facetPatterns.length) facetClauses = facetPatterns.join('');//don't do union here. conjunctive
-  // var classClauses = getSelectedClasses(state).map(activeClass => {
-  //   // return `?iri rdf:type <${activeClass}> . { ${facetClauses} }`
-  //
-  //
-  //   //NOTE: first facet clauses , then subclass stuff. Is waaaay faster than the other way around
-  //   return `
-  //     { ${facetClauses} }
-  //     ?iri rdf:type <${activeClass}> .
-  //     `
-  //     // BIND(<${activeClass}> as ?forClass)
-  //     // ?anySubClass rdfs:subClassOf* ?forClass .
-  //     // ?iri rdf:type ?anySubClass .
-
-  //
-  // });
-  // if (classClauses.length === 0) {
-  //   throw new Error('empty query')
-  // }
-  // var classClausString = classClauses.join(`} UNION {`)
-  // return `
-  //   ${PREFIXES}
-  //   SELECT ?iri WHERE {
-  //     { ${classClausString} }
-  //   } LIMIT 20
-  // `
-  // return `${getAsString()}
-  // SELECT ?_r WHERE {
-  //   BIND(<https://cultureelerfgoed.nl/id/monument/511321> as ?_r)
-  // } LIMIT 20
-
-  // `
 }
 
 export function toggleClass(className: string, checked: boolean): Action {
@@ -386,7 +318,16 @@ export function getMatchingIris(state: GlobalState): any {
           sparqlSelect: query
         })
         .then(sparql => {
-          return sparql.getValuesForVar("_r");
+          return sparql.getValues().reduce<FacetToClassMapping>(function(result, binding) {
+            if (binding._r) {
+              if (binding._type && getSelectedClasses(state).indexOf(binding._type.value) >= 0) {
+                //it's a type we recognize (i.e., we can render it)
+                result[binding._r.value] = binding._type.value;
+              }
+            }
+            return result;
+          },{})
+
         })
   };
 }
