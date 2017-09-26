@@ -131,7 +131,7 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
 
         {
           this.props.facetsProps.valueSeq().map((facet) => {
-            return <Facet key={facet.iri} facet={facet} setSelectedFacetValue={setSelectedFacetValue} setSelectedObject={setSelectedObject}/>
+            return <Facet key={facet.iri} facet={facet} className={styles.section} setSelectedFacetValue={setSelectedFacetValue} setSelectedObject={setSelectedObject}/>
           })
         }
 
@@ -154,7 +154,7 @@ export default connect<GlobalState, Panel.PropsFromState, Panel.DispatchProps, {
   //dispatch
   {
     toggleClass:toggleClass,
-    setFacetMultiselectValue: setSelectedObject,
-    setFacetsetFacetMinMaxValue:setSelectedObject
+    setSelectedObject: setSelectedObject,
+    setSelectedFacetValue:setSelectedFacetValue
   }
 )(Panel);

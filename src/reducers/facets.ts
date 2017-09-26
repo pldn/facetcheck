@@ -4,11 +4,11 @@ import * as N3 from "n3";
 import * as Immutable from "immutable";
 import ApiClient from "helpers/ApiClient";
 import { GlobalActions, GlobalState } from "reducers";
-import {FACETS,CLASSES, FacetValue} from 'facetConf'
+import { FACETS, CLASSES, FacetValue } from "facetConf";
 import * as ReduxObservable from "redux-observable";
 import * as Redux from "redux";
 import * as RX from "rxjs";
-import {FacetProvinces, FacetMultiSelect, FacetSlider} from 'components'
+import { Facet as FacetComponent } from "components";
 import { default as prefixes, getAsString, prefix } from "prefixes";
 import SparqlBuilder from "helpers/SparqlBuilder";
 import * as sparqljs from "sparqljs";
@@ -32,24 +32,18 @@ export enum Actions {
 
 export type Statement = N3.Statement;
 export type Statements = Immutable.List<Statement>;
-export type FacetToClassMapping = {[iri:string]:string}
-
-
-
-
-
-
+export type IriToClassMapping = { [iri: string]: string };
 
 // export type FacetValueOptions = Partial<FacetProvinces.Options & FacetMultiSelect.Options & FacetSlider.Options>;
 export interface FacetProps {
   iri: string;
-  selectedFacetValues: Immutable.Set<string>
+  selectedFacetValues: Immutable.Set<string>;
 
   //we're never modifying props in these objects, but always overwriting it completely
   //so no use using an immutable model here
-  optionList: FacetValue[],
-  optionObject: {[key:string]: FacetValue | number}
-  selectedObject: {[key:string]:number}
+  optionList: FacetValue[];
+  optionObject: { [key: string]: FacetValue | number };
+  selectedObject: { [key: string]: number };
 }
 export var Facet = Immutable.Record<FacetProps>(
   {
@@ -61,12 +55,12 @@ export var Facet = Immutable.Record<FacetProps>(
   },
   "facetValues"
 );
-export type Facet = Immutable.Record.Inst<FacetProps>
+export type Facet = Immutable.Record.Inst<FacetProps>;
 export type SelectedClasses = Immutable.OrderedMap<string, boolean>;
 
 export var StateRecord = Immutable.Record(
   {
-    matchingIris: Immutable.OrderedMap<string,string>(),//matched IRI -> className of that iri
+    matchingIris: Immutable.OrderedMap<string, string>(), //matched IRI -> className of that iri
     fetchResources: 0,
     updateFacetInfoQueue: Immutable.List<string>(),
     classes: <SelectedClasses>Immutable.OrderedMap<string, boolean>().withMutations(m => {
@@ -83,19 +77,21 @@ export var StateRecord = Immutable.Record(
 export var initialState = new StateRecord();
 
 export type StateRecordInterface = typeof initialState;
-export type FacetsProps = StateRecordInterface['facets'];
+export type FacetsProps = StateRecordInterface["facets"];
 
 export interface Action extends GlobalActions<Actions> {
   className?: string;
   facetName?: string;
   result?: {
-    optionList?:FacetProps['optionList'],
-    optionObject?:FacetProps['optionObject']
-  } & FacetToClassMapping
+    optionList?: FacetProps["optionList"];
+    optionObject?: FacetProps["optionObject"];
+    iriToClassMapping?: IriToClassMapping;
+  };
   facetQueue?: string[];
   facetValueKey?: string;
   checked?: boolean;
-  selectedFacetObject?:FacetProps['selectedObject']
+  selectedFacetObject?: FacetProps["selectedObject"];
+  sync?: boolean;
 }
 
 export function reducer(state = initialState, action: Action) {
@@ -105,7 +101,9 @@ export function reducer(state = initialState, action: Action) {
     case Actions.GET_MATCHING_IRIS_FAIL:
       return state.update("fetchResources", num => num - 1);
     case Actions.GET_MATCHING_IRIS_SUCCESS:
-      return state.update("fetchResources", num => num - 1).set("matchingIris", Immutable.OrderedMap<string,string>(<any>action.result));
+      return state
+        .update("fetchResources", num => num - 1)
+        .set("matchingIris", Immutable.OrderedMap<string, string>(<any>action.result.iriToClassMapping));
     case Actions.TOGGLE_CLASS:
       return state.setIn(<[keyof StateRecordInterface, string]>["classes", action.className], action.checked);
     case Actions.SET_FACET_VALUE:
@@ -119,8 +117,8 @@ export function reducer(state = initialState, action: Action) {
               } else {
                 vals.update("selectedFacetValues", selected => selected.remove(action.facetValueKey));
               }
-            } else if(action.selectedFacetObject) {
-              vals.set('selectedObject', action.selectedFacetObject)
+            } else if (action.selectedFacetObject) {
+              vals.set("selectedObject", action.selectedFacetObject);
             }
             return vals;
           });
@@ -131,16 +129,20 @@ export function reducer(state = initialState, action: Action) {
     case Actions.FETCH_FACET_PROPS:
       return state.update("updateFacetInfoQueue", list => list.delete(list.indexOf(action.facetName)));
     case Actions.FETCH_FACET_PROPS_SUCCESS:
-      // return state.updateIn('facetsValues', list => list.delete(list.indexOf(action.facetName)));;
+      if (action.sync) {
+        //if this is executed in sync (i.e. without sparql request)
+        //we have to make sure the queue gets decremented as well (this is otherwise done before the ajax query is sent)
+        state = state.update("updateFacetInfoQueue", list => list.delete(list.indexOf(action.facetName)));
+      }
       return state.update("facets", facet => {
         return facet.update(action.facetName, new Facet(), _vals => {
           return _vals.withMutations(vals => {
             vals.set("iri", action.facetName);
             if (action.result.optionList) {
-              vals.set('optionList', action.result.optionList)
+              vals.set("optionList", action.result.optionList);
             }
             if (action.result.optionObject) {
-              vals.set('optionObject', action.result.optionObject)
+              vals.set("optionObject", action.result.optionObject);
             }
           });
         });
@@ -178,15 +180,17 @@ export var epics: [(action: Action$, store: Store) => any] = [
   },
   //update facet information when another one finished
   (action$: Action$, store: Store) => {
-    return action$.ofType(Actions.FETCH_FACET_PROPS_SUCCESS)
+    return action$
+      .ofType(Actions.FETCH_FACET_PROPS_SUCCESS)
       .filter(() => {
-        return !!store.getState().facets.updateFacetInfoQueue.size
-      }).map((action: Action) => {
-      const state = store.getState();
-      if (state.facets.updateFacetInfoQueue.size) {
-        return store.dispatch(getFacetProps(state, state.facets.updateFacetInfoQueue.first()));
-      }
-    });
+        return !!store.getState().facets.updateFacetInfoQueue.size;
+      })
+      .map((action: Action) => {
+        const state = store.getState();
+        if (state.facets.updateFacetInfoQueue.size) {
+          return store.dispatch(getFacetProps(state, state.facets.updateFacetInfoQueue.first()));
+        }
+      });
   }
 ];
 
@@ -205,7 +209,9 @@ export function facetsToQuery(state: GlobalState) {
   //also return which classes match. That way, we know for this particular IRI how to render it
   //as one iri can have multiple classes, we have to join this variable with the list of selected classes when
   //we get the query result
-  sparqlBuilder.addQueryPatterns([{type: 'bgp', triples: [{subject:'?_r', predicate:prefix('rdf','type'), object:'?_type'}]}])
+  sparqlBuilder.addQueryPatterns([
+    { type: "bgp", triples: [{ subject: "?_r", predicate: prefix("rdf", "type"), object: "?_type" }] }
+  ]);
 
   /**
    * Get facets we might need to integrate in this query
@@ -220,36 +226,40 @@ export function facetsToQuery(state: GlobalState) {
     return !!_.size(facetsValues.selectedObject) || !!facetsValues.selectedFacetValues.size;
   });
 
-  var queryPatterns:sparqljs.QueryPattern[] = [];
+  var queryPatterns: sparqljs.QueryPattern[] = [];
   for (const facetIri of facetsToCheck) {
     const facetConfig = FACETS[facetIri];
     const facetsValues = state.facets.facets.get(facetIri);
-    var bgp = '';
+    var bgp = "";
     if (facetsValues.selectedFacetValues.size) {
-      bgp +=  '{' + facetConfig.facetToQueryPatterns({values:facetsValues.optionList.filter(v => facetsValues.selectedFacetValues.has(v.value))})
-        .map(pattern => {
-          if (pattern.trim()[0] !== '{') {
-            return `{ ${pattern} }`
-          }
-          return pattern
-        })
-        .join(' } UNION {') + '}';
+      bgp +=
+        "{" +
+        facetConfig
+          .facetToQueryPatterns(
+             facetsValues.optionList.filter(v => facetsValues.selectedFacetValues.has(v.value))
+          )
+          .map(pattern => {
+            if (pattern.trim()[0] !== "{") {
+              return `{ ${pattern} }`;
+            }
+            return pattern;
+          })
+          .join(" } UNION {") +
+        "}";
     } else {
       //just pass the object
-      const patterns = facetConfig.facetToQueryPatterns(facetsValues.selectedObject)
+      const patterns = facetConfig.facetToQueryPatterns(facetsValues.selectedObject);
       if (patterns && patterns.length) {
-        bgp += '{' + patterns.join('}{') + '}';
+        bgp += "{" + patterns.join("}{") + "}";
       }
     }
     if (bgp && bgp.length) {
       queryPatterns = queryPatterns.concat(SparqlBuilder.getQueryPattern(bgp));
     }
-
-
   }
 
-  sparqlBuilder.addQueryPatterns(queryPatterns)
-  console.log(sparqlBuilder.toString())
+  sparqlBuilder.addQueryPatterns(queryPatterns);
+  console.log(sparqlBuilder.toString());
   return sparqlBuilder.toString();
 }
 
@@ -272,7 +282,7 @@ export function setSelectedFacetValue(facetProp: string, key: string, checked: b
     checked: checked
   };
 }
-export function setSelectedObject(facetProp: string, facetObject:FacetProps['selectedObject']): Action {
+export function setSelectedObject(facetProp: string, facetObject: FacetProps["selectedObject"]): Action {
   return {
     type: Actions.SET_FACET_VALUE,
     facetName: facetProp,
@@ -296,16 +306,17 @@ export function getMatchingIris(state: GlobalState): any {
           sparqlSelect: query
         })
         .then(sparql => {
-          return sparql.getValues().reduce<FacetToClassMapping>(function(result, binding) {
-            if (binding._r) {
-              if (binding._type && getSelectedClasses(state).indexOf(binding._type.value) >= 0) {
-                //it's a type we recognize (i.e., we can render it)
-                result[binding._r.value] = binding._type.value;
+          return {
+            facetToClassMapping: sparql.getValues().reduce<IriToClassMapping>(function(result, binding) {
+              if (binding._r) {
+                if (binding._type && getSelectedClasses(state).indexOf(binding._type.value) >= 0) {
+                  //it's a type we recognize (i.e., we can render it)
+                  result[binding._r.value] = binding._type.value;
+                }
               }
-            }
-            return result;
-          },{})
-
+              return result;
+            }, {})
+          };
         })
   };
 }
@@ -337,16 +348,32 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
   if (!facetConf) {
     throw new Error("Could not find facet config for " + forProp);
   }
-  const sparqlBuilder = SparqlBuilder.fromQueryString(FACETS[forProp].getFacetValues(forProp));
-
-  sparqlBuilder.distinct();
-  if (facetConf.facetType === "multiselect" || facetConf.facetType === "nlProvinces") {
-    sparqlBuilder.limit(100);
-  } else if (facetConf.facetType === 'slider') {
-    sparqlBuilder.limit(1);
-  } else {
-    throw new Error("Unknown facet type " + facetConf.facetType);
+  if (facetConf.facetValues) {
+    //options are set directly, no need to fetch the options via sparql
+    if (Array.isArray(facetConf.facetValues)) {
+      return {
+        type: Actions.FETCH_FACET_PROPS_SUCCESS,
+        result: {
+          optionList: facetConf.facetValues
+        },
+        sync: true,
+        facetName: facetConf.iri
+      };
+    } else {
+      return {
+        type: Actions.FETCH_FACET_PROPS_SUCCESS,
+        result: {
+          optionObject: facetConf.facetValues
+        },
+        sync: true,
+        facetName: facetConf.iri
+      };
+    }
   }
+  const sparqlBuilder = SparqlBuilder.fromQueryString(FACETS[forProp].getFacetValuesQuery(forProp));
+  const facetComponent = FacetComponent.getFacetFromString(facetConf.facetType);
+  sparqlBuilder.distinct();
+  facetComponent.prepareOptionsQuery(sparqlBuilder);
   sparqlBuilder.hasClasses(...getSelectedClasses(state));
   return {
     types: [Actions.FETCH_FACET_PROPS, Actions.FETCH_FACET_PROPS_SUCCESS, Actions.FETCH_FACET_PROPS_FAIL],
@@ -357,25 +384,16 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
           sparqlSelect: sparqlBuilder.toString()
         })
         .then(sparql => {
-          const values: FacetValue[] = [];
-          var minValue: FacetValue;
-          var maxValue: FacetValue;
-          const result = sparql.getValues();
-          for (const binding of result) {
-            if (binding._value) {
-              values.push({
-                ...binding._value,
-                label: binding._valueLabel ? binding._valueLabel.value : undefined
-              });
-            }
-            if (binding._minValue) minValue = binding._minValue;
-            if (binding._maxValue) maxValue = binding._maxValue;
+          const opts = facetComponent.getOptionsForQueryResult(sparql);
+          if (Array.isArray(opts)) {
+            return {
+              optionList: opts
+            };
+          } else {
+            return {
+              optionObject: opts
+            };
           }
-          return {
-            minValue,
-            maxValue,
-            values
-          };
         })
   };
 }

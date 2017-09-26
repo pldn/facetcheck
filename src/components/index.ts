@@ -3,7 +3,6 @@
 //import own dependencies
 export { default as Ellipsis } from "./Ellipsis";
 export { default as Facet } from "./Facet";
-export { default as FacetDate } from "./FacetDate";
 export { default as FacetMultiSelect } from "./FacetMultiSelect";
 export { default as FacetProvinces } from "./FacetProvinces";
 export { default as FacetSlider } from "./FacetSlider";

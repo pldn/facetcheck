@@ -4,10 +4,12 @@ import * as _ from "lodash";
 // import * as getClassName from "classnames";
 import {Facet} from 'components'
 import {Facet as GenericFacetProps} from 'reducers/facets'
-import {FACETS} from 'facetConf'
+import {FACETS, FacetValue} from 'facetConf'
 const Slider = require('rc-slider');
 const createSliderWithTooltip = Slider.createSliderWithTooltip;
 const Range = createSliderWithTooltip(Slider.Range);
+import SparqlJson from 'helpers/SparqlJson'
+import SparqlBuilder from 'helpers/SparqlBuilder'
 namespace FacetSlider {
   //Interface that extends the generic selectedObject from the facet reducer
   export interface Options {
@@ -16,7 +18,8 @@ namespace FacetSlider {
     [key:string]:number
   }
   export interface FacetProps extends GenericFacetProps {
-    selectedObject: Options
+    selectedObject: Options,
+    optionObject: Options
   }
   export interface Props extends Facet.Props {
     facet: FacetProps
@@ -29,10 +32,26 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, any> {
   static shouldRender(props:Facet.Props) {
     return FACETS[props.facet.iri].facetType === 'slider'
   }
+  static prepareOptionsQuery(sparqlBuilder:SparqlBuilder) {
+    return sparqlBuilder.limit(1);
+  }
+  static getOptionsForQueryResult(sparql:SparqlJson):FacetSlider.Options {
+    var minValue: number;
+    var maxValue: number;
+    const result = sparql.getValues();
+    for (const binding of result) {
+      if (binding._min) minValue = +binding._min.value;
+      if (binding._max) maxValue = +binding._max.value;
+    }
+    return {
+      min: minValue,
+      max: maxValue
+    };
+  }
   render() {
     const {facet} = this.props
-    if (!facet.selectedObject) return null
-    const {min,max} = facet.selectedObject;
+    if (!facet.optionObject) return null
+    const {min,max} = facet.optionObject;
     return <div className={styles.range}>
       <Range
         min={min}

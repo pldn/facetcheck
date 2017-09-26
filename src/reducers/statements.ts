@@ -7,7 +7,7 @@ import { GlobalActions } from "reducers";
 import {default as prefixes, getAsString} from 'prefixes'
 const urlParse = require("url-parse");
 import Tree from 'helpers/Tree'
-import {Actions as FacetsActions,FacetToClassMapping} from './facets'
+import {Actions as FacetsActions,IriToClassMapping, Action as FacetAction} from './facets'
 import * as ReduxObservable from "redux-observable";
 import * as Redux from "redux";
 import {GlobalState} from './'
@@ -43,7 +43,7 @@ export type ResourceDescriptions = Immutable.OrderedMap<string, Statements>;
 export interface Action extends GlobalActions<Actions> {
   forIri?: string;
   toRemove?:string[],
-  toFetch?:FacetToClassMapping
+  toFetch?:IriToClassMapping
 }
 
 export function reducer(state = initialState, action: Action) {
@@ -83,14 +83,16 @@ export var epics: [(action: Action$, store: Store) => any] = [
    */
   (action$: Action$, store: Store) => {
     return action$.ofType(FacetsActions.GET_MATCHING_IRIS_SUCCESS)
-      .map(action => action.result)
-      .map((matches:FacetToClassMapping) => {
+      .map((action:FacetAction) => action.result)
+      .filter(result => !!result.iriToClassMapping)
+      .map((result) => {
+        const matches = result.iriToClassMapping;
         const matchingIris = _.keys(matches);
         const existingStatements = store.getState().statements.resourceDescriptions.keySeq().toArray();
         const toRemove = _.difference(existingStatements, matchingIris);
         const toFetch = matchingIris.filter(s => {
           return existingStatements.indexOf(s) < 0;
-        }).reduce<FacetToClassMapping>(function(result, matchingIri) {
+        }).reduce<IriToClassMapping>(function(result, matchingIri) {
           result[matchingIri] = matches[matchingIri]
           return result;
         },{});
@@ -102,8 +104,8 @@ export var epics: [(action: Action$, store: Store) => any] = [
   (action$: Action$, store: Store) => {
     return action$.ofType(Actions.MARK_FOR_FETCHING_OR_DELETION)
       .map(action => action.toFetch)
-      .filter((toFetch:FacetToClassMapping) => !_.isEmpty(toFetch))
-      .map((toFetch:FacetToClassMapping) => {
+      .filter((toFetch:IriToClassMapping) => !_.isEmpty(toFetch))
+      .map((toFetch:IriToClassMapping) => {
         const matchingIri = _.keys(toFetch)[0];
         const className = toFetch[matchingIri];
         return getStatements(matchingIri,className)
@@ -124,7 +126,7 @@ export var epics: [(action: Action$, store: Store) => any] = [
   }
 ]
 
-export function markForFetchingOrDeletion(toRemove:string[], toFetch:FacetToClassMapping):Action {
+export function markForFetchingOrDeletion(toRemove:string[], toFetch:IriToClassMapping):Action {
   return {
     type: Actions.MARK_FOR_FETCHING_OR_DELETION,
     toRemove,

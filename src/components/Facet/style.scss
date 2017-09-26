@@ -1,11 +1,12 @@
 @import '../../theme/bootstrap.overrides/variables.scss';
 @import '../../containers/Nav/vars.scss';
-.facet {
-  padding-left: 10px;
-  margin-top: 5px;
-  padding-top: 5px;
-  border-top:2px solid #e4e4e4;
-}
-.disabled {
-  background:rgba(0,0,0,0.5);
+.facetHeader {
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 24px;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  font-weight: bold;
+  height: 32px;
+  flex-shrink: 0;
 }
