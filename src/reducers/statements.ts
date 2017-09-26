@@ -86,6 +86,7 @@ export var epics: [(action: Action$, store: Store) => any] = [
       .map((action:FacetAction) => action.result)
       .filter(result => !!result.iriToClassMapping)
       .map((result) => {
+        console.log('in epic', result)
         const matches = result.iriToClassMapping;
         const matchingIris = _.keys(matches);
         const existingStatements = store.getState().statements.resourceDescriptions.keySeq().toArray();

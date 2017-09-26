@@ -232,25 +232,16 @@ export function facetsToQuery(state: GlobalState) {
     const facetsValues = state.facets.facets.get(facetIri);
     var bgp = "";
     if (facetsValues.selectedFacetValues.size) {
-      bgp +=
-        "{" +
-        facetConfig
-          .facetToQueryPatterns(
-             facetsValues.optionList.filter(v => facetsValues.selectedFacetValues.has(v.value))
-          )
-          .map(pattern => {
-            if (pattern.trim()[0] !== "{") {
-              return `{ ${pattern} }`;
-            }
-            return pattern;
-          })
-          .join(" } UNION {") +
-        "}";
+      const pattern = facetConfig
+        .facetToQueryPatterns(
+           facetsValues.optionList.filter(v => facetsValues.selectedFacetValues.has(v.value))
+        );
+      if (pattern && pattern.length) bgp += `{ ${pattern} }`
     } else {
       //just pass the object
-      const patterns = facetConfig.facetToQueryPatterns(facetsValues.selectedObject);
-      if (patterns && patterns.length) {
-        bgp += "{" + patterns.join("}{") + "}";
+      const pattern = facetConfig.facetToQueryPatterns(facetsValues.selectedObject);
+      if (pattern && pattern.length) {
+        bgp += "{" + pattern + "}";
       }
     }
     if (bgp && bgp.length) {
@@ -307,14 +298,14 @@ export function getMatchingIris(state: GlobalState): any {
         })
         .then(sparql => {
           return {
-            facetToClassMapping: sparql.getValues().reduce<IriToClassMapping>(function(result, binding) {
+            iriToClassMapping: sparql.getValues().reduce<IriToClassMapping>(function(mapping, binding) {
               if (binding._r) {
                 if (binding._type && getSelectedClasses(state).indexOf(binding._type.value) >= 0) {
                   //it's a type we recognize (i.e., we can render it)
-                  result[binding._r.value] = binding._type.value;
+                  mapping[binding._r.value] = binding._type.value;
                 }
               }
-              return result;
+              return mapping;
             }, {})
           };
         })

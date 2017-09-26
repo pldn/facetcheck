@@ -9,7 +9,7 @@ export interface FacetConfig {
   facetType: FacetTypes;
   getFacetValuesQuery?: (iri: string) => string;
   facetValues?: FacetProps["optionList"] | FacetProps["optionObject"];
-  facetToQueryPatterns: (values:FacetProps["optionList"] | FacetProps["optionObject"]) => string[];
+  facetToQueryPatterns: (values:FacetProps["optionList"] | FacetProps["optionObject"]) => string
   // getFacetFilter: () => {
   //
   // }
@@ -121,22 +121,10 @@ export var FACETS: { [property: string]: FacetConfig } = {
       "_z-holland": { value: "http://www.gemeentegeschiedenis.nl/provincie/Zuid-Holland", label: "Zuid-holland" }
     },
     facetToQueryPatterns: values => {
-      if (values instanceof Array) {
-        return values.map(v => `?_r <https://cultureelerfgoed.nl/vocab/province> <${v.value}> .`)
+      if (values instanceof Array && values.length) {
+        return values.map(v => `?_r <https://cultureelerfgoed.nl/vocab/province> <${v.value}> .`).join('} UNION {')
       }
     }
-    // facetToQueryPatterns: values => {
-    //   //TODO
-    //   if (Array.isArray(values)) {
-    //     return null;
-    //   }
-    //   if (values.min || values.max) {
-    //     var pattern = `?_r <http://schema.org/dateCreated> ?createdAt . `;
-    //     if (values.min) pattern += `FILTER(xsd:integer(?createdAt) >= ${values.min}) `;
-    //     if (values.max) pattern += `FILTER(xsd:integer(?createdAt) <= ${values.max}) `;
-    //     return [pattern];
-    //   }
-    // }
   },
   "http://schema.org/dateCreated": {
     iri: "http://schema.org/dateCreated",
@@ -156,10 +144,14 @@ export var FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (values.min || values.max) {
-        var pattern = `?_r <http://schema.org/dateCreated> ?createdAt . `;
+        var pattern = `?_r <http://schema.org/dateCreated> ?createdAt .
+        FILTER(strlen(?createdAt) = 4)
+        FILTER(REGEX(?createdAt, '^\\\\d{4}$'))
+        `;
+
         if (values.min) pattern += `FILTER(xsd:integer(?createdAt) >= ${values.min}) `;
         if (values.max) pattern += `FILTER(xsd:integer(?createdAt) <= ${values.max}) `;
-        return [pattern];
+        return pattern;
       }
     }
   }
