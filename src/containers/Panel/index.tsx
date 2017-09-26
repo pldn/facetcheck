@@ -6,21 +6,12 @@ import { connect, MapDispatchToPropsObject } from "react-redux";
 import * as getClassName from "classnames";
 //import own dependencies
 import { asyncConnect, IAsyncConnect } from "redux-connect";
-// import ResourceTreeItem from 'helpers/ResourceTreeItem'
+import Checkbox from 'react-toolbox/lib/checkbox';
 import { GlobalState } from "reducers";
-import {FacetsValues,toggleClass,SelectedClasses,FacetsProps,setFacetMultiselectValue,setFacetsetFacetMinMaxValue} from 'reducers/facets'
+import {toggleClass,SelectedClasses,FacetsProps,setSelectedFacetValue,setSelectedObject} from 'reducers/facets'
 import {CLASSES,FACETS} from 'facetConf'
-// import {State as SchemaState} from 'reducers/schema'
-// import {getLabel, State as LabelsState} from 'reducers/labels'
-// import { State as FacetState,ActiveClasses,setActiveClasses,getSelectedClasses,setFacetFilter} from 'reducers/facets'
-// import { Shapes,getShapesForClasses} from 'reducers/schema'
 import {
-  // DataAdd
-  PanelItem,
-  FacetMultiSelect,
-  FacetProvinces,
   Facet,
-  FacetSlider
 } from "components";
 import {} from "containers";
 
@@ -29,12 +20,12 @@ namespace Panel {
   // }
   export interface DispatchProps {
     toggleClass: typeof toggleClass
-    setFacetMultiselectValue: typeof setFacetMultiselectValue
-    setFacetsetFacetMinMaxValue: typeof setFacetsetFacetMinMaxValue
+    setSelectedFacetValue: typeof setSelectedFacetValue
+    setSelectedObject: typeof setSelectedObject
   }
   export interface PropsFromState {
     selectedClasses: SelectedClasses,
-    facetsValues: FacetsProps
+    facetsProps: FacetsProps
   }
 
   export interface State {
@@ -47,102 +38,102 @@ const styles = require("./style.scss");
 class Panel extends React.PureComponent<Panel.Props, Panel.State> {
 
   renderFacets() {
-    const {facetsValues} = this.props;
-    return facetsValues.valueSeq().map((facet) => {
-      const iri = facet.iri;
-      const staticFacetConfig = FACETS[iri];
-      if (!staticFacetConfig) throw new Error('Missing facet config for ' + iri);
-      if (staticFacetConfig.facetType === 'multiselect') {
-        return <div key={iri} className={styles.section}>
-          <div className={styles.sectionHeader}>{staticFacetConfig.label}</div>
-
-          <FacetMultiSelect
-
-          options={facet.values.map((val) => {
-            return {
-              value: val.value,
-              label: val.label,
-              checked: facet.selectedValues.has(val.value)
-            }
-          })}
-          onChange={(valueKey, checked) => {
-            this.props.setFacetMultiselectValue(iri, valueKey, checked)
-          }}
-          />
-          </div>
-      } else if(staticFacetConfig.facetType === 'slider') {
-
-        return <div key={iri} className={styles.section}>
-          <div className={styles.sectionHeader}>{staticFacetConfig.label}</div>
-            <FacetSlider
-              min={+facet.minValue.value}
-              max={+facet.maxValue.value}
-              onChange={(min,max) => {this.props.setFacetsetFacetMinMaxValue(iri, ""+min,""+max)}}/>
-          </div>
-      } else if (staticFacetConfig.facetType === 'nlProvinces') {
-        return <div key={iri} className={styles.section}>
-          <div className={styles.sectionHeader}>{staticFacetConfig.label}</div>
-          <FacetProvinces
-
-          options={facet.values.map((val) => {
-            return {
-              value: val.value,
-              label: val.label,
-              checked: facet.selectedValues.has(val.value)
-            }
-          })}
-          onChange={(valueKey, checked) => {
-            this.props.setFacetMultiselectValue(iri, valueKey, checked)
-          }}
-          />
-          </div>
-      }
-      throw new Error('Unsupported facettype ' + staticFacetConfig.facetType)
-
-    })
+    return
+    //
+    // const {facetsValues} = this.props;
+    // return facetsValues.valueSeq().map((facet) => {
+    //   const iri = facet.iri;
+    //   const staticFacetConfig = FACETS[iri];
+    //   if (!staticFacetConfig) throw new Error('Missing facet config for ' + iri);
+    //   if (staticFacetConfig.facetType === 'multiselect') {
+    //     return <div key={iri} className={styles.section}>
+    //       <div className={styles.sectionHeader}>{staticFacetConfig.label}</div>
+    //
+    //       <FacetMultiSelect
+    //
+    //       options={}
+    //       onChange={(valueKey, checked) => {
+    //         this.props.setFacetMultiselectValue(iri, valueKey, checked)
+    //       }}
+    //       />
+    //       </div>
+    //   } else if(staticFacetConfig.facetType === 'slider') {
+    //
+    //     return <div key={iri} className={styles.section}>
+    //       <div className={styles.sectionHeader}>{staticFacetConfig.label}</div>
+    //         <FacetSlider
+    //           options={{
+    //             min: +facet.options.min,
+    //             max:+facet.options.max
+    //           }}
+    //           onChange={(min,max) => {this.props.setFacetsetFacetMinMaxValue(iri, ""+min,""+max)}}/>
+    //       </div>
+    //   } else if (staticFacetConfig.facetType === 'nlProvinces') {
+    //     return <div key={iri} className={styles.section}>
+    //       <div className={styles.sectionHeader}>{staticFacetConfig.label}</div>
+    //       <FacetProvinces
+    //
+    //       options={facet.options.map((val) => {
+    //         return {
+    //           value: val.value,
+    //           label: val.label,
+    //           checked: facet.selectedValues.has(val.value)
+    //         }
+    //       })}
+    //       onChange={(valueKey, checked) => {
+    //         this.props.setFacetMultiselectValue(iri, valueKey, checked)
+    //       }}
+    //       />
+    //       </div>
+    //   }
+    //   throw new Error('Unsupported facettype ' + staticFacetConfig.facetType)
+    //
+    // })
     // return null;
   }
 
-    //   getShapesForClasses(getSelectedClasses(facets),shapes).map((shape) => {
-    //   return <Facet
-    //     key={shape.predicate}
-    //     disabled={refreshingShapes}
-    //     setFacetFilter={this.props.setFacetFilter}
-    //     filter={facets.facetFilters[shape.predicate] }
-    //     label={getLabel(labels, shape.predicate)}
-    //     shape={shape}
-    //     labels={labels}
-    //     />
-    // })
+
+  renderClasses() {
+    return <div className={styles.section}>
+      <div className={styles.sectionHeader}>Classes</div>
+      {
+      this.props.selectedClasses.map((val,key) => {
+        const CLASS = CLASSES[key]
+          return <Checkbox
+            label={CLASS.label}
+            checked={val}
+            key={key}
+            onChange={(checked:boolean) => {
+              this.props.toggleClass(key, checked)
+            }}
+            />
+      }).valueSeq().toArray()
+      }
+
+
+
+    </div>
+  }
   render() {
     const {
-
-      selectedClasses
+      setSelectedObject,
+      setSelectedFacetValue
     } = this.props;
 
     const classNames: { [className: string]: boolean } = {
       [styles.panel]: true,
       [styles.main]: true
     };
+
     return (
       <div className={getClassName(classNames)}>
+        {this.renderClasses()}
 
-        <div className={styles.section}>
-          <div className={styles.sectionHeader}>Classes</div>
-          <FacetMultiSelect
-            options={selectedClasses.map((val,key) => {
-              return {
-                value: key,
-                label: CLASSES[key].label,
-                checked: val,
-              }
-            }).valueSeq().toArray()}
-            onChange={this.props.toggleClass}
-            />
-
-
-        </div>
-        {this.renderFacets()}
+        {
+          this.props.facetsProps.valueSeq().map((facet) => {
+            return <Facet facetProps={facet} setSelectedFacetValue={setSelectedFacetValue} setSelectedObject={setSelectedObject}/>
+          })
+        }
 
       </div>
     );
@@ -156,27 +147,14 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
 export default connect<GlobalState, Panel.PropsFromState, Panel.DispatchProps, {}>(
   (state, ownProps) => {
     return {
-      selectedClasses: state.facets.selectedClasses,
-      facetsValues: state.facets.facetsValues
-      // addedDsName: state.datasetManagement.added,
-      // datasets: state.datasetManagement.list,
-      // fetchingList: state.datasetManagement.fetchingList,
-      // fetchingListError: state.datasetManagement.fetchingListError,
-      // currentAccount: state.accounts.current,
-      // acl: Acl.Get(state.auth.user),
-      // nextPage: state.datasetManagement.nextPage,
-      // orgMembers: state.accounts.current && state.orgs.members.get(state.accounts.current.accountName),
-      // orgs: state.accounts.current && state.orgs.orgs.get(state.accounts.current.accountName)
+      selectedClasses: state.facets.classes,
+      facetsProps: state.facets.facets
     };
   },
   //dispatch
   {
     toggleClass:toggleClass,
-    setFacetMultiselectValue: setFacetMultiselectValue,
-    setFacetsetFacetMinMaxValue:setFacetsetFacetMinMaxValue
-    // addDataset,
-    // getDatasets,
-    // impersonateTo,
-    // pushState: reactRouterRedux.push
+    setFacetMultiselectValue: setSelectedObject,
+    setFacetsetFacetMinMaxValue:setSelectedObject
   }
 )(Panel);

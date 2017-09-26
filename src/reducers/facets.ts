@@ -4,11 +4,11 @@ import * as N3 from "n3";
 import * as Immutable from "immutable";
 import ApiClient from "helpers/ApiClient";
 import { GlobalActions, GlobalState } from "reducers";
-import {FACETS,CLASSES} from 'facetConf'
+import {FACETS,CLASSES, FacetValue} from 'facetConf'
 import * as ReduxObservable from "redux-observable";
 import * as Redux from "redux";
 import * as RX from "rxjs";
-
+import {FacetProvinces, FacetMultiSelect, FacetSlider} from 'components'
 import { default as prefixes, getAsString, prefix } from "prefixes";
 import SparqlBuilder from "helpers/SparqlBuilder";
 import * as sparqljs from "sparqljs";
@@ -33,91 +33,69 @@ export enum Actions {
 export type Statement = N3.Statement;
 export type Statements = Immutable.List<Statement>;
 export type FacetToClassMapping = {[iri:string]:string}
-export interface ClassProps {
-  default: boolean;
-  iri: string;
-  label: string;
-  facets: string[];
-  resourceDescriptionQuery: (iri:string)=>string
-}
 
-export type FacetTypes = "multiselect" | "slider" | "nlProvinces" | "multiselectText";
-export interface FacetValue extends Partial<SparqlTerm> {
-  value: string;
-  label?: string;
-}
+
+
+
+
+
+
+// export type FacetValueOptions = Partial<FacetProvinces.Options & FacetMultiSelect.Options & FacetSlider.Options>;
 export interface FacetProps {
   iri: string;
-  label: string;
-  // datatype: string;
-  facetType: FacetTypes;
-  getFacetValues: (iri: string, state: GlobalState) => string;
-  facetToQueryPatterns: (values: {values?: FacetValue[], minValue?: FacetValue, maxValue?:FacetValue}) => string[];
-  // getFacetFilter: () => {
-  //
-  // }
-  // getBgp: (values: string[]) => string;
-}
+  selectedFacetValues: Immutable.Set<string>
 
-export interface FacetValuesProps {
-  iri: string;
-  minValue: FacetValue;
-  maxValue: FacetValue;
-  values: FacetValue[];
-  selectedValues: Immutable.Set<string>;
-  selectedMinValue: string;
-  selectedMaxValue: string;
+  //we're never modifying props in these objects, but always overwriting it completely
+  //so no use using an immutable model here
+  optionList: FacetValue[],
+  optionObject: {[key:string]: FacetValue | number}
+  selectedObject: {[key:string]:number}
 }
-export var FacetValues = Immutable.Record<FacetValuesProps>(
+export var Facet = Immutable.Record<FacetProps>(
   {
     iri: null,
-    minValue: null,
-    maxValue: null,
-    values: null,
-    selectedValues: Immutable.Set<string>(),
-    selectedMinValue: null,
-    selectedMaxValue: null
+    selectedFacetValues: Immutable.Set(),
+    optionList: null,
+    optionObject: null,
+    selectedObject: null
   },
   "facetValues"
 );
-export type FacetValues = Immutable.Record.Inst<Partial<FacetValuesProps>>;
-export type FacetsValues = Immutable.OrderedMap<string, FacetValues>;
+export type Facet = Immutable.Record.Inst<FacetProps>
 export type SelectedClasses = Immutable.OrderedMap<string, boolean>;
-export type FacetsProps = Immutable.OrderedMap<string, Immutable.Record.Inst<FacetValuesProps>>;
+
 export var StateRecord = Immutable.Record(
   {
     matchingIris: Immutable.OrderedMap<string,string>(),//matched IRI -> className of that iri
     fetchResources: 0,
     updateFacetInfoQueue: Immutable.List<string>(),
-    selectedClasses: <SelectedClasses>Immutable.OrderedMap<string, boolean>().withMutations(m => {
+    classes: <SelectedClasses>Immutable.OrderedMap<string, boolean>().withMutations(m => {
       //populate selectedClasses (taken from object here, so no guarantees on sorting)
       for (const c of Object.keys(CLASSES)) {
         m.set(c, CLASSES[c].default);
       }
       return m;
     }),
-    facetsValues: <FacetsProps>Immutable.OrderedMap<string, Immutable.Record.Inst<FacetValuesProps>>()
+    facets: Immutable.OrderedMap<string, Facet>()
   },
   "facets"
 );
 export var initialState = new StateRecord();
 
 export type StateRecordInterface = typeof initialState;
+export type FacetsProps = StateRecordInterface['facets'];
 
 export interface Action extends GlobalActions<Actions> {
-  checked?: boolean;
   className?: string;
   facetName?: string;
   result?: {
-    minValue?: FacetValue;
-    maxValue?: FacetValue;
-    values?: FacetValue[];
-
+    optionList?:FacetProps['optionList'],
+    optionObject?:FacetProps['optionObject']
   } & FacetToClassMapping
   facetQueue?: string[];
   facetValueKey?: string;
-  minValue?: string;
-  maxValue?: string;
+  checked?: boolean;
+  selectedFacetObject?:FacetProps['selectedObject']
 }
 
 export function reducer(state = initialState, action: Action) {
@@ -129,21 +107,20 @@ export function reducer(state = initialState, action: Action) {
     case Actions.GET_MATCHING_IRIS_SUCCESS:
       return state.update("fetchResources", num => num - 1).set("matchingIris", Immutable.OrderedMap<string,string>(<any>action.result));
     case Actions.TOGGLE_CLASS:
-      return state.setIn(<[keyof StateRecordInterface, string]>["selectedClasses", action.className], action.checked);
+      return state.setIn(<[keyof StateRecordInterface, string]>["classes", action.className], action.checked);
     case Actions.SET_FACET_VALUE:
-      return state.update("facetsValues", facet => {
-        return facet.update(action.facetName, new FacetValues(), _vals => {
+      return state.update("facets", facet => {
+        return facet.update(action.facetName, new Facet(), _vals => {
           return _vals.withMutations(vals => {
             if (action.facetValueKey) {
-              if (action.checked) {
-                vals.update("selectedValues", selected => selected.add(action.facetValueKey));
-              } else {
-                vals.update("selectedValues", selected => selected.remove(action.facetValueKey));
-              }
-            } else {
               //assuming multi-select
-              vals.set("selectedMaxValue", action.maxValue);
-              vals.set("selectedMinValue", action.minValue);
+              if (action.checked) {
+                vals.update("selectedFacetValues", selected => selected.add(action.facetValueKey));
+              } else {
+                vals.update("selectedFacetValues", selected => selected.remove(action.facetValueKey));
+              }
+            } else if(action.selectedFacetObject) {
+              vals.set('selectedObject', action.selectedFacetObject)
             }
             return vals;
           });
@@ -155,14 +132,16 @@ export function reducer(state = initialState, action: Action) {
       return state.update("updateFacetInfoQueue", list => list.delete(list.indexOf(action.facetName)));
     case Actions.FETCH_FACET_PROPS_SUCCESS:
       // return state.updateIn('facetsValues', list => list.delete(list.indexOf(action.facetName)));;
-      return state.update("facetsValues", facet => {
-        return facet.update(action.facetName, new FacetValues(), _vals => {
+      return state.update("facets", facet => {
+        return facet.update(action.facetName, new Facet(), _vals => {
           return _vals.withMutations(vals => {
             vals.set("iri", action.facetName);
-            if (action.result.minValue) vals.set("minValue", action.result.minValue);
-            if (action.result.maxValue) vals.set("maxValue", action.result.maxValue);
-            if (action.result.values) vals.set("values", action.result.values);
-            return vals;
+            if (action.result.optionList) {
+              vals.set('optionList', action.result.optionList)
+            }
+            if (action.result.optionObject) {
+              vals.set('optionObject', action.result.optionObject)
+            }
           });
         });
       });
@@ -236,18 +215,18 @@ export function facetsToQuery(state: GlobalState) {
     facetsToCheck = facetsToCheck.concat(CLASSES[className].facets);
   }
   facetsToCheck = _.uniq(facetsToCheck).filter(f => {
-    const facetsValues = state.facets.facetsValues.get(f);
+    const facetsValues = state.facets.facets.get(f);
     if (!facetsValues) return false;
-    return !!facetsValues.selectedMaxValue || !!facetsValues.selectedMinValue || !!facetsValues.selectedValues.size;
+    return !!_.size(facetsValues.selectedObject) || !!facetsValues.selectedFacetValues.size;
   });
 
   var queryPatterns:sparqljs.QueryPattern[] = [];
   for (const facetIri of facetsToCheck) {
     const facetConfig = FACETS[facetIri];
-    const facetsValues = state.facets.facetsValues.get(facetIri);
-    var bgp: string;
-    if (facetsValues.selectedValues.size) {
-      bgp =  '{' + facetConfig.facetToQueryPatterns({values:facetsValues.values.filter(v => facetsValues.selectedValues.has(v.value))})
+    const facetsValues = state.facets.facets.get(facetIri);
+    var bgp = '';
+    if (facetsValues.selectedFacetValues.size) {
+      bgp +=  '{' + facetConfig.facetToQueryPatterns({values:facetsValues.optionList.filter(v => facetsValues.selectedFacetValues.has(v.value))})
         .map(pattern => {
           if (pattern.trim()[0] !== '{') {
             return `{ ${pattern} }`
@@ -256,17 +235,13 @@ export function facetsToQuery(state: GlobalState) {
         })
         .join(' } UNION {') + '}';
     } else {
-      //assuming min/max
-      const patterns = facetConfig.facetToQueryPatterns(<any>{
-        //first do a check whether selected value is same as the outer-bound value. If it is, there is no use having it in this check
-        minValue: facetsValues.selectedMinValue && facetsValues.selectedMinValue !== facetsValues.minValue.value ? facetsValues.selectedMinValue : undefined,
-        maxValue: facetsValues.selectedMaxValue && facetsValues.selectedMaxValue !== facetsValues.maxValue.value ? facetsValues.selectedMaxValue : undefined,
-      })
+      //just pass the object
+      const patterns = facetConfig.facetToQueryPatterns(facetsValues.selectedObject)
       if (patterns && patterns.length) {
-        bgp = '{' + patterns.join('}{') + '}';
+        bgp += '{' + patterns.join('}{') + '}';
       }
     }
-    if (bgp) {
+    if (bgp && bgp.length) {
       queryPatterns = queryPatterns.concat(SparqlBuilder.getQueryPattern(bgp));
     }
 
@@ -285,20 +260,23 @@ export function toggleClass(className: string, checked: boolean): Action {
     checked: checked
   };
 }
-export function setFacetMultiselectValue(facetProp: string, multiSelectKey: string, checked: boolean): Action {
+//
+// selectedFacetValues: Immutable.Set(),
+// selectedObjects: Immutable.Map()
+//
+export function setSelectedFacetValue(facetProp: string, key: string, checked: boolean): Action {
   return {
     type: Actions.SET_FACET_VALUE,
     facetName: facetProp,
-    facetValueKey: multiSelectKey,
+    facetValueKey: key,
     checked: checked
   };
 }
-export function setFacetsetFacetMinMaxValue(facetProp: string, min: string, max: string): Action {
+export function setSelectedObject(facetProp: string, facetObject:FacetProps['selectedObject']): Action {
   return {
     type: Actions.SET_FACET_VALUE,
     facetName: facetProp,
-    minValue: min,
-    maxValue: max
+    selectedFacetObject: facetObject
   };
 }
 
@@ -332,7 +310,7 @@ export function getMatchingIris(state: GlobalState): any {
   };
 }
 export function getSelectedClasses(state: GlobalState) {
-  return state.facets.selectedClasses
+  return state.facets.classes
     .filter(val => val)
     .keySeq()
     .toArray();
@@ -359,7 +337,7 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
   if (!facetConf) {
     throw new Error("Could not find facet config for " + forProp);
   }
-  const sparqlBuilder = SparqlBuilder.fromQueryString(FACETS[forProp].getFacetValues(forProp, state));
+  const sparqlBuilder = SparqlBuilder.fromQueryString(FACETS[forProp].getFacetValues(forProp));
 
   sparqlBuilder.distinct();
   if (facetConf.facetType === "multiselect" || facetConf.facetType === "nlProvinces") {
@@ -401,26 +379,3 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
         })
   };
 }
-
-// export function getFacets(state:GlobalState):FacetValues[] {
-//
-//   var props:string[] = [];
-//   for (const [className,selected] of state.facets.selectedClasses) {
-//     if (selected) {
-//       props = props.concat(CLASSES[className].facets)
-//     }
-//   }
-//   props = _.uniq(props);
-//
-//
-//   return props.map(p => {
-//     if (state.facets.facetsValues.has(p)) {
-//       return state.facets.facetsValues(p)
-//     }
-//
-//   })
-//
-//
-//   const facets:FacetValues[] = [];
-//   return facets;
-// }

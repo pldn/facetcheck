@@ -1,46 +1,47 @@
 import * as React from "react";
-// const Icon = require('-!svg-react-loader?name=Icon!./provinces.svg');
+import {Facet as GenericFacetProps} from 'reducers/facets'
+import {FacetValue} from 'facetConf'
 var provincesSvg = '';
 if (__CLIENT__) {
   provincesSvg = require('./provinces.raw.svg')
 }
+import { Facet } from "components";
 const SVGInline = require("react-svg-inline").default;
 import * as _ from "lodash";
 import * as getClassName from "classnames";
-namespace FacetMultiSelect {
+namespace FacetProvinces {
+  //Interface that extends the generic selectedObject from the facet reducer
+  export interface FacetProps extends GenericFacetProps {
+    optionObject: {[P in Provinces]: FacetValue | any}
+  }
+  export interface Props extends Facet.Props {
+    facetProps: FacetProps
+  }
+
   export type Provinces = "limburg" | "zeeland" | "n-brabant" | "gelderland" | "z-holland" | "n-holland" | "utrecht" | "flevoland" | "overijssel" | "drenthe" | "groningen" | "friesland"
-  export interface Option {
-    value: string;
-    checked:boolean
-  }
-  export interface Props {
-    options: {
-      [province:Provinces]: Option
-    };
-    onChange: (value:string, checked:boolean) => any
-  }
 }
 const styles = require("./style.scss");
 
-class FacetMultiSelect extends React.PureComponent<FacetMultiSelect.Props, any> {
+@Facet.staticImplements<Facet.FacetComponent>()
+class FacetProvinces extends React.PureComponent<FacetProvinces.Props, any> {
+  static shouldRender(props: Facet.Props) {
+    return false;
+  }
   render() {
+    const {facetProps} = this.props;
     return <div>
           {
             <SVGInline className={styles.provinces} svg={provincesSvg} onClick={(data:any,e:any) => {
               if (data.target && data.target.id) {
-                // this.props.onChange()
+                const id:FacetProvinces.Provinces = data.target.id;
+                if (this.props.facetProps.optionObject[id]) {
+                  const val = facetProps.optionObject[id].value
+                  this.props.setSelectedFacetValue(facetProps.iri, val, !facetProps.selectedFacetValues.has(val))
+                }
               }
             }}/>
-        // this.props.options.map(o => <Checkbox
-        //   label={o.label}
-        //   checked={o.checked}
-        //   key={o.value}
-        //   onChange={(checked:boolean) => {
-        //     this.props.onChange(o.value, checked)
-        //   }}
-        //   />)
         }
     </div>
   }
 }
-export default FacetMultiSelect;
+export default FacetProvinces;

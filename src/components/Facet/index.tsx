@@ -1,121 +1,56 @@
 import * as React from "react";
 
-import * as _ from "lodash";
+
 import * as getClassName from "classnames";
-import { Checkbox } from "material-ui";
-// import {Shape} from 'reducers/schema'
-// import {getLabel, State as LabelsState} from 'reducers/labels'
-// import {FacetFilter,setFacetFilter, FacetFilterValue} from 'reducers/facets'
-import * as moment from "moment";
-// import {OverlayTrigger, Tooltip} from 'react-bootstrap'
-// import {Row,Col} from 'react-bootstrap';
-// import {Link} from 'react-router'
-import { FacetMultiSelect, FacetDate } from "components";
+
+
+import {Facet as FacetProps} from 'reducers/facets'
+import {FacetMultiSelect, FacetSlider, FacetProvinces} from 'components'
+import {setSelectedFacetValue,setSelectedObject} from 'reducers/facets'
 namespace Facet {
+  //Hacky interface so we can define a static function in an interface
+  export interface FacetComponent {
+    new (props?: Facet.Props): React.PureComponent<Facet.Props, any>;
+    shouldRender(props: Facet.Props): boolean;
+  }
   export interface Props {
-    className?: string;
-    // shape:Shape,
-    label: string;
-    // labels?:LabelsState
-    // filter: FacetFilter,
-    disabled?: boolean;
-    // setFacetFilter: typeof setFacetFilter,
-    // updateQuery:Function
+    className?:string,
+    facetProps: FacetProps,
+    setSelectedFacetValue: typeof setSelectedFacetValue,
+    setSelectedObject: typeof setSelectedObject
   }
 }
 const styles = require("./style.scss");
-const panelStyles = require("../../containers/Panel/style.scss");
+
 class Facet extends React.PureComponent<Facet.Props, any> {
-  getHeader() {
-    // return <div className={panelStyles.sectionHeader}>
-    //   <a href={this.props.shape.predicate} target="_blank">{this.props.label}</a>
-    // </div>
+  FacetComponents: [Facet.FacetComponent];
+  //used by subcomponents, so we can have an 'implements' interface that has static methods
+  static staticImplements<T>() {
+    return (constructor: T) => {};
   }
-  render(): any {
-    const {
-      label,
-      // shape,
-      className,
-      // filter,
-      disabled
-      // labels
-    } = this.props;
-    const enabledStyles = {
-      [className]: !!className,
-      [styles.facet]: !!styles.facet,
-      [styles.disabled]: disabled,
-      [panelStyles.section]: !!panelStyles.section,
-      [panelStyles.firstSection]: !!panelStyles.firstSection
-    };
-    switch ("bla") {
-      // switch (shape.facetType) {
-      //   case 'boolean':
-      //     const activeValuesBoolean:{[val:string]:boolean} = {};
-      //     if (filter) filter.values.forEach(val => {activeValues[val.value] = true})
-      //     return <div className={getClassName(enabledStyles)}>
-      //       {this.getHeader()}
-      //       <FacetMultiSelect
-      //         forShape={shape}
-      //         options={[{value: 'true', label: 'Ja'}, {value:'false', label:'Nee'}]}
-      //         activeValues={activeValuesBoolean}
-      //         onChange={(selected) => {
-      //           const selectedVals:FacetFilterValue[] = [];
-      //           for (var value in selected) {
-      //             if (selected[value]) selectedVals.push({value});
-      //           }
-      //           this.props.setFacetFilter(this.props.shape.predicate, {
-      //             datatype: shape.rangeDatatype,
-      //             values: selectedVals,
-      //             isLiteral: true,
-      //           })
-      //         }}/>
-      //     </div>
-      //   case 'date':
-      //     return <div className={getClassName(enabledStyles)}>
-      //       {this.getHeader()}
-      //       <FacetDate
-      //       filter={filter}
-      //       shape={shape}
-      //       setFacetFilter={this.props.setFacetFilter}
-      //       onMinDateChange={(e,date)=> {
-      //         this.props.setFacetFilter(this.props.shape.predicate, _.merge<FacetFilter,FacetFilter,FacetFilter>({}as any, filter, {isLiteral: true, datatype:shape.rangeDatatype, greaterThan: moment(date).format("YYYY-MM-DD")}))
-      //       }}
-      //       onMaxDateChange={(e,date)=> {
-      //         this.props.setFacetFilter(this.props.shape.predicate, _.merge<FacetFilter,FacetFilter,FacetFilter>({} as any, filter, {isLiteral: true, datatype:shape.rangeDatatype, lessThan: moment(date).format("YYYY-MM-DD")}))
-      //       }}
-      //       />
-      //     </div>
-      //   case 'nominal':
-      //     const activeValues:{[val:string]:boolean} = {};
-      //     if (filter) filter.values.forEach(val => {activeValues[val.value] = true})
-      //     return <div className={getClassName(enabledStyles)}>
-      //       {this.getHeader()}
-      //       <FacetMultiSelect
-      //
-      //         forShape={shape}
-      //         options={shape.distinctValues.map(val => {
-      //           return {
-      //             value:val,
-      //             label: (shape.nodeKind && shape.nodeKind === 'http://www.w3.org/ns/shacl#IRI'?getLabel(labels, val):val),
-      //             link:  shape.nodeKind === 'http://www.w3.org/ns/shacl#IRI'? val: null
-      //           }
-      //         })}
-      //         activeValues={activeValues}
-      //         onChange={(selected) => {
-      //           const selectedVals:FacetFilterValue[] = [];
-      //           for (var value in selected) {
-      //             if (selected[value]) selectedVals.push({value});
-      //           }
-      //           this.props.setFacetFilter(this.props.shape.predicate, {
-      //             datatype: shape.rangeDatatype,
-      //             values: selectedVals,
-      //             isLiteral: shape.nodeKind === 'http://www.w3.org/ns/shacl#Literal'
-      //           })
-      //         }}/>
-      //     </div>
-      default:
-        return null;
+  constructor(props: Facet.Props) {
+    super(props);
+    this.FacetComponents = [
+      FacetMultiSelect,
+      FacetSlider,
+      FacetProvinces
+    ];
+
+  }
+
+  renderFacet() {
+    for (const FacetComponent of this.FacetComponents) {
+      if (FacetComponent.shouldRender(this.props)) return <FacetComponent {...this.props} />;
     }
+    return null;
+  }
+  render() {
+    const { className } = this.props;
+    return (
+      <div className={getClassName(className, styles.wrapper)}>
+        {this.renderFacet()}
+      </div>
+    );
   }
 }
 export default Facet;

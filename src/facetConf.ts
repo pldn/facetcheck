@@ -1,6 +1,30 @@
-import {ClassProps,FacetProps} from 'reducers/facets'
+import { Term as SparqlTerm } from "helpers/SparqlJson";
+export type FacetTypes = "multiselect" | "slider" | "nlProvinces" | "multiselectText";
+export interface FacetConfig {
+  iri: string;
+  label: string;
+  // datatype: string;
+  facetType: FacetTypes;
+  getFacetValues: (iri: string) => string;
+  facetToQueryPatterns: (values: {values?: FacetValue[], minValue?: FacetValue, maxValue?:FacetValue}) => string[];
+  // getFacetFilter: () => {
+  //
+  // }
+  // getBgp: (values: string[]) => string;
+}
+export interface FacetValue extends Partial<SparqlTerm> {
+  value: string;
+  label?: string;
 
-export var CLASSES: { [className: string]: ClassProps } = {
+}
+export interface ClassConfig {
+  default: boolean;
+  iri: string;
+  label: string;
+  facets: string[];
+  resourceDescriptionQuery: (iri:string)=>string
+}
+export var CLASSES: { [className: string]: ClassConfig } = {
   "https://cultureelerfgoed.nl/vocab/Monument": {
     default: true, //default
     iri: "https://cultureelerfgoed.nl/vocab/Monument",
@@ -73,12 +97,12 @@ export var CLASSES: { [className: string]: ClassProps } = {
 };
 
 
-export var FACETS: { [property: string]: FacetProps } = {
+export var FACETS: { [property: string]: FacetConfig } = {
   "https://cultureelerfgoed.nl/vocab/province": {
     iri: "https://cultureelerfgoed.nl/vocab/province",
     label: "Provincie",
     facetType: "nlProvinces",
-    getFacetValues: (iri, state) => {
+    getFacetValues: (iri) => {
       return `
       SELECT DISTINCT ?_value ?_valueLabel WHERE {
         ?_r <${iri}> ?_value.
@@ -99,7 +123,7 @@ export var FACETS: { [property: string]: FacetProps } = {
     iri: "http://schema.org/dateCreated",
     label: "Bouwjaar",
     facetType: "slider",
-    getFacetValues: (iri, state) => {
+    getFacetValues: (iri) => {
       return `
       SELECT DISTINCT (MIN(xsd:integer(?value)) as ?_minValue) (MAX(xsd:integer(?value)) as ?_maxValue) WHERE {
         ?_r <${iri}> ?value.

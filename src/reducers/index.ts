@@ -44,7 +44,7 @@ const transitHandler = transitImmutable.withRecords(
     app.StateRecord,
     config.StateRecord,
     facets.StateRecord,
-    facets.FacetValues,
+    facets.Facet,
     routing.LocationRecord,
     routing.StateRecord,
     notifications.NotificationRecord,
