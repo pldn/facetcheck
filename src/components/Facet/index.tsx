@@ -15,7 +15,7 @@ namespace Facet {
   }
   export interface Props {
     className?:string,
-    facetProps: FacetProps,
+    facet: FacetProps,
     setSelectedFacetValue: typeof setSelectedFacetValue,
     setSelectedObject: typeof setSelectedObject
   }

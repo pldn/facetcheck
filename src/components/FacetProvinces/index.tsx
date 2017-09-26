@@ -1,10 +1,11 @@
 import * as React from "react";
 import {Facet as GenericFacetProps} from 'reducers/facets'
-import {FacetValue} from 'facetConf'
+import {FacetValue,FACETS} from 'facetConf'
 var provincesSvg = '';
 if (__CLIENT__) {
   provincesSvg = require('./provinces.raw.svg')
 }
+
 import { Facet } from "components";
 const SVGInline = require("react-svg-inline").default;
 import * as _ from "lodash";
@@ -15,7 +16,7 @@ namespace FacetProvinces {
     optionObject: {[P in Provinces]: FacetValue | any}
   }
   export interface Props extends Facet.Props {
-    facetProps: FacetProps
+    facet: FacetProps
   }
 
   export type Provinces = "limburg" | "zeeland" | "n-brabant" | "gelderland" | "z-holland" | "n-holland" | "utrecht" | "flevoland" | "overijssel" | "drenthe" | "groningen" | "friesland"
@@ -24,19 +25,19 @@ const styles = require("./style.scss");
 
 @Facet.staticImplements<Facet.FacetComponent>()
 class FacetProvinces extends React.PureComponent<FacetProvinces.Props, any> {
-  static shouldRender(props: Facet.Props) {
-    return false;
+  static shouldRender(props:Facet.Props) {
+    return FACETS[props.facet.iri].facetType === 'nlProvinces'
   }
   render() {
-    const {facetProps} = this.props;
+    const {facet} = this.props;
     return <div>
           {
             <SVGInline className={styles.provinces} svg={provincesSvg} onClick={(data:any,e:any) => {
               if (data.target && data.target.id) {
                 const id:FacetProvinces.Provinces = data.target.id;
-                if (this.props.facetProps.optionObject[id]) {
-                  const val = facetProps.optionObject[id].value
-                  this.props.setSelectedFacetValue(facetProps.iri, val, !facetProps.selectedFacetValues.has(val))
+                if (this.props.facet.optionObject[id]) {
+                  const val = facet.optionObject[id].value
+                  this.props.setSelectedFacetValue(facet.iri, val, !facet.selectedFacetValues.has(val))
                 }
               }
             }}/>

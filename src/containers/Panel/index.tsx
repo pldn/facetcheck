@@ -131,7 +131,7 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
 
         {
           this.props.facetsProps.valueSeq().map((facet) => {
-            return <Facet facetProps={facet} setSelectedFacetValue={setSelectedFacetValue} setSelectedObject={setSelectedObject}/>
+            return <Facet key={facet.iri} facet={facet} setSelectedFacetValue={setSelectedFacetValue} setSelectedObject={setSelectedObject}/>
           })
         }
 

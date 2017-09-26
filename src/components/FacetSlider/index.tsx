@@ -4,6 +4,7 @@ import * as _ from "lodash";
 // import * as getClassName from "classnames";
 import {Facet} from 'components'
 import {Facet as GenericFacetProps} from 'reducers/facets'
+import {FACETS} from 'facetConf'
 const Slider = require('rc-slider');
 const createSliderWithTooltip = Slider.createSliderWithTooltip;
 const Range = createSliderWithTooltip(Slider.Range);
@@ -18,7 +19,7 @@ namespace FacetSlider {
     selectedObject: Options
   }
   export interface Props extends Facet.Props {
-    facetProps: FacetProps
+    facet: FacetProps
   }
 }
 const styles = require("./style.scss");
@@ -26,11 +27,12 @@ const styles = require("./style.scss");
 class FacetSlider extends React.PureComponent<FacetSlider.Props, any> {
 
   static shouldRender(props:Facet.Props) {
-    return true;
+    return FACETS[props.facet.iri].facetType === 'slider'
   }
   render() {
-    const {facetProps} = this.props
-    const {min,max} = facetProps.selectedObject;
+    const {facet} = this.props
+    if (!facet.selectedObject) return null
+    const {min,max} = facet.selectedObject;
     return <div className={styles.range}>
       <Range
         min={min}
@@ -48,7 +50,7 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, any> {
           if (min !== selectedMin) selectedObject.min = selectedMin;
           if (max !== selectedMax) selectedObject.max = selectedMax;
           if (_.size(selectedObject)) {
-            this.props.setSelectedObject(facetProps.iri, selectedObject);
+            this.props.setSelectedObject(facet.iri, selectedObject);
           }
         }}
       />
