@@ -141,6 +141,7 @@ export function reducer(state = initialState, action: Action) {
           state = state.update("updateFacetInfoQueue", list => list.delete(queueIndex));
         }
       }
+      const facetSorting = getFacetsForClasses(getSelectedClasses(state));
       return state.update("facets", facet => {
         return facet.update(action.facetName, new Facet(), _vals => {
           return _vals.withMutations(vals => {
@@ -152,6 +153,8 @@ export function reducer(state = initialState, action: Action) {
               vals.set("optionObject", action.result.optionObject);
             }
           });
+        }).sortBy((val,key) => {
+          return facetSorting.indexOf(key)
         });
       });
     default:
@@ -198,7 +201,13 @@ export var epics: [(action: Action$, store: Store) => any] = [
       });
   }
 ];
-
+export function getFacetsForClasses(selectedClasses:string[]):string[] {
+  var facetsToCheck: string[] = [];
+  for (const className of selectedClasses) {
+    facetsToCheck = facetsToCheck.concat(CLASSES[className].facets);
+  }
+  return _.uniq(facetsToCheck)
+}
 export function facetsToQuery(state: GlobalState) {
   const sparqlBuilder = SparqlBuilder.get(prefixes);
   sparqlBuilder
@@ -209,7 +218,7 @@ export function facetsToQuery(state: GlobalState) {
   /**
    * Add classes
    */
-  const selectedClasses = getSelectedClasses(state);
+  const selectedClasses = getSelectedClasses(state.facets);
   sparqlBuilder.hasClasses(...selectedClasses);
   //also return which classes match. That way, we know for this particular IRI how to render it
   //as one iri can have multiple classes, we have to join this variable with the list of selected classes when
@@ -221,11 +230,7 @@ export function facetsToQuery(state: GlobalState) {
   /**
    * Get facets we might need to integrate in this query
    */
-  var facetsToCheck: string[] = [];
-  for (const className of selectedClasses) {
-    facetsToCheck = facetsToCheck.concat(CLASSES[className].facets);
-  }
-  facetsToCheck = _.uniq(facetsToCheck).filter(f => {
+  var facetsToCheck: string[] = getFacetsForClasses(selectedClasses).filter(f => {
     const facetsValues = state.facets.facets.get(f);
     if (!facetsValues) return false;
     return !!_.size(facetsValues.selectedObject) || !!facetsValues.selectedFacetValues.size;
@@ -307,7 +312,7 @@ export function getMatchingIris(state: GlobalState): any {
           return {
             iriToClassMapping: sparql.getValues().reduce<IriToClassMapping>(function(mapping, binding) {
               if (binding._r) {
-                if (binding._type && getSelectedClasses(state).indexOf(binding._type.value) >= 0) {
+                if (binding._type && getSelectedClasses(state.facets).indexOf(binding._type.value) >= 0) {
                   //it's a type we recognize (i.e., we can render it)
                   mapping[binding._r.value] = binding._type.value;
                 }
@@ -318,15 +323,15 @@ export function getMatchingIris(state: GlobalState): any {
         })
   };
 }
-export function getSelectedClasses(state: GlobalState) {
-  return state.facets.classes
+export function getSelectedClasses(facetState:StateRecordInterface ) {
+  return facetState.classes
     .filter(val => val)
     .keySeq()
     .toArray();
 }
 
 export function queueFacetUpdates(state: GlobalState, ...forClasses: string[]): Action {
-  if (!forClasses || forClasses.length === 0) forClasses = getSelectedClasses(state);
+  if (!forClasses || forClasses.length === 0) forClasses = getSelectedClasses(state.facets);
   var facets: string[] = [];
   for (const forClass of forClasses) {
     const classConf = CLASSES[forClass];
@@ -373,7 +378,7 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
   const facetComponent = FacetComponent.getFacetFromString(facetConf.facetType);
   sparqlBuilder.distinct();
   facetComponent.prepareOptionsQuery(sparqlBuilder);
-  sparqlBuilder.hasClasses(...getSelectedClasses(state));
+  sparqlBuilder.hasClasses(...getSelectedClasses(state.facets));
   return {
     types: [Actions.FETCH_FACET_PROPS, Actions.FETCH_FACET_PROPS_SUCCESS, Actions.FETCH_FACET_PROPS_FAIL],
     facetName: forProp,

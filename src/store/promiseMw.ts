@@ -10,26 +10,30 @@ import ApiClient from "helpers/ApiClient";
 var createClientMiddleware = function(client: ApiClient): Middleware {
   return (store: Store<GlobalState>) => {
     return (next: Function) => (action: any) => {
-      
+
       try {
         if (typeof action === "function") {
           return action(store.dispatch, store.getState);
         }
         const { promise, types, ...rest } = action;
         if (!promise || !types || types.length !== 3) {
+          if (action instanceof Promise) {
+            //hmm, when is an action a promise? just return empty
+            return;
+          }
           return next(action);
         }
         const [REQUEST, SUCCESS, FAILURE] = types;
-        next(_.assign({}, rest, { type: REQUEST }));
+        next({...rest, type: REQUEST});
         const actionPromise = promise(client);
         actionPromise
           .then(
             (result: any) => {
               if (result && result.body && result.meta) {
                 //this promise comes from our API client
-                next(_.assign({}, rest, { result: result.body, meta: result.meta, type: SUCCESS }));
+                next({...rest, result: result.body, meta: result.meta, type: SUCCESS});
               } else {
-                next(_.assign({}, rest, { result: result, type: SUCCESS }));
+                next({...rest, result: result, type: SUCCESS});
               }
             },
             (error: any) => {

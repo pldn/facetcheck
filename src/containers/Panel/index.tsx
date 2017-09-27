@@ -25,7 +25,7 @@ namespace Panel {
   }
   export interface PropsFromState {
     selectedClasses: SelectedClasses,
-    facetsProps: FacetsProps
+    facets: FacetsProps
   }
 
   export interface State {
@@ -36,61 +36,6 @@ namespace Panel {
 const styles = require("./style.scss");
 
 class Panel extends React.PureComponent<Panel.Props, Panel.State> {
-
-  renderFacets() {
-    return
-    //
-    // const {facetsValues} = this.props;
-    // return facetsValues.valueSeq().map((facet) => {
-    //   const iri = facet.iri;
-    //   const staticFacetConfig = FACETS[iri];
-    //   if (!staticFacetConfig) throw new Error('Missing facet config for ' + iri);
-    //   if (staticFacetConfig.facetType === 'multiselect') {
-    //     return <div key={iri} className={styles.section}>
-    //       <div className={styles.sectionHeader}>{staticFacetConfig.label}</div>
-    //
-    //       <FacetMultiSelect
-    //
-    //       options={}
-    //       onChange={(valueKey, checked) => {
-    //         this.props.setFacetMultiselectValue(iri, valueKey, checked)
-    //       }}
-    //       />
-    //       </div>
-    //   } else if(staticFacetConfig.facetType === 'slider') {
-    //
-    //     return <div key={iri} className={styles.section}>
-    //       <div className={styles.sectionHeader}>{staticFacetConfig.label}</div>
-    //         <FacetSlider
-    //           options={{
-    //             min: +facet.options.min,
-    //             max:+facet.options.max
-    //           }}
-    //           onChange={(min,max) => {this.props.setFacetsetFacetMinMaxValue(iri, ""+min,""+max)}}/>
-    //       </div>
-    //   } else if (staticFacetConfig.facetType === 'nlProvinces') {
-    //     return <div key={iri} className={styles.section}>
-    //       <div className={styles.sectionHeader}>{staticFacetConfig.label}</div>
-    //       <FacetProvinces
-    //
-    //       options={facet.options.map((val) => {
-    //         return {
-    //           value: val.value,
-    //           label: val.label,
-    //           checked: facet.selectedValues.has(val.value)
-    //         }
-    //       })}
-    //       onChange={(valueKey, checked) => {
-    //         this.props.setFacetMultiselectValue(iri, valueKey, checked)
-    //       }}
-    //       />
-    //       </div>
-    //   }
-    //   throw new Error('Unsupported facettype ' + staticFacetConfig.facetType)
-    //
-    // })
-    // return null;
-  }
 
 
   renderClasses() {
@@ -130,7 +75,7 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
         {this.renderClasses()}
 
         {
-          this.props.facetsProps.valueSeq().map((facet) => {
+          this.props.facets.valueSeq().map((facet) => {
             return <Facet key={facet.iri} facet={facet} className={styles.section} setSelectedFacetValue={setSelectedFacetValue} setSelectedObject={setSelectedObject}/>
           })
         }
@@ -148,7 +93,7 @@ export default connect<GlobalState, Panel.PropsFromState, Panel.DispatchProps, {
   (state, ownProps) => {
     return {
       selectedClasses: state.facets.classes,
-      facetsProps: state.facets.facets
+      facets: state.facets.facets
     };
   },
   //dispatch

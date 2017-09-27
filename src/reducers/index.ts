@@ -11,7 +11,6 @@ const { reducer } = require("redux-connect");
 import * as _ from "lodash";
 import { reducer as form } from "redux-form";
 
-import SocketClient from "helpers/SocketClient";
 import ApiClient from "helpers/ApiClient";
 
 /**
@@ -134,10 +133,6 @@ export var rootEpic = ReduxObservable
   (
     ...facets.epics,
     ...statements.epics
-    // ...socket.epics,
-    // ...datasets.epics,
-    // datasetManagement.epic,
-    // graphs.epic,
 
   );
 
@@ -151,7 +146,6 @@ export interface _GlobalActions<A = any> {
   message?: string;
   status?: number;
   promise?: (apiClient?: ApiClient) => Promise<any>;
-  socket?: (socket: SocketClient) => any;
 }
 //Need to merge it with a promise, as our promise MW might make it into one
 //some of our async dispatched actions expect a thenable result
