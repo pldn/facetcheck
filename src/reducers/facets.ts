@@ -232,11 +232,13 @@ export function facetsToQuery(state: GlobalState) {
     const facetsValues = state.facets.facets.get(facetIri);
     var bgp = "";
     if (facetsValues.selectedFacetValues.size) {
-      const pattern = facetConfig
-        .facetToQueryPatterns(
-           facetsValues.optionList.filter(v => facetsValues.selectedFacetValues.has(v.value))
-        );
-      if (pattern && pattern.length) bgp += `{ ${pattern} }`
+      const listOfFacetValues = facetsValues.optionList
+        ? facetsValues.optionList
+        : _.values<FacetValue>(facetsValues.optionObject);
+      const pattern = facetConfig.facetToQueryPatterns(
+        listOfFacetValues.filter(v => facetsValues.selectedFacetValues.has(v.value))
+      );
+      if (pattern && pattern.length) bgp += `{ ${pattern} }`;
     } else {
       //just pass the object
       const pattern = facetConfig.facetToQueryPatterns(facetsValues.selectedObject);

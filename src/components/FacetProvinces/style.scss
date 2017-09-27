@@ -2,17 +2,31 @@
 .provinces {
   width:120px;
   path:hover {
-    stroke: #002868 !important;
-    stroke-width:2px;
+    stroke: lighten($custom4, 2);
+    // stroke-width:2px;
     stroke-linejoin: round;
-    fill: #002868 !important;
+    fill:  lighten($custom4, 2);
     cursor: pointer;
   }
-  path:global(.selected) {
-    stroke: #002868 !important;
-    stroke-width:2px;
-    stroke-linejoin: round;
-    fill: #002868 !important;
-    cursor: pointer;
-  }
+}
+
+
+
+.gelderland :global(#gelderland),
+.limburg :global(#limburg),
+.zeeland :global(#zeeland),
+.n-brabant :global(#n-brabant),
+.z-holland :global(#z-holland),
+.n-holland :global(#n-hollan),
+.utrecht :global(#utrecht),
+.flevoland :global(#flevoland),
+.overijssel :global(#overijssel),
+.drenthe :global(#drenthe),
+.groningen :global(#groningen),
+.friesland :global(#friesland)
+ {
+  stroke: $custom4 !important;
+  // stroke-width:2px;
+  // stroke-linejoin: round;
+  fill: $custom4 !important;
 }
