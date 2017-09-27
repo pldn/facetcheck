@@ -7,13 +7,14 @@ import * as Immutable from 'immutable'
 //import own dependencies
 import { TermLink, TermLiteral} from "components";
 import Tree from 'helpers/Tree'
-import {RenderConfiguration} from  'reducers/statements'
+import {RenderConfiguration,getLabel} from  'reducers/statements'
 export namespace Term {
   export interface Props {
     className?: string;
     term: string;
     label?: string;
     config?:RenderConfiguration
+    tree:Tree
     // fetchLabel: typeof fetchLabel
   }
 }
@@ -21,7 +22,7 @@ export namespace Term {
 const styles = require("./style.scss");
 class Term extends React.PureComponent<Term.Props, any> {
   render() {
-    const { term, className, label,config } = this.props;
+    const { term, className, label,config,tree } = this.props;
 
     // if (TermGeo.acceptsTerm(term, resourceContext)) return <TermGeo term={term} context={resourceContext} />;
     // if (TermLink.acceptsTerm(term, resourceContext)) return <TermLink className={className} iri={term} label={label} />;
@@ -37,7 +38,7 @@ class Term extends React.PureComponent<Term.Props, any> {
         />
       );
     } else {
-      return <TermLink className={className} iri={term} label={label} />
+      return <TermLink className={className} iri={term} label={label || getLabel(term, tree)} />
     }
   }
 }

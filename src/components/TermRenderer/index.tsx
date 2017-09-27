@@ -31,6 +31,7 @@ class TermRenderer extends React.PureComponent<TermRenderer.Props, any> {
       [styles.dynamic]: config && config.size === 'dynamic',
       [styles.full]: !config || !config.size || config.size === 'full'
     }
+    const root:Tree = values.length? values[0].getRoot():null;
     return (
       <div className={getClassNames(enabledStyles)}>
         {label && <div className={styles.title}><span>{label}</span></div>}
@@ -41,6 +42,7 @@ class TermRenderer extends React.PureComponent<TermRenderer.Props, any> {
               className={styles.obj}
               term={value.getTerm()}
               config={config}
+              tree={root}
               />
 
           )}

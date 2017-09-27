@@ -20,7 +20,10 @@ export default class TreeNode {
     this.predicate = predicate;
   }
 
-
+  public getRoot():TreeNode {
+    if (!this.parent) return this;
+    return this.parent.getRoot();
+  }
   private setParent(parent:TreeNode) {
     this.parent = parent;
   }

@@ -134,11 +134,13 @@ export function markForFetchingOrDeletion(toRemove:string[], toFetch:IriToClassM
   }
 }
 export function getStatements(resource: string, className:string): Action {
+  const q = `${getAsString()} ${CLASSES[className].resourceDescriptionQuery(resource)}`;
+  console.log(q);
   return {
     types: [Actions.GET_STATEMENTS, Actions.GET_STATEMENTS_SUCCESS, Actions.GET_STATEMENTS_FAIL],
     promise: (client: ApiClient) =>
       client.req({
-        sparqlConstruct: `${getAsString()} ${CLASSES[className].resourceDescriptionQuery(resource)}`
+        sparqlConstruct: q
       }),
     forIri: resource
   };
