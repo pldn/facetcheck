@@ -91,7 +91,7 @@ export interface Action extends GlobalActions<Actions> {
   facetValueKey?: string;
   checked?: boolean;
   selectedFacetObject?: FacetProps["selectedObject"];
-  sync?: boolean;
+  sync?:boolean
 }
 
 export function reducer(state = initialState, action: Action) {
@@ -127,12 +127,19 @@ export function reducer(state = initialState, action: Action) {
     case Actions.QUEUE_FACET_UPDATE:
       return state.set("updateFacetInfoQueue", Immutable.List(action.facetQueue));
     case Actions.FETCH_FACET_PROPS:
-      return state.update("updateFacetInfoQueue", list => list.delete(list.indexOf(action.facetName)));
+      return state.update("updateFacetInfoQueue", list => {
+        const i = list.indexOf(action.facetName);
+        if (i >= 0) return list.delete(list.indexOf(action.facetName))
+        return list;
+      });
     case Actions.FETCH_FACET_PROPS_SUCCESS:
       if (action.sync) {
         //if this is executed in sync (i.e. without sparql request)
         //we have to make sure the queue gets decremented as well (this is otherwise done before the ajax query is sent)
-        state = state.update("updateFacetInfoQueue", list => list.delete(list.indexOf(action.facetName)));
+        const queueIndex = state.updateFacetInfoQueue.indexOf(action.facetName);
+        if (queueIndex >= 0) {
+          state = state.update("updateFacetInfoQueue", list => list.delete(queueIndex));
+        }
       }
       return state.update("facets", facet => {
         return facet.update(action.facetName, new Facet(), _vals => {
@@ -175,7 +182,7 @@ export var epics: [(action: Action$, store: Store) => any] = [
   //update facet information when facets are added to the queue
   (action$: Action$, store: Store) => {
     return action$.ofType(Actions.QUEUE_FACET_UPDATE).map((action: Action) => {
-      return store.dispatch(getFacetProps(store.getState(), action.facetQueue.shift()));
+      return store.dispatch(getFacetProps(store.getState(), action.facetQueue[0]));
     });
   },
   //update facet information when another one finished
@@ -187,9 +194,7 @@ export var epics: [(action: Action$, store: Store) => any] = [
       })
       .map((action: Action) => {
         const state = store.getState();
-        if (state.facets.updateFacetInfoQueue.size) {
-          return store.dispatch(getFacetProps(state, state.facets.updateFacetInfoQueue.first()));
-        }
+        return store.dispatch(getFacetProps(state, state.facets.updateFacetInfoQueue.first()));
       });
   }
 ];
@@ -349,8 +354,8 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
         result: {
           optionList: facetConf.facetValues
         },
-        sync: true,
-        facetName: facetConf.iri
+        facetName: facetConf.iri,
+        sync:true
       };
     } else {
       return {
@@ -358,9 +363,10 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
         result: {
           optionObject: facetConf.facetValues
         },
-        sync: true,
-        facetName: facetConf.iri
-      };
+        facetName: facetConf.iri,
+        rand: Math.random(),
+        sync:true
+      } as any;
     }
   }
   const sparqlBuilder = SparqlBuilder.fromQueryString(FACETS[forProp].getFacetValuesQuery(forProp));

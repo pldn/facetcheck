@@ -31,8 +31,8 @@ export var CLASSES: { [className: string]: ClassConfig } = {
     default: true, //default
     iri: "https://cultureelerfgoed.nl/vocab/Monument",
     label: "Monument",
-    facets: ["https://cultureelerfgoed.nl/vocab/province", "http://schema.org/dateCreated"],
-    // widgets: ['leaflet', 'textarea'],
+    facets: ["https://cultureelerfgoed.nl/vocab/province", "http://schema.org/dateCreated", "http://dbpedia.org/ontology/code"],
+    // facets: ["http://schema.org/dateCreated", "http://dbpedia.org/ontology/code"],
     resourceDescriptionQuery: function(iri: string) {
       var projectPattern = `
         <${iri}> ?x ?y.
@@ -95,8 +95,53 @@ export var CLASSES: { [className: string]: ClassConfig } = {
     }
   }
 };
+const escape = /["\\\t\n\r\b\f]/g;
+const escapeReplacer = function (c:string) { return escapeReplacements[c]; };
+const escapeReplacements:{[key:string]:string} = { '\\': '\\\\', '"': '\\"', '\t': '\\t',
+                           '\n': '\\n', '\r': '\\r', '\b': '\\b', '\f': '\\f' };
+var XSD_INTEGER = 'http://www.w3.org/2001/XMLSchema#integer';
+function toEntity(value:FacetValue):string {
+  // regular entity
+  if (value.type === 'bnode') {
+    return value.value;
+  }
+  if (value.type === 'uri') {
+    return `<${value.value}>`
+  }
+  //its a literal
+  if (value.datatype === XSD_INTEGER && /^\d+$/.test(value.value)) {
+    // Add space to avoid confusion with decimals in broken parsers
+    return value.value + ' ';
+  }
 
+  var stringRepresentation = `"${value.value.replace(escape, escapeReplacer)}"`
+  if (value.type === 'typed-literal') {
+    stringRepresentation += `^^<${value.datatype}>`
+  }
+  console.log(stringRepresentation)
+  return stringRepresentation
+}
 export var FACETS: { [property: string]: FacetConfig } = {
+  "http://dbpedia.org/ontology/code": {
+    iri: "http://dbpedia.org/ontology/code",
+    label: "Monument code",
+    facetType: "multiselect",
+    getFacetValuesQuery: iri => {
+      return `
+      SELECT DISTINCT ?_value ?_valueLabel WHERE {
+        ?_r <${iri}> ?_value.
+        OPTIONAL {
+          ?_value rdfs:label ?_valueLabel
+        }
+      } LIMIT 100`;
+    },
+    facetToQueryPatterns: values => {
+      if (values instanceof Array && values.length) {
+        console.log(values)
+        return values.map(v => `?_r <http://dbpedia.org/ontology/code> ${toEntity(v)} .`).join('} UNION {')
+      }
+    }
+  },
   "https://cultureelerfgoed.nl/vocab/province": {
     iri: "https://cultureelerfgoed.nl/vocab/province",
     label: "Provincie",

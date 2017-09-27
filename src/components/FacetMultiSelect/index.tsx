@@ -36,7 +36,7 @@ class FacetMultiSelect extends React.PureComponent<Facet.Props, any> {
     return <div>
       {
         this.props.facet.optionList.map(o => <Checkbox
-          label={o.label}
+          label={o.label || o.value}
           checked={this.props.facet.selectedFacetValues.has(o.value)}
           key={o.value}
           onChange={(checked:boolean) => {

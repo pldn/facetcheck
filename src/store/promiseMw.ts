@@ -10,14 +10,13 @@ import ApiClient from "helpers/ApiClient";
 var createClientMiddleware = function(client: ApiClient): Middleware {
   return (store: Store<GlobalState>) => {
     return (next: Function) => (action: any) => {
+      
       try {
         if (typeof action === "function") {
           return action(store.dispatch, store.getState);
         }
-        const { promise, types } = action;
-        const rest = _.omit(action, ["promise, types"]);
-        // const {promise, types, ...rest} = action; // eslint-disable-line no-redeclare
-        if (!promise) {
+        const { promise, types, ...rest } = action;
+        if (!promise || !types || types.length !== 3) {
           return next(action);
         }
         const [REQUEST, SUCCESS, FAILURE] = types;
