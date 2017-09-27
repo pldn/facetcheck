@@ -1,6 +1,7 @@
 
 .range {
   margin: 0 20px;
+  padding-bottom:20px; //the legenda is shown with absolute pos. so need extra spacing to avoid overlap with other els
 }
 :global {
   .rc-slider {
