@@ -66,7 +66,8 @@ export function reducer(state = initialState, action: Action) {
         state = state.set('fetchQueue', Immutable.OrderedMap(action.toFetch))
       }
       return state;
-
+    // case FacetsActions.REFRESH_FACETS:
+    //   return state.set('resourceDescriptions', Immutable.OrderedMap<string, Statements>())
 
     // return newState;
     default:

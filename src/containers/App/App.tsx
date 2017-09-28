@@ -13,7 +13,7 @@ import * as getClassName from "classnames";
 // import {Account} from 'reducers/accounts'
 import { getPageMetadata } from "reducers/config";
 // import {getSubclassRelations,fetchShapes} from 'reducers/schema'
-import { getMatchingIris, queueFacetUpdates } from "reducers/facets";
+import { getMatchingIris, refreshFacets } from "reducers/facets";
 import { getStatements } from "reducers/statements";
 import { GlobalState } from "reducers";
 
@@ -35,7 +35,7 @@ const styles = require("./style.scss");
 @asyncConnect([
   {
     promise: ({ store: { dispatch, getState } }) => {
-      return Promise.all([dispatch(getMatchingIris(getState())), dispatch(queueFacetUpdates(getState()))]);
+      return Promise.all([dispatch(getMatchingIris(getState())), dispatch(refreshFacets(getState()))]);
     }
   } as IAsyncConnect<any>
 ])

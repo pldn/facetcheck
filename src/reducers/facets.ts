@@ -23,7 +23,7 @@ export enum Actions {
   FETCH_FACET_PROPS = "facetcheck/facets/FETCH_FACET_PROPS" as any,
   FETCH_FACET_PROPS_SUCCESS = "facetcheck/facets/FETCH_FACET_PROPS_SUCCESS" as any,
   FETCH_FACET_PROPS_FAIL = "facetcheck/facets/FETCH_FACET_PROPS_FAIL" as any,
-  QUEUE_FACET_UPDATE = "facetcheck/facets/QUEUE_FACET_UPDATE" as any,
+  REFRESH_FACETS = "facetcheck/facets/REFRESH_FACETS" as any,
   SET_FACET_VALUE = "facetcheck/facets/SET_FACET_VALUE" as any
   // GET_FACET_CONFIG = "facetcheck/facets/GET_FACET_CONFIG" as any,
   // GET_FACET_CONFIG_SUCCESS = "facetcheck/facets/GET_FACET_CONFIG_SUCCESS" as any,
@@ -118,8 +118,10 @@ export function reducer(state = initialState, action: Action) {
           });
         });
       });
-    case Actions.QUEUE_FACET_UPDATE:
-      return state.set("updateFacetInfoQueue", Immutable.List(action.facetQueue));
+    case Actions.REFRESH_FACETS:
+      return state.set('facets', Immutable.OrderedMap())//clear old facet configs
+        .set('matchingIris', Immutable.OrderedMap())//clear old facet configs
+        .set("updateFacetInfoQueue", Immutable.List(action.facetQueue));
     case Actions.FETCH_FACET_PROPS:
       return state.update("updateFacetInfoQueue", list => {
         const i = list.indexOf(action.facetName);
@@ -163,22 +165,27 @@ export var epics: [(action: Action$, store: Store) => any] = [
   //update matching iris when classes change
   (action$: Action$, store: Store) => {
     return action$.ofType(Actions.SET_SELECTED_CLASS).map((action: Action) => {
-      store.dispatch(getMatchingIris(store.getState()));
-      store.dispatch(queueFacetUpdates(store.getState(), action.className));
-      return () => {}; //empty action
+      //facet settings might need removing before fetching the matching iris. So make sure we don't call one before the other
+      // store.dispatch(getMatchingIris(store.getState()));
+      return store.dispatch(refreshFacets(store.getState(), action.className));
     });
   },
   //update matching iris when facets change
   (action$: Action$, store: Store) => {
     return action$.ofType(Actions.SET_FACET_VALUE).map((action: Action) => {
-      store.dispatch(getMatchingIris(store.getState()));
-      return () => {}; //empty action
+      return store.dispatch(getMatchingIris(store.getState()));
+    });
+  },
+  //update matching iris when facets are refreshed (this triggers new resourcedescriptions as well)
+  (action$: Action$, store: Store) => {
+    return action$.ofType(Actions.REFRESH_FACETS).map((action: Action) => {
+      return store.dispatch(getMatchingIris(store.getState()));
     });
   },
 
   //update facet information when facets are added to the queue
   (action$: Action$, store: Store) => {
-    return action$.ofType(Actions.QUEUE_FACET_UPDATE).map((action: Action) => {
+    return action$.ofType(Actions.REFRESH_FACETS).map((action: Action) => {
       return store.dispatch(getFacetProps(store.getState(), action.facetQueue[0]));
     });
   },
@@ -317,7 +324,7 @@ export function getSelectedClass(facetState:StateRecordInterface ):string {
   return facetState.selectedClass
 }
 
-export function queueFacetUpdates(state: GlobalState, forClass?: string): Action {
+export function refreshFacets(state: GlobalState, forClass?: string): Action {
   if (!forClass || forClass.length === 0) forClass = getSelectedClass(state.facets);
   var facets: string[] = [];
 
@@ -327,8 +334,8 @@ export function queueFacetUpdates(state: GlobalState, forClass?: string): Action
   }
   var facets: string[] = classConf.facets
   return {
-    type: Actions.QUEUE_FACET_UPDATE,
-    facetQueue: _.uniq(facets)
+    type: Actions.REFRESH_FACETS,
+    facetQueue: _.uniq(facets),
   };
 }
 
