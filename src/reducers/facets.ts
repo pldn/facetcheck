@@ -4,7 +4,7 @@ import * as N3 from "n3";
 import * as Immutable from "immutable";
 import ApiClient from "helpers/ApiClient";
 import { GlobalActions, GlobalState } from "reducers";
-import { FACETS, CLASSES, FacetValue } from "facetConf";
+import { FACETS, CLASSES, FacetValue,ClassConfig } from "facetConf";
 import * as ReduxObservable from "redux-observable";
 import * as Redux from "redux";
 import * as RX from "rxjs";
@@ -19,7 +19,7 @@ export enum Actions {
   GET_MATCHING_IRIS = "facetcheck/facets/GET_MATCHING_IRIS" as any,
   GET_MATCHING_IRIS_SUCCESS = "facetcheck/facets/GET_MATCHING_IRIS_SUCCESS" as any,
   GET_MATCHING_IRIS_FAIL = "facetcheck/facets/GET_MATCHING_IRIS_FAIL" as any,
-  TOGGLE_CLASS = "facetcheck/facets/TOGGLE_CLASS" as any,
+  SET_SELECTED_CLASS = "facetcheck/facets/SET_SELECTED_CLASS" as any,
   FETCH_FACET_PROPS = "facetcheck/facets/FETCH_FACET_PROPS" as any,
   FETCH_FACET_PROPS_SUCCESS = "facetcheck/facets/FETCH_FACET_PROPS_SUCCESS" as any,
   FETCH_FACET_PROPS_FAIL = "facetcheck/facets/FETCH_FACET_PROPS_FAIL" as any,
@@ -63,13 +63,7 @@ export var StateRecord = Immutable.Record(
     matchingIris: Immutable.OrderedMap<string, string>(), //matched IRI -> className of that iri
     fetchResources: 0,
     updateFacetInfoQueue: Immutable.List<string>(),
-    classes: <SelectedClasses>Immutable.OrderedMap<string, boolean>().withMutations(m => {
-      //populate selectedClasses (taken from object here, so no guarantees on sorting)
-      for (const c of Object.keys(CLASSES)) {
-        m.set(c, CLASSES[c].default);
-      }
-      return m;
-    }),
+    selectedClass: <string>_.values<ClassConfig>(CLASSES).find((val) => val.default).iri,
     facets: Immutable.OrderedMap<string, Facet>()
   },
   "facets"
@@ -104,8 +98,8 @@ export function reducer(state = initialState, action: Action) {
       return state
         .update("fetchResources", num => num - 1)
         .set("matchingIris", Immutable.OrderedMap<string, string>(<any>action.result.iriToClassMapping));
-    case Actions.TOGGLE_CLASS:
-      return state.setIn(<[keyof StateRecordInterface, string]>["classes", action.className], action.checked);
+    case Actions.SET_SELECTED_CLASS:
+      return state.set("selectedClass",action.className);
     case Actions.SET_FACET_VALUE:
       return state.update("facets", facet => {
         return facet.update(action.facetName, new Facet(), _vals => {
@@ -141,7 +135,7 @@ export function reducer(state = initialState, action: Action) {
           state = state.update("updateFacetInfoQueue", list => list.delete(queueIndex));
         }
       }
-      const facetSorting = getFacetsForClasses(getSelectedClasses(state));
+      const facetSorting = getFacetsForClass(getSelectedClass(state));
       return state.update("facets", facet => {
         return facet.update(action.facetName, new Facet(), _vals => {
           return _vals.withMutations(vals => {
@@ -168,7 +162,7 @@ export type Store = Redux.Store<GlobalState>;
 export var epics: [(action: Action$, store: Store) => any] = [
   //update matching iris when classes change
   (action$: Action$, store: Store) => {
-    return action$.ofType(Actions.TOGGLE_CLASS).map((action: Action) => {
+    return action$.ofType(Actions.SET_SELECTED_CLASS).map((action: Action) => {
       store.dispatch(getMatchingIris(store.getState()));
       store.dispatch(queueFacetUpdates(store.getState(), action.className));
       return () => {}; //empty action
@@ -201,12 +195,9 @@ export var epics: [(action: Action$, store: Store) => any] = [
       });
   }
 ];
-export function getFacetsForClasses(selectedClasses:string[]):string[] {
-  var facetsToCheck: string[] = [];
-  for (const className of selectedClasses) {
-    facetsToCheck = facetsToCheck.concat(CLASSES[className].facets);
-  }
-  return _.uniq(facetsToCheck)
+export function getFacetsForClass(selectedClass:string):string[] {
+  if (!CLASSES[selectedClass]) throw new Error('No class definition found for ' + selectedClass)
+  return CLASSES[selectedClass].facets;
 }
 export function facetsToQuery(state: GlobalState) {
   const sparqlBuilder = SparqlBuilder.get(prefixes);
@@ -218,8 +209,8 @@ export function facetsToQuery(state: GlobalState) {
   /**
    * Add classes
    */
-  const selectedClasses = getSelectedClasses(state.facets);
-  sparqlBuilder.hasClasses(...selectedClasses);
+  const selectedClass = getSelectedClass(state.facets);
+  sparqlBuilder.hasClasses(selectedClass);
   //also return which classes match. That way, we know for this particular IRI how to render it
   //as one iri can have multiple classes, we have to join this variable with the list of selected classes when
   //we get the query result
@@ -230,7 +221,7 @@ export function facetsToQuery(state: GlobalState) {
   /**
    * Get facets we might need to integrate in this query
    */
-  var facetsToCheck: string[] = getFacetsForClasses(selectedClasses).filter(f => {
+  var facetsToCheck: string[] = getFacetsForClass(selectedClass).filter(f => {
     const facetsValues = state.facets.facets.get(f);
     if (!facetsValues) return false;
     return !!_.size(facetsValues.selectedObject) || !!facetsValues.selectedFacetValues.size;
@@ -266,11 +257,10 @@ export function facetsToQuery(state: GlobalState) {
   return sparqlBuilder.toString();
 }
 
-export function toggleClass(className: string, checked: boolean): Action {
+export function setSelectedClass(className: string): Action {
   return {
-    type: Actions.TOGGLE_CLASS,
+    type: Actions.SET_SELECTED_CLASS,
     className: className,
-    checked: checked
   };
 }
 //
@@ -312,7 +302,7 @@ export function getMatchingIris(state: GlobalState): any {
           return {
             iriToClassMapping: sparql.getValues().reduce<IriToClassMapping>(function(mapping, binding) {
               if (binding._r) {
-                if (binding._type && getSelectedClasses(state.facets).indexOf(binding._type.value) >= 0) {
+                if (binding._type && getSelectedClass(state.facets).indexOf(binding._type.value) >= 0) {
                   //it's a type we recognize (i.e., we can render it)
                   mapping[binding._r.value] = binding._type.value;
                 }
@@ -323,23 +313,19 @@ export function getMatchingIris(state: GlobalState): any {
         })
   };
 }
-export function getSelectedClasses(facetState:StateRecordInterface ) {
-  return facetState.classes
-    .filter(val => val)
-    .keySeq()
-    .toArray();
+export function getSelectedClass(facetState:StateRecordInterface ):string {
+  return facetState.selectedClass
 }
 
-export function queueFacetUpdates(state: GlobalState, ...forClasses: string[]): Action {
-  if (!forClasses || forClasses.length === 0) forClasses = getSelectedClasses(state.facets);
+export function queueFacetUpdates(state: GlobalState, forClass?: string): Action {
+  if (!forClass || forClass.length === 0) forClass = getSelectedClass(state.facets);
   var facets: string[] = [];
-  for (const forClass of forClasses) {
-    const classConf = CLASSES[forClass];
-    if (!classConf) {
-      throw new Error("Could not find class config for " + forClass);
-    }
-    facets = facets.concat(classConf.facets);
+
+  const classConf = CLASSES[forClass];
+  if (!classConf) {
+    throw new Error("Could not find class config for " + forClass);
   }
+  var facets: string[] = classConf.facets
   return {
     type: Actions.QUEUE_FACET_UPDATE,
     facetQueue: _.uniq(facets)
@@ -378,7 +364,7 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
   const facetComponent = FacetComponent.getFacetFromString(facetConf.facetType);
   sparqlBuilder.distinct();
   facetComponent.prepareOptionsQuery(sparqlBuilder);
-  sparqlBuilder.hasClasses(...getSelectedClasses(state.facets));
+  sparqlBuilder.hasClasses(getSelectedClass(state.facets));
   return {
     types: [Actions.FETCH_FACET_PROPS, Actions.FETCH_FACET_PROPS_SUCCESS, Actions.FETCH_FACET_PROPS_FAIL],
     facetName: forProp,

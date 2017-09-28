@@ -6,9 +6,11 @@ import { connect, MapDispatchToPropsObject } from "react-redux";
 import * as getClassName from "classnames";
 //import own dependencies
 import { asyncConnect, IAsyncConnect } from "redux-connect";
+import { RadioGroup, RadioButton } from 'react-toolbox/lib/radio';
+
 import Checkbox from 'react-toolbox/lib/checkbox';
 import { GlobalState } from "reducers";
-import {toggleClass,SelectedClasses,FacetsProps,setSelectedFacetValue,setSelectedObject} from 'reducers/facets'
+import {setSelectedClass,FacetsProps,setSelectedFacetValue,setSelectedObject} from 'reducers/facets'
 import {CLASSES,FACETS} from 'facetConf'
 import {
   Facet,
@@ -19,12 +21,12 @@ namespace Panel {
   // export interface OwnProps extends IComponentProps {
   // }
   export interface DispatchProps {
-    toggleClass: typeof toggleClass
+    setSelectedClass: typeof setSelectedClass
     setSelectedFacetValue: typeof setSelectedFacetValue
     setSelectedObject: typeof setSelectedObject
   }
   export interface PropsFromState {
-    selectedClasses: SelectedClasses,
+    selectedClass: string,
     facets: FacetsProps
   }
 
@@ -42,17 +44,24 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
     return <div className={styles.section}>
       <div className={styles.sectionHeader}>Classes</div>
       {
-      this.props.selectedClasses.map((val,key) => {
-        const CLASS = CLASSES[key]
-          return <Checkbox
-            label={CLASS.label}
-            checked={val}
-            key={key}
-            onChange={(checked:boolean) => {
-              this.props.toggleClass(key, checked)
-            }}
-            />
-      }).valueSeq().toArray()
+        <RadioGroup value={this.props.selectedClass} onChange={this.props.setSelectedClass}>
+
+        {
+          _.keys(CLASSES).map(key => <RadioButton label={CLASSES[key].label} value={CLASSES[key].iri}/>)
+
+        }
+        </RadioGroup>
+      // this.props.selectedClass.map((val,key) => {
+      //   const CLASS = CLASSES[key]
+      //     return <Checkbox
+      //       label={CLASS.label}
+      //       checked={val}
+      //       key={key}
+      //       onChange={(checked:boolean) => {
+      //         this.props.toggleClass(key, checked)
+      //       }}
+      //       />
+      // }).valueSeq().toArray()
       }
 
 
@@ -92,13 +101,13 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
 export default connect<GlobalState, Panel.PropsFromState, Panel.DispatchProps, {}>(
   (state, ownProps) => {
     return {
-      selectedClasses: state.facets.classes,
+      selectedClass: state.facets.selectedClass,
       facets: state.facets.facets
     };
   },
   //dispatch
   {
-    toggleClass:toggleClass,
+    setSelectedClass:setSelectedClass,
     setSelectedObject: setSelectedObject,
     setSelectedFacetValue:setSelectedFacetValue
   }

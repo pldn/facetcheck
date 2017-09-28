@@ -2,10 +2,10 @@
 .provinces {
   width:120px;
   path:hover {
-    stroke: lighten($custom4, 2);
+    stroke: $custom4;
     // stroke-width:2px;
     stroke-linejoin: round;
-    fill:  lighten($custom4, 2);
+    fill:  $custom4;
     cursor: pointer;
   }
 }
