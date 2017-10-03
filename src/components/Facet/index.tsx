@@ -48,12 +48,11 @@ class Facet extends React.PureComponent<Facet.Props, any> {
     this.FacetComponents = [FacetMultiSelect, FacetSlider, FacetProvinces];
   }
 
-  
+
   render() {
     const { className } = this.props;
     var facet: any;
     if (this.props.facet.error) {
-      console.log('an error!')
       facet = <Label bsStyle="danger">{this.props.facet.error}</Label>
     } else {
       for (const FacetComponent of this.FacetComponents) {

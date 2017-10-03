@@ -34,7 +34,7 @@ const styles = require("./style.scss");
 @asyncConnect([
   {
     promise: ({ store: { dispatch, getState } }) => {
-      return Promise.all([dispatch(getMatchingIris(getState())), dispatch(refreshFacets(getState()))]);
+      return Promise.all([dispatch(refreshFacets(getState()))]);
     }
   } as IAsyncConnect<any>
 ])

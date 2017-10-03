@@ -52,7 +52,6 @@ class Home extends React.PureComponent<Home.Props, any> {
       if (els.length === 0) {
         return "no descriptions found...";
       } else {
-        console.log(els)
         return els;
       }
 
