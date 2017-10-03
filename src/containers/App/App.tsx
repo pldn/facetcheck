@@ -14,7 +14,6 @@ import * as getClassName from "classnames";
 import { getPageMetadata } from "reducers/config";
 // import {getSubclassRelations,fetchShapes} from 'reducers/schema'
 import { getMatchingIris, refreshFacets } from "reducers/facets";
-import { getStatements } from "reducers/statements";
 import { GlobalState } from "reducers";
 
 namespace App {

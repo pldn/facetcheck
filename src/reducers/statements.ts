@@ -7,7 +7,7 @@ import { GlobalActions } from "reducers";
 import {default as prefixes, getAsString} from 'prefixes'
 const urlParse = require("url-parse");
 import Tree from 'helpers/Tree'
-import {Actions as FacetsActions,IriToClassMapping, Action as FacetAction} from './facets'
+import {Actions as FacetsActions, Action as FacetAction} from './facets'
 import * as ReduxObservable from "redux-observable";
 import * as Redux from "redux";
 import {GlobalState} from './'
@@ -31,7 +31,7 @@ export var StateRecord = Immutable.Record(
   {
     resourceDescriptions: Immutable.OrderedMap<string, Statements>(),
     fetchRequests: 0,
-    fetchQueue: Immutable.OrderedMap<string,string>()
+    fetchQueue: Immutable.OrderedSet<string>()
   },
   "statements"
 );
@@ -43,7 +43,7 @@ export type ResourceDescriptions = Immutable.OrderedMap<string, Statements>;
 export interface Action extends GlobalActions<Actions> {
   forIri?: string;
   toRemove?:string[],
-  toFetch?:IriToClassMapping
+  toFetch?:string[]
 }
 
 export function reducer(state = initialState, action: Action) {
@@ -63,7 +63,7 @@ export function reducer(state = initialState, action: Action) {
         });
       }
       if (action.toFetch && action.toFetch.length) {
-        state = state.set('fetchQueue', Immutable.OrderedMap(action.toFetch))
+        state = state.set('fetchQueue', Immutable.OrderedSet(action.toFetch))
       }
       return state;
     // case FacetsActions.REFRESH_FACETS:
@@ -85,18 +85,15 @@ export var epics: [(action: Action$, store: Store) => any] = [
   (action$: Action$, store: Store) => {
     return action$.ofType(FacetsActions.GET_MATCHING_IRIS_SUCCESS)
       .map((action:FacetAction) => action.result)
-      .filter(result => !!result.iriToClassMapping)
+      .filter(result => result.iris && result.iris.length > 0)
       .map((result) => {
-        const matches = result.iriToClassMapping;
-        const matchingIris = _.keys(matches);
+        console.log('epic?')
+        const matchingIris = result.iris
         const existingStatements = store.getState().statements.resourceDescriptions.keySeq().toArray();
         const toRemove = _.difference(existingStatements, matchingIris);
         const toFetch = matchingIris.filter(s => {
           return existingStatements.indexOf(s) < 0;
-        }).reduce<IriToClassMapping>(function(result, matchingIri) {
-          result[matchingIri] = matches[matchingIri]
-          return result;
-        },{});
+        })
 
         return markForFetchingOrDeletion(toRemove,toFetch)
     })
@@ -105,29 +102,27 @@ export var epics: [(action: Action$, store: Store) => any] = [
   (action$: Action$, store: Store) => {
     return action$.ofType(Actions.MARK_FOR_FETCHING_OR_DELETION)
       .map(action => action.toFetch)
-      .filter((toFetch:IriToClassMapping) => !_.isEmpty(toFetch))
-      .map((toFetch:IriToClassMapping) => {
-        const matchingIri = _.keys(toFetch)[0];
-        const className = toFetch[matchingIri];
-        return getStatements(matchingIri,className)
+      .filter((toFetch:string[]) => toFetch.length > 0)
+      .map((toFetch:string[]) => {
+        const matchingIri = toFetch[0];
+        return getStatements(matchingIri,store.getState().facets.selectedClass)
     })
   },
   //Fetch new statement from queue list when we've finished fetching
   (action$: Action$, store: Store) => {
     return action$.ofType(Actions.GET_STATEMENTS_SUCCESS)
-      .map((action:any) => {
+      .map((action:any):any => {
         return store.getState().statements.fetchQueue;
       })
-      .filter((fetchQueue:Immutable.OrderedMap<string,string>) => fetchQueue.size > 0)
-      .map((fetchQueue:Immutable.OrderedMap<string,string>) => {
-        const matchingIri = fetchQueue.keySeq().first();
-        const className = fetchQueue.get(matchingIri);
-        return getStatements(matchingIri,className)
+      .filter((fetchQueue:Immutable.OrderedSet<string>) => fetchQueue.size > 0)
+      .map((fetchQueue:Immutable.OrderedSet<string>) => {
+        const matchingIri = fetchQueue.first();
+        return getStatements(matchingIri,store.getState().facets.selectedClass)
       })
   }
 ]
 
-export function markForFetchingOrDeletion(toRemove:string[], toFetch:IriToClassMapping):Action {
+export function markForFetchingOrDeletion(toRemove:string[], toFetch:string[]):Action {
   return {
     type: Actions.MARK_FOR_FETCHING_OR_DELETION,
     toRemove,
@@ -135,6 +130,9 @@ export function markForFetchingOrDeletion(toRemove:string[], toFetch:IriToClassM
   }
 }
 export function getStatements(resource: string, className:string): Action {
+  if (!className) throw new Error('missing classname. cannot get statements')
+  if (!resource) throw new Error('missing resource IRI. cannot get statements')
+  console.log(className)
   const q = `${getAsString()} ${CLASSES[className].resourceDescriptionQuery(resource)}`;
   console.log(q);
   return {

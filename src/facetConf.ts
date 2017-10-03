@@ -28,11 +28,10 @@ export interface ClassConfig {
 }
 export var CLASSES: { [className: string]: ClassConfig } = {
   "https://cultureelerfgoed.nl/vocab/Monument": {
-    default: true, //default
+    default: false, //default
     iri: "https://cultureelerfgoed.nl/vocab/Monument",
     label: "Monument",
     facets: ["https://cultureelerfgoed.nl/vocab/province", "http://schema.org/dateCreated", "http://dbpedia.org/ontology/code"],
-    // facets: ["http://schema.org/dateCreated", "http://dbpedia.org/ontology/code"],
     resourceDescriptionQuery: function(iri: string) {
       var projectPattern = `
         <${iri}> ?x ?y.
@@ -62,7 +61,7 @@ export var CLASSES: { [className: string]: ClassConfig } = {
     }
   },
   "https://data.pdok.nl/cbs/vocab/Gemeente": {
-    default: false, //default
+    default: true, //default
     iri: "https://data.pdok.nl/cbs/vocab/Gemeente",
     label: "Gemeente",
     facets: ["https://cultureelerfgoed.nl/vocab/province"],
@@ -77,18 +76,20 @@ export var CLASSES: { [className: string]: ClassConfig } = {
 
       `;
       var selectPattern = `
-      <${iri}> ?x ?y.
-      OPTIONAL {
-        ?y rdfs:label ?yLabel
-      }
-      OPTIONAL {
-        ?x rdfs:label ?xLabel
-      }
+      GRAPH <https://data.pdok.nl/cbs/id/graph/2015> {
+          <${iri}> ?x ?y.
+          OPTIONAL {
+            ?y rdfs:label ?yLabel
+          }
+          OPTIONAL {
+            ?x rdfs:label ?xLabel
+          }
 
-      OPTIONAL {
-        <${iri}> geo:hasGeometry ?geo .
-        ?geo geo:asWKT ?wkt.
-      }
+          OPTIONAL {
+            <${iri}> geo:hasGeometry ?geo .
+            ?geo geo:asWKT ?wkt.
+          }
+        }
 
       `;
       return `CONSTRUCT { ${projectPattern} } WHERE { ${selectPattern} } `;

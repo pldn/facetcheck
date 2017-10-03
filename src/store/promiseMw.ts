@@ -15,6 +15,7 @@ var createClientMiddleware = function(client: ApiClient): Middleware {
         if (typeof action === "function") {
           return action(store.dispatch, store.getState);
         }
+        if (!action) return
         const { promise, types, ...rest } = action;
         if (!promise || !types || types.length !== 3) {
           if (action instanceof Promise) {

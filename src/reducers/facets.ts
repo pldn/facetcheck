@@ -32,7 +32,6 @@ export enum Actions {
 
 export type Statement = N3.Statement;
 export type Statements = Immutable.List<Statement>;
-export type IriToClassMapping = { [iri: string]: string };
 
 // export type FacetValueOptions = Partial<FacetProvinces.Options & FacetMultiSelect.Options & FacetSlider.Options>;
 export interface FacetProps {
@@ -60,7 +59,7 @@ export type SelectedClasses = Immutable.OrderedMap<string, boolean>;
 
 export var StateRecord = Immutable.Record(
   {
-    matchingIris: Immutable.OrderedMap<string, string>(), //matched IRI -> className of that iri
+    matchingIris: Immutable.List<string>(),
     fetchResources: 0,
     updateFacetInfoQueue: Immutable.List<string>(),
     selectedClass: <string>_.values<ClassConfig>(CLASSES).find((val) => val.default).iri,
@@ -79,7 +78,7 @@ export interface Action extends GlobalActions<Actions> {
   result?: {
     optionList?: FacetProps["optionList"];
     optionObject?: FacetProps["optionObject"];
-    iriToClassMapping?: IriToClassMapping;
+    iris?:string[];
   };
   facetQueue?: string[];
   facetValueKey?: string;
@@ -97,7 +96,7 @@ export function reducer(state = initialState, action: Action) {
     case Actions.GET_MATCHING_IRIS_SUCCESS:
       return state
         .update("fetchResources", num => num - 1)
-        .set("matchingIris", Immutable.OrderedMap<string, string>(<any>action.result.iriToClassMapping));
+        .set("matchingIris", Immutable.List<string>(action.result.iris));
     case Actions.SET_SELECTED_CLASS:
       return state.set("selectedClass",action.className);
     case Actions.SET_FACET_VALUE:
@@ -120,7 +119,7 @@ export function reducer(state = initialState, action: Action) {
       });
     case Actions.REFRESH_FACETS:
       return state.set('facets', Immutable.OrderedMap())//clear old facet configs
-        .set('matchingIris', Immutable.OrderedMap())//clear old facet configs
+        .set('matchingIris', Immutable.List())//clear old facet configs
         .set("updateFacetInfoQueue", Immutable.List(action.facetQueue));
     case Actions.FETCH_FACET_PROPS:
       return state.update("updateFacetInfoQueue", list => {
@@ -209,7 +208,7 @@ export function getFacetsForClass(selectedClass:string):string[] {
 export function facetsToQuery(state: GlobalState) {
   const sparqlBuilder = SparqlBuilder.get(prefixes);
   sparqlBuilder
-    .vars("?_r", "?_type")
+    .vars("?_r")
     .limit(2)
     .distinct();
 
@@ -218,12 +217,6 @@ export function facetsToQuery(state: GlobalState) {
    */
   const selectedClass = getSelectedClass(state.facets);
   sparqlBuilder.hasClasses(selectedClass);
-  //also return which classes match. That way, we know for this particular IRI how to render it
-  //as one iri can have multiple classes, we have to join this variable with the list of selected classes when
-  //we get the query result
-  sparqlBuilder.addQueryPatterns([
-    { type: "bgp", triples: [{ subject: "?_r", predicate: prefix("rdf", "type"), object: "?_type" }] }
-  ]);
 
   /**
    * Get facets we might need to integrate in this query
@@ -307,15 +300,7 @@ export function getMatchingIris(state: GlobalState): any {
         })
         .then(sparql => {
           return {
-            iriToClassMapping: sparql.getValues().reduce<IriToClassMapping>(function(mapping, binding) {
-              if (binding._r) {
-                if (binding._type && getSelectedClass(state.facets).indexOf(binding._type.value) >= 0) {
-                  //it's a type we recognize (i.e., we can render it)
-                  mapping[binding._r.value] = binding._type.value;
-                }
-              }
-              return mapping;
-            }, {})
+            iris: sparql.getValuesForVar('_r')
           };
         })
   };
