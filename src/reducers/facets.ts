@@ -253,7 +253,7 @@ export function facetsToQuery(state: GlobalState) {
   }
 
   sparqlBuilder.addQueryPatterns(queryPatterns);
-  console.log(sparqlBuilder.toString());
+  console.groupCollapsed('Querying for matching IRIs');console.info(sparqlBuilder.toString());console.groupEnd()
   return sparqlBuilder.toString();
 }
 

@@ -119,7 +119,6 @@ function toEntity(value:FacetValue):string {
   if (value.type === 'typed-literal') {
     stringRepresentation += `^^<${value.datatype}>`
   }
-  console.log(stringRepresentation)
   return stringRepresentation
 }
 export var FACETS: { [property: string]: FacetConfig } = {
@@ -138,7 +137,6 @@ export var FACETS: { [property: string]: FacetConfig } = {
     },
     facetToQueryPatterns: values => {
       if (values instanceof Array && values.length) {
-        console.log(values)
         return values.map(v => `?_r <http://dbpedia.org/ontology/code> ${toEntity(v)} .`).join('} UNION {')
       }
     }

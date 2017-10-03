@@ -87,7 +87,6 @@ export var epics: [(action: Action$, store: Store) => any] = [
       .map((action:FacetAction) => action.result)
       .filter(result => result.iris && result.iris.length > 0)
       .map((result) => {
-        console.log('epic?')
         const matchingIris = result.iris
         const existingStatements = store.getState().statements.resourceDescriptions.keySeq().toArray();
         const toRemove = _.difference(existingStatements, matchingIris);
@@ -132,9 +131,8 @@ export function markForFetchingOrDeletion(toRemove:string[], toFetch:string[]):A
 export function getStatements(resource: string, className:string): Action {
   if (!className) throw new Error('missing classname. cannot get statements')
   if (!resource) throw new Error('missing resource IRI. cannot get statements')
-  console.log(className)
   const q = `${getAsString()} ${CLASSES[className].resourceDescriptionQuery(resource)}`;
-  console.log(q);
+  console.groupCollapsed('Querying for a resource description');console.info(resource,q);console.groupEnd()
   return {
     types: [Actions.GET_STATEMENTS, Actions.GET_STATEMENTS_SUCCESS, Actions.GET_STATEMENTS_FAIL],
     promise: (client: ApiClient) =>

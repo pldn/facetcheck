@@ -152,7 +152,7 @@ export default class ApiClient {
 
       const request: superagent.Request<any> = superagent[args.method](requestTo);
       const uuid = this.addRequestReference(args.requestTag, request);
-      console.info(requestTo);
+      // console.info(requestTo);
       if (args.query) {
         request.query(args.query);
       }

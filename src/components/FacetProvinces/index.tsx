@@ -94,9 +94,7 @@ class FacetProvinces extends React.PureComponent<FacetProvinces.Props, any> {
             onClick={(data: any, e: any) => {
               if (data.target && data.target.id) {
                 const id: FacetProvinces.Provinces = data.target.id;
-                console.log(id,this.props.facet.optionObject)
                 if (this.props.facet.optionObject[id]) {
-                  console.log('found optionobj')
                   const val = facet.optionObject[id].value;
                   this.props.setSelectedFacetValue(facet.iri, val, !facet.selectedFacetValues.has(val));
                 }
