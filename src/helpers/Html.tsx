@@ -47,7 +47,6 @@ export default class Html extends React.PureComponent<any, any> {
               media="screen, projection"
               rel="stylesheet"
               type="text/css"
-              charSet="UTF-8"
             />
           )}
 
