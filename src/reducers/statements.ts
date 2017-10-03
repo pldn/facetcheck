@@ -31,7 +31,9 @@ export var StateRecord = Immutable.Record(
   {
     resourceDescriptions: Immutable.OrderedMap<string, Statements>(),
     fetchRequests: 0,
-    fetchQueue: Immutable.OrderedSet<string>()
+    fetchQueue: Immutable.OrderedSet<string>(),
+    getMatchingIrisError: <string>null,
+    errors: Immutable.OrderedMap<string, string>(),
   },
   "statements"
 );
@@ -39,6 +41,7 @@ export var initialState = new StateRecord();
 export type StateRecordInterface = typeof initialState;
 
 export type ResourceDescriptions = Immutable.OrderedMap<string, Statements>;
+export type Errors = Immutable.OrderedMap<string, string>;
 
 export interface Action extends GlobalActions<Actions> {
   forIri?: string;
@@ -46,12 +49,15 @@ export interface Action extends GlobalActions<Actions> {
   toFetch?:string[]
 }
 
-export function reducer(state = initialState, action: Action) {
+export function reducer(state = initialState, action: Action & FacetAction) {
   switch (action.type) {
+    case FacetsActions.GET_MATCHING_IRIS_FAIL:
+      return state.set('getMatchingIrisError', action.error);
     case Actions.GET_STATEMENTS:
       return state.update("fetchRequests", num => num + 1).update('fetchQueue', map => map.delete(action.forIri));;
     case Actions.GET_STATEMENTS_FAIL:
-      return state.update("fetchRequests", num => num - 1);
+      return state.update("fetchRequests", num => num - 1).
+        update('errors', errors => errors.set(action.forIri, action.message))
     case Actions.GET_STATEMENTS_SUCCESS:
       return state.update("fetchRequests", num => num - 1).update("resourceDescriptions", resourceDescriptions => {
         return resourceDescriptions.set(action.forIri, Immutable.List<Statement>(action.result));

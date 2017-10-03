@@ -78,68 +78,18 @@ export function reducer(state = initialState, action: Action): StateInterface {
   var succesMsg: string;
   switch (action.type) {
     //first deal with errors that aren't handled by other reducers
-    case StatementActions.GET_STATEMENTS_FAIL:
-      // case UploadingActions.UPLOAD_FILES_FAIL:
-      // case authActions.IMPERSONATE_FAIL:
-      // case authActions.UNDO_IMPERSONATE_FAIL:
-      // case accountActions.GET_TOKENS_FAIL:
-      // case accountActions.REVOKE_TOKEN_FAIL:
-      // case accountActions.GET_TOKEN_FAIL:
-      // case configActions.UPLOAD_LOGO_FAIL:
-      // case configActions.UPDATE_APPLICATION_CONFIG_FAIL:
-      // case configActions.UPDATE_AUTH_SETTINGS_FAIL:
-      // case containerActions.GET_LIST_FAIL:
-      // case containerActions.GET_LIST_AS_ADMIN_SUCCESS:
-      // case ContainerManagementActions.DELETE_CONTAINER_FAIL:
-      // case ContainerManagementActions.DELETE_CONTAINER_FROM_ADMIN_LIST_FAIL:
-      // case ContainerManagementActions.START_CONTAINER_FAIL:
-      // case DatasetManagementActions.DELETE_DATASET_FAIL:
-      // case prefixActions.UPDATE_PREFIX_FAIL:
-      if (action.message) {
-        const notification = getNotificationWithKey({
-          type: NotificationType.ERROR,
-          message: action.message,
-          timeout: 10000,
-          devMessage: action.devMessage
-        });
-        return state.set(notification.notificationKey, notification);
-      }
-      return state;
-
-    //api calls where we want to ignore 404 status codes
-    // case ContainerManagementActions.GET_CONTAINER_INFO_FAIL:
-    // case TriplesActions.GET_TRIPLES_FAIL:
-    //   if (action.message && action.meta && action.meta.status !== 404) {
-    //     const notification = getNotificationWithKey({type: NotificationType.ERROR, message: action.message, timeout: 10000, devMessage:action.devMessage})
-    //     // notification.
-    //     return state.set(notification.notificationKey, notification)
+    // case StatementActions.GET_STATEMENTS_FAIL:
+    //   if (action.message) {
+    //     const notification = getNotificationWithKey({
+    //       type: NotificationType.ERROR,
+    //       message: action.message,
+    //       timeout: 10000,
+    //       devMessage: action.devMessage
+    //     });
+    //     return state.set(notification.notificationKey, notification);
     //   }
-
-    // case configActions.GET_CONFIG_FAIL:
-    //   const notification = getNotificationWithKey({type: NotificationType.ERROR, message: 'Failed to connect to backend', timeout: 10000});
-    //   return state.set(notification.notificationKey, notification)
-
-    // case FileActions.ADD_FILES_SUCCESS:
-    //   if(action.files && action.files.length) {
-    //     const notification = getNotificationWithKey({type: NotificationType.SUCCESS, message: `Successfully uploaded ${action.files.map(f => f.name).join(", ")}`, timeout: 10000});
-    //     return state.set(notification.notificationKey, notification)
-    //   }
-    // case FileActions.ADD_FILES_FAIL:
-    //   if(action.files && action.files.length) {
-    //     const notification = getNotificationWithKey({type: NotificationType.ERROR, message: `Upload of ${action.files.map(f => f.name).join(", ")} failed${action.message ? `. ${action.message}` : null}`, timeout: 10000});
-    //     return state.set(notification.notificationKey, notification)
-    //   }
-
-    //Some success messages
-    // case authActions.VERIFY_SUCCESS:
-    //   succesMsg = "Account verified";
-    // case authActions.RESET_PASSWORD_SUCCESS:
-    //   succesMsg = "Password successfully reset. Please log in again."
-    // case ContainerManagementActions.DELETE_CONTAINER_SUCCESS:
-    //   succesMsg = "Container successfully removed."
-    // case DatasetManagementActions.DELETE_DATASET_SUCCESS:
-    //   succesMsg = "Dataset successfully removed."
-
+    //   return state;
+    //
     // some notification management actions
     case Actions.REMOVE_ONE:
       return state.remove(action.removeKey);

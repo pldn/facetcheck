@@ -43,6 +43,7 @@ export interface FacetProps {
   optionList: FacetValue[];
   optionObject: { [key: string]: FacetValue | number };
   selectedObject: { [key: string]: number };
+  error:string
 }
 export var Facet = Immutable.Record<FacetProps>(
   {
@@ -50,7 +51,8 @@ export var Facet = Immutable.Record<FacetProps>(
     selectedFacetValues: Immutable.Set(),
     optionList: null,
     optionObject: null,
-    selectedObject: null
+    selectedObject: null,
+    error:null
   },
   "facetValues"
 );
@@ -127,6 +129,7 @@ export function reducer(state = initialState, action: Action) {
         if (i >= 0) return list.delete(list.indexOf(action.facetName))
         return list;
       });
+    case Actions.FETCH_FACET_PROPS_FAIL:
     case Actions.FETCH_FACET_PROPS_SUCCESS:
       if (action.sync) {
         //if this is executed in sync (i.e. without sparql request)
@@ -141,12 +144,13 @@ export function reducer(state = initialState, action: Action) {
         return facet.update(action.facetName, new Facet(), _vals => {
           return _vals.withMutations(vals => {
             vals.set("iri", action.facetName);
-            if (action.result.optionList) {
+            if (action.result && action.result.optionList) {
               vals.set("optionList", action.result.optionList);
             }
-            if (action.result.optionObject) {
+            if (action.result && action.result.optionObject) {
               vals.set("optionObject", action.result.optionObject);
             }
+            if (action.error) vals.set('error',action.error)
           });
         }).sortBy((val,key) => {
           return facetSorting.indexOf(key)
@@ -285,25 +289,33 @@ export function setSelectedObject(facetProp: string, facetObject: FacetProps["se
 
 var lastExecutedQuery: string;
 export function getMatchingIris(state: GlobalState): any {
-  const query = facetsToQuery(state);
-  if (lastExecutedQuery === query) {
-    //return a no-op. no use executing this query again (I think...)
-    return () => {};
+  try {
+    const query = facetsToQuery(state);
+    if (lastExecutedQuery === query) {
+      //return a no-op. no use executing this query again (I think...)
+      return () => {};
+    }
+    lastExecutedQuery = query;
+    return {
+      types: [Actions.GET_MATCHING_IRIS, Actions.GET_MATCHING_IRIS_SUCCESS, Actions.GET_MATCHING_IRIS_FAIL],
+      promise: (client: ApiClient) =>
+        client
+          .req<any, SparqlJson>({
+            sparqlSelect: query
+          })
+          .then(sparql => {
+            return {
+              iris: sparql.getValuesForVar('_r')
+            };
+          })
+    };
+  } catch(e) {
+    console.error('Failed querying for matching IRIs', e);
+    return {
+      type: Actions.GET_MATCHING_IRIS_FAIL,
+      error: 'Failed to query for resource that match these facets: ' + e.message
+    }
   }
-  lastExecutedQuery = query;
-  return {
-    types: [Actions.GET_MATCHING_IRIS, Actions.GET_MATCHING_IRIS_SUCCESS, Actions.GET_MATCHING_IRIS_FAIL],
-    promise: (client: ApiClient) =>
-      client
-        .req<any, SparqlJson>({
-          sparqlSelect: query
-        })
-        .then(sparql => {
-          return {
-            iris: sparql.getValuesForVar('_r')
-          };
-        })
-  };
 }
 export function getSelectedClass(facetState:StateRecordInterface ):string {
   return facetState.selectedClass
@@ -325,57 +337,67 @@ export function refreshFacets(state: GlobalState, forClass?: string): Action {
 }
 
 export function getFacetProps(state: GlobalState, forProp: string): Action {
-  const facetConf = FACETS[forProp];
-  if (!facetConf) {
-    throw new Error("Could not find facet config for " + forProp);
-  }
-  if (facetConf.facetValues) {
-    //options are set directly, no need to fetch the options via sparql
-    if (Array.isArray(facetConf.facetValues)) {
-      return {
-        type: Actions.FETCH_FACET_PROPS_SUCCESS,
-        result: {
-          optionList: facetConf.facetValues
-        },
-        facetName: facetConf.iri,
-        sync:true
-      };
-    } else {
-      return {
-        type: Actions.FETCH_FACET_PROPS_SUCCESS,
-        result: {
-          optionObject: facetConf.facetValues
-        },
-        facetName: facetConf.iri,
-        rand: Math.random(),
-        sync:true
-      } as any;
+  try {
+    const facetConf = FACETS[forProp];
+    if (!facetConf) {
+      throw new Error("Could not find facet config for " + forProp);
+    }
+    if (facetConf.facetValues) {
+      //options are set directly, no need to fetch the options via sparql
+      if (Array.isArray(facetConf.facetValues)) {
+        return {
+          type: Actions.FETCH_FACET_PROPS_SUCCESS,
+          result: {
+            optionList: facetConf.facetValues
+          },
+          facetName: facetConf.iri,
+          sync:true
+        };
+      } else {
+        return {
+          type: Actions.FETCH_FACET_PROPS_SUCCESS,
+          result: {
+            optionObject: facetConf.facetValues
+          },
+          facetName: facetConf.iri,
+          rand: Math.random(),
+          sync:true
+        } as any;
+      }
+    }
+    const sparqlBuilder = SparqlBuilder.fromQueryString(FACETS[forProp].getFacetValuesQuery(forProp));
+    const facetComponent = FacetComponent.getFacetFromString(facetConf.facetType);
+    sparqlBuilder.distinct();
+    facetComponent.prepareOptionsQuery(sparqlBuilder);
+    sparqlBuilder.hasClasses(getSelectedClass(state.facets));
+    return {
+      types: [Actions.FETCH_FACET_PROPS, Actions.FETCH_FACET_PROPS_SUCCESS, Actions.FETCH_FACET_PROPS_FAIL],
+      facetName: forProp,
+      promise: (client: ApiClient) =>
+        client
+          .req<any, SparqlJson>({
+            sparqlSelect: sparqlBuilder.toString()
+          })
+          .then(sparql => {
+            const opts = facetComponent.getOptionsForQueryResult(sparql);
+            if (Array.isArray(opts)) {
+              return {
+                optionList: opts
+              };
+            } else {
+              return {
+                optionObject: opts
+              };
+            }
+          })
+    };
+  } catch(e) {
+    console.error('Failed to fetch facet props for ' + forProp,e)
+    return {
+      type: Actions.FETCH_FACET_PROPS_FAIL,
+      facetName: forProp,
+      error:e.message
     }
   }
-  const sparqlBuilder = SparqlBuilder.fromQueryString(FACETS[forProp].getFacetValuesQuery(forProp));
-  const facetComponent = FacetComponent.getFacetFromString(facetConf.facetType);
-  sparqlBuilder.distinct();
-  facetComponent.prepareOptionsQuery(sparqlBuilder);
-  sparqlBuilder.hasClasses(getSelectedClass(state.facets));
-  return {
-    types: [Actions.FETCH_FACET_PROPS, Actions.FETCH_FACET_PROPS_SUCCESS, Actions.FETCH_FACET_PROPS_FAIL],
-    facetName: forProp,
-    promise: (client: ApiClient) =>
-      client
-        .req<any, SparqlJson>({
-          sparqlSelect: sparqlBuilder.toString()
-        })
-        .then(sparql => {
-          const opts = facetComponent.getOptionsForQueryResult(sparql);
-          if (Array.isArray(opts)) {
-            return {
-              optionList: opts
-            };
-          } else {
-            return {
-              optionObject: opts
-            };
-          }
-        })
-  };
+
 }

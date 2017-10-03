@@ -196,27 +196,25 @@ export default class ApiClient {
         if (typeof body === "string") {
           returnErr.message = body;
         }
-        if (err.status) returnErr.error = err.status + ": " + (body.message || err.message);
+        if (err.status) returnErr.error = err.status + ": " + err.message;
         if (!returnErr.message) returnErr.message = err.message;
         if (!returnErr.status) returnErr.status = err.status;
         if (returnErr.serverError) returnErr.devError = returnErr.serverError;
         if (!_.isEmpty(returnErr.message)) return returnErr;
         return err;
       };
-      const getBody = (res: superagent.Response) => {
-        if (res.body) return res.body;
-        if (res.text) {
-          if (args.sparqlConstruct) {
-            return  N3.Parser().parse(res.text)
-          }
-          return res.text
-        }
-        return undefined
-      }
-      request.end((err: Error, res: superagent.Response) => {
-        this.removeRequestReference(args.requestTag, uuid);
-        const body = getBody(res);
 
+      request.end((err: Error, res: superagent.Response) => {
+        const getBody = (res: superagent.Response) => {
+          if (res.body) return res.body;
+          if (res.text) {
+            return res.text
+          }
+          return undefined
+        }
+        this.removeRequestReference(args.requestTag, uuid);
+
+        const body = getBody(res);
         if (err || !res) return reject(formatError(err, body));
         if (args.sparqlSelect) {
           return resolve(<any>new SparqlJson(body))
@@ -230,7 +228,7 @@ export default class ApiClient {
 
         return resolve(
           <any>{
-            body,
+            body:(args.sparqlConstruct? N3.Parser().parse(body): body),
             meta
           }
         );

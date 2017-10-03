@@ -28,7 +28,7 @@ export interface ClassConfig {
 }
 export var CLASSES: { [className: string]: ClassConfig } = {
   "https://cultureelerfgoed.nl/vocab/Monument": {
-    default: false, //default
+    default: true, //default
     iri: "https://cultureelerfgoed.nl/vocab/Monument",
     label: "Monument",
     facets: ["https://cultureelerfgoed.nl/vocab/province", "http://schema.org/dateCreated", "http://dbpedia.org/ontology/code"],
@@ -61,7 +61,7 @@ export var CLASSES: { [className: string]: ClassConfig } = {
     }
   },
   "https://data.pdok.nl/cbs/vocab/Gemeente": {
-    default: true, //default
+    default: false, //default
     iri: "https://data.pdok.nl/cbs/vocab/Gemeente",
     label: "Gemeente",
     facets: ["https://cultureelerfgoed.nl/vocab/province"],

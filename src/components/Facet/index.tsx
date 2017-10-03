@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import * as getClassName from "classnames";
-
+import {Label } from 'react-bootstrap'
 import SparqlJson from "helpers/SparqlJson";
 import SparqlBuilder from "helpers/SparqlBuilder";
 import { Facet as FacetProps } from "reducers/facets";
@@ -48,26 +48,17 @@ class Facet extends React.PureComponent<Facet.Props, any> {
     this.FacetComponents = [FacetMultiSelect, FacetSlider, FacetProvinces];
   }
 
-  renderFacet() {
-    var facet: any;
-    for (const FacetComponent of this.FacetComponents) {
-      if (FacetComponent.shouldRender(this.props)) facet = <FacetComponent {...this.props} />;
-    }
-    if (facet) {
-      return (
-        <div className={styles.facet}>
-          <div className={styles.facetHeader}>{FACETS[this.props.facet.iri].label}</div>
-          {facet}
-        </div>
-      );
-    }
-    return null;
-  }
+  
   render() {
     const { className } = this.props;
     var facet: any;
-    for (const FacetComponent of this.FacetComponents) {
-      if (FacetComponent.shouldRender(this.props)) facet = <FacetComponent {...this.props} />;
+    if (this.props.facet.error) {
+      console.log('an error!')
+      facet = <Label bsStyle="danger">{this.props.facet.error}</Label>
+    } else {
+      for (const FacetComponent of this.FacetComponents) {
+        if (FacetComponent.shouldRender(this.props)) facet = <FacetComponent {...this.props} />;
+      }
     }
     if (facet) {
       return (
