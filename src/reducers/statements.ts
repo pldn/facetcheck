@@ -214,7 +214,7 @@ const selectLabel:SelectWidget = (t) => {
   }
 }
 const catchAll:SelectWidget = (t) => {
-  const node = t.find().offset(1).limit(7).exec();
+  const node = t.find().offset(1).exec();
   const groupedByPred = _.groupBy(node, (n) => n.getPredicate())
   const selections:WidgetConfig[] = [];
   _.forEach(groupedByPred, (nodes, predicate) => {
@@ -229,7 +229,7 @@ const catchAll:SelectWidget = (t) => {
       label: 'Properties',
       config: {
         asToggle: true,
-        hideOnLoad: true,
+        hideOnLoad: false,
         size: 'dynamic'
       }
     }
@@ -244,34 +244,54 @@ export var SelectWidgets:SelectWidget[] = [
 
 
 
+const getWidgetKey = (widget:WidgetConfig):string => {
+  if (widget.values) return widget.values.map(value => value.getKey()).join();
+  if (widget.children) return widget.children.map(s => getWidgetKey(s)).join();
+  return '';
+}
 
 export function getWidgets(tree:Tree, selectWidgets:SelectWidget[] = SelectWidgets):WidgetConfig {
-  const getWidgetKey = (widget:WidgetConfig):string => {
-    if (widget.values) return widget.values.map(value => value.getKey()).join();
-    if (widget.children) return widget.children.map(s => getWidgetKey(s)).join();
-    return '';
-  }
+  const selectedTreeNodes = new Set<Tree>();
+
+
   const postprocessWidget = (widget:WidgetConfig):WidgetConfig  => {
     widget.key = getWidgetKey(widget)
     if (!widget.config) widget.config = {};
     if (widget.children) {
+      //make sure child widgets have a key as well
       widget.children = widget.children.map(child => postprocessWidget(child))
+    }
+    //make sure we don't render values twice...
+    //so, keep track of a set of values that we're already rendering
+    //if we come accross a widget that has one of those values, just remove that value
+    if (widget.values) {
+      const removeIndexes:number[] = [];
+      for (var i = 0; i < widget.values.length; i++) {
+        const val = widget.values[i];
+        if (selectedTreeNodes.has( val)) {
+          removeIndexes.push(i)
+        } else {
+          selectedTreeNodes.add(val)
+        }
+      }
+      _.pullAt(widget.values, removeIndexes);
+      
     }
     return widget;
   }
-
 
   var widgets:WidgetConfig[] = [];
   for (const selectWidget of selectWidgets) {
     const widget = selectWidget(tree);
     if (widget) {
+
       widgets = widgets.concat(postprocessWidget(widget));
     }
   }
-  //make sure all renderers are unique. We don't want to draw these things twice
-  //TODO: we're not taking into account widget children here...
+
+
   return {
-    children: _.uniqBy(widgets, (r => r.key)),
+    children: widgets,
     config: {},
   }
 }

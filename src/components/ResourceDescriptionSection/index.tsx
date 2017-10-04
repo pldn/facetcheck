@@ -108,7 +108,7 @@ class ResourceDescriptionSection extends React.PureComponent<
     );
   }
   renderValues() {
-    if (!this.props.widget || !this.props.widget.values) return null;
+    if (!this.props.widget || !this.props.widget.values || !this.props.widget.values.length) return null;
     const { widget, tree } = this.props;
     const { values, config, label } = widget;
 
