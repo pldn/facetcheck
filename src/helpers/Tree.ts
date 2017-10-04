@@ -63,6 +63,12 @@ export default class TreeNode {
   /**
    * Public methods
    */
+  public hasChildren():boolean {
+    return !!_.size(this.children)
+  }
+  public isBnode() {
+    return N3.Util.isBlank(this.term) || (N3.Util.isIRI(this.term) && this.term.indexOf('/.well-known/genid') > 0)
+  }
   public getStatements() {
     return this.statements;
   }

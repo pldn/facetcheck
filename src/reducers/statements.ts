@@ -214,8 +214,19 @@ const selectLabel:SelectWidget = (t) => {
   }
 }
 const catchAll:SelectWidget = (t) => {
-  const node = t.find().offset(1).exec();
-  const groupedByPred = _.groupBy(node, (n) => n.getPredicate())
+  var nodes = t.find().offset(1).exec();
+  const removeNodes:number[] = [];
+  for (var i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    if (node.isBnode()) {
+      removeNodes.push(i)
+      if (node.hasChildren()) {
+        nodes = nodes.concat(node.getChildren())
+      }
+    }
+  }
+  _.pullAt(nodes, removeNodes)
+  const groupedByPred = _.groupBy(nodes, (n) => n.getPredicate())
   const selections:WidgetConfig[] = [];
   _.forEach(groupedByPred, (nodes, predicate) => {
     selections.push({
@@ -275,7 +286,7 @@ export function getWidgets(tree:Tree, selectWidgets:SelectWidget[] = SelectWidge
         }
       }
       _.pullAt(widget.values, removeIndexes);
-      
+
     }
     return widget;
   }
