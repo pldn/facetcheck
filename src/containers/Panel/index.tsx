@@ -42,7 +42,7 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
 
   renderClasses() {
     return <div className={styles.section}>
-      <div className={styles.sectionHeader}>Classes</div>
+      <div className={styles.sectionHeader}>Class</div>
       {
         <RadioGroup value={this.props.selectedClass} onChange={this.props.setSelectedClass}>
 

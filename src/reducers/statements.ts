@@ -221,9 +221,6 @@ const catchAll:SelectWidget = (t) => {
     selections.push({
       label: getLabel(predicate,t),
       values: nodes,
-      config: {
-        size: 'dynamic'
-      }
     })
   })
   if (selections.length) {
@@ -233,6 +230,7 @@ const catchAll:SelectWidget = (t) => {
       config: {
         asToggle: true,
         hideOnLoad: true,
+        size: 'dynamic'
       }
     }
   }
@@ -258,13 +256,15 @@ export function getWidgets(tree:Tree, selectWidgets:SelectWidget[] = SelectWidge
     const widget = selectWidget(tree);
     if (widget) {
       widget.key = getWidgetKey(widget)
+      if (!widget.config) widget.config = {};
       widgets = widgets.concat(widget);
     }
   }
   //make sure all renderers are unique. We don't want to draw these things twice
   //TODO: we're not taking into account widget children here...
   return {
-    children: _.uniqBy(widgets, (r => r.key))
+    children: _.uniqBy(widgets, (r => r.key)),
+    config: {},
   }
 }
 /**

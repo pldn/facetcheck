@@ -52,15 +52,16 @@ class ResourceDescriptionSection extends React.PureComponent<
     level: 0
   };
   toggleShow() {
-    this.setState((prevState:ResourceDescriptionSection.State, props:ResourceDescriptionSection.Props) => {
-      return {show: !prevState.show};
-    })
+    this.setState((prevState: ResourceDescriptionSection.State, props: ResourceDescriptionSection.Props) => {
+      return { show: !prevState.show };
+    });
   }
 
   renderChildren(): JSX.Element {
     if (!this.props.widget || !this.props.widget.children) return null;
     const { widget, tree, level } = this.props;
     const enableToggle = widget.config && !!widget.config.asToggle;
+    console.log(widget)
     return (
       <div className={styles.section} style={{ marginLeft: level * indent }}>
         <div
@@ -72,20 +73,35 @@ class ResourceDescriptionSection extends React.PureComponent<
           {widget.config &&
             widget.config.asToggle && (
               <i
-              className={getClassNames({
-                fa: true,
-                "fa-chevron-down": !this.state.show,
-                "fa-chevron-up": this.state.show,
+                className={getClassNames({
+                  fa: true,
+                  "fa-chevron-down": !this.state.show,
+                  "fa-chevron-up": this.state.show,
 
-                [styles.chevron]: !!styles.chevron
-              })}
+                  [styles.chevron]: !!styles.chevron
+                })}
               />
             )}
-          {widget.label && <span className={styles.label}>{widget.label}</span>}
+          {widget.label && (
+            <span
+              className={styles.label}
+              style={{
+                fontSize: "" + (200 - 20 * level) + "%"
+              }}
+            >
+              {widget.label}
+            </span>
+          )}
         </div>
-        {this.state.show && widget.children.map(child => (
-          <ResourceDescriptionSection key={child.key} widget={child} tree={tree} level={level + 1} />
-        ))}
+        <div className={getClassNames({
+          [styles.children]: !!styles.children,
+          [styles.dynamic]: widget.config.size === 'dynamic'
+        })}>
+          {this.state.show &&
+            widget.children.map(child => (
+              <ResourceDescriptionSection key={child.key} widget={child} tree={tree} level={level + 1} />
+            ))}
+        </div>
       </div>
     );
   }
@@ -96,8 +112,6 @@ class ResourceDescriptionSection extends React.PureComponent<
 
     const enabledStyles: { [key: string]: boolean } = {
       [styles.values]: !!styles.values,
-      [styles.dynamic]: config && config.size === "dynamic",
-      [styles.full]: !config || !config.size || config.size === "full"
     };
     return (
       <div className={getClassNames(enabledStyles)}>

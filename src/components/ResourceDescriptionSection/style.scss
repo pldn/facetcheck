@@ -1,8 +1,30 @@
 @import '../../theme/bootstrap.overrides/variables.scss';
 .section {
-  display:flex;
-  flex-wrap:wrap;
+  // display:flex;
+  // flex-wrap:wrap;
   width:100%;
+  .children {
+    &.dynamic {
+      @media (min-width: $screen-md-min) {
+        column-count: 2;
+      }
+      @media (min-width: $screen-lg-min) {
+        column-count: 3;
+      }
+      @media (min-width: $screen-llg-min) {
+          column-count: 4;
+      }
+      column-count: 1;
+      & > * {
+        page-break-inside: avoid;
+        break-inside: avoid;
+        border-left: 3px solid #ecf2f5;
+        padding-left:10px;
+        margin-left: 10px;
+        margin-bottom: 20px;
+      }
+    }
+  }
 }
 .sectionHeader {
   display:flex;
@@ -14,7 +36,7 @@
     color: #7e8ba4;
     letter-spacing: 2px;
     // margin-bottom: 7px;
-    font-size: 200%;
+
     // flex-grow:1;
   }
   .chevron {
@@ -34,14 +56,7 @@
 .full {
   width:100%;
 }
-.dynamic {
-  border-left: 3px solid #ecf2f5;
-  padding-left:10px;
-  margin-left: 10px;
-  margin-bottom: 20px;
-  // height:100%;
-  flex-basis:30%;
-}
+
 
 .title {
   color: #7e8ba4;
