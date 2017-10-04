@@ -47,13 +47,6 @@ $paddingHor: $panelLeftPadding;
 }
 
 
-:global(.collapsed) .item {
-  span {
-    opacity: 0;
-  }
-}
-
-
 $tooltipHeight: 26px;
 $tooltipPaddingVert: 2px;
 $tooltipPaddingHor: 25px;
@@ -79,12 +72,6 @@ $tooltipPaddingHor: 25px;
 }
 
 
-:global(.collapsed) .item:hover .tooltip {
-  //added very small delay (.1s) to avoid flickering when moving mouse over menu
-  animation: animateTooltip .25s linear .1s;
-  animation-fill-mode: forwards;
-  display:block;
-}
 
 @keyframes animateTooltip {
   0% {

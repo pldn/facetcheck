@@ -158,7 +158,7 @@
 
 
 //use global style, so we can use this in other components
-@media #{$showCollapsableOnSize} {
+
   .panel {
     //position is taken care of by component itself
     width: $panelWidth;
@@ -166,12 +166,3 @@
   .appContent {
     left: $panelWidth;
   }
-  :global(.collapsed) {
-    .appContent {
-      left: $panelWidthCollapsed;
-    }
-    .panel {
-      width: $panelWidthCollapsed;
-    }
-  }
-}

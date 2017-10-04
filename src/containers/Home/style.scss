@@ -3,7 +3,10 @@
 .home {
   margin: 10px;
   width:100%;
-  column-count: 2;
+  @media (min-width: $screen-lg-min) {
+    column-count: 2;
+  }
+  column-count:1;
   column-gap: 1em;
   column-fill: auto;
   & > * {
