@@ -40,7 +40,6 @@ class ResourceDescription extends React.PureComponent<ResourceDescription.Props,
     const tree=getStatementsAsTree(forIri, statements);
     const rootWidget = getWidgets(tree);
     const {label, ...widget} = rootWidget;
-    console.log(widget)
     return (
       <div className={getClassNames(style)}>
         <div className={styles.header}>

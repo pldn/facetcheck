@@ -64,7 +64,6 @@ class ResourceDescriptionSection extends React.PureComponent<
     if (!this.props.widget || !this.props.widget.children) return null;
     const { widget, tree, level } = this.props;
     const enableToggle = widget.config && !!widget.config.asToggle;
-    console.log(widget)
     return (
       <div className={styles.section} style={{ marginLeft: level * indent }}>
         <div

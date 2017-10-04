@@ -226,10 +226,10 @@ const catchAll:SelectWidget = (t) => {
   if (selections.length) {
     return <WidgetConfig>{
       children: selections,
-      label: 'Show more',
+      label: 'Properties',
       config: {
         asToggle: true,
-        // hideOnLoad: false,
+        hideOnLoad: true,
         size: 'dynamic'
       }
     }
@@ -251,13 +251,21 @@ export function getWidgets(tree:Tree, selectWidgets:SelectWidget[] = SelectWidge
     if (widget.children) return widget.children.map(s => getWidgetKey(s)).join();
     return '';
   }
+  const postprocessWidget = (widget:WidgetConfig):WidgetConfig  => {
+    widget.key = getWidgetKey(widget)
+    if (!widget.config) widget.config = {};
+    if (widget.children) {
+      widget.children = widget.children.map(child => postprocessWidget(child))
+    }
+    return widget;
+  }
+
+
   var widgets:WidgetConfig[] = [];
   for (const selectWidget of selectWidgets) {
     const widget = selectWidget(tree);
     if (widget) {
-      widget.key = getWidgetKey(widget)
-      if (!widget.config) widget.config = {};
-      widgets = widgets.concat(widget);
+      widgets = widgets.concat(postprocessWidget(widget));
     }
   }
   //make sure all renderers are unique. We don't want to draw these things twice
