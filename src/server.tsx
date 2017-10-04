@@ -28,7 +28,7 @@ import ApiClient from "helpers/ApiClient";
 import Html from "helpers/Html";
 import getRoutes from "routes";
 import customTheme from "muiTheme";
-
+var favicon = require('serve-favicon');
 declare var __DEVELOPMENT__: boolean;
 declare var __DISABLE_SSR__: boolean;
 __DISABLE_SSR__ = true;
@@ -49,8 +49,7 @@ const proxy = httpProxy.createProxyServer({
 app.disable("x-powered-by");
 app.set("trust proxy", true);
 
-app.use(Express.static(path.join(__dirname, "..", "assets")));
-
+app.use(favicon('./public/images/favicon.ico'));
 // Proxy to API server
 app.use("/sparql", (req: Express.Request, res: Express.Response) => {
   proxy.web(req, res, { target: "http://lod.labs.vu.nl:8899/sparql" });

@@ -240,7 +240,7 @@ const catchAll:SelectWidget = (t) => {
       label: 'Properties',
       config: {
         asToggle: true,
-        hideOnLoad: false,
+        hideOnLoad: true,
         size: 'dynamic'
       }
     }
