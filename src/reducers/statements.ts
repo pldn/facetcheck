@@ -214,7 +214,7 @@ const selectLabel:SelectWidget = (t) => {
   }
 }
 const catchAll:SelectWidget = (t) => {
-  const node = t.find().offset(1).exec();
+  const node = t.find().offset(1).limit(7).exec();
   const groupedByPred = _.groupBy(node, (n) => n.getPredicate())
   const selections:WidgetConfig[] = [];
   _.forEach(groupedByPred, (nodes, predicate) => {
@@ -229,7 +229,7 @@ const catchAll:SelectWidget = (t) => {
       label: 'Show more',
       config: {
         asToggle: true,
-        hideOnLoad: true,
+        // hideOnLoad: false,
         size: 'dynamic'
       }
     }

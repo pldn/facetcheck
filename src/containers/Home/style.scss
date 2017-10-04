@@ -2,7 +2,17 @@
 
 .home {
   margin: 10px;
-  transition: background 0.5s ease;
+  width:100%;
+  column-count: 2;
+  column-gap: 1em;
+  column-fill: auto;
+  & > * {
+    //This is VERY strange. I need this float, otherwise the divs might get split up accross columns
+    float:left;
+
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
 }
 div.description {
   &:first-child {

@@ -52,6 +52,9 @@ class ResourceDescriptionSection extends React.PureComponent<
     level: 0
   };
   toggleShow() {
+    const {widget} = this.props;
+    const enableToggle = widget.config && !!widget.config.asToggle;
+    if (!enableToggle) return
     this.setState((prevState: ResourceDescriptionSection.State, props: ResourceDescriptionSection.Props) => {
       return { show: !prevState.show };
     });
@@ -68,7 +71,7 @@ class ResourceDescriptionSection extends React.PureComponent<
           className={getClassNames(styles.sectionHeader, styles.full, {
             [styles.asToggle]: enableToggle
           })}
-          onClick={enableToggle && this.toggleShow.bind(this)}
+          onClick={this.toggleShow.bind(this)}
         >
           {widget.config &&
             widget.config.asToggle && (

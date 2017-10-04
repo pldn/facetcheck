@@ -15,6 +15,10 @@
           column-count: 4;
       }
       column-count: 1;
+      // column-width: 400px;
+      // @media (min-width: $screen-md-min) {
+      //   column-count: 2;
+      // }
       & > * {
         page-break-inside: avoid;
         break-inside: avoid;
@@ -24,6 +28,11 @@
         margin-bottom: 20px;
       }
     }
+    // display:flex;
+    // flex-wrap:wrap;
+    // & > * {
+    //   flex-basis: 30%;
+    // }
   }
 }
 .sectionHeader {
