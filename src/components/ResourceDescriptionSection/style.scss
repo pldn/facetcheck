@@ -1,5 +1,50 @@
 @import '../../theme/bootstrap.overrides/variables.scss';
-.statements {
+.section {
   display:flex;
   flex-wrap:wrap;
+  width:100%;
+}
+.sectionHeader {
+  display:flex;
+  align-items: center;
+  &.asToggle {
+    cursor: pointer;
+  }
+  .label {
+    color: #7e8ba4;
+    letter-spacing: 2px;
+    // margin-bottom: 7px;
+    font-size: 200%;
+    // flex-grow:1;
+  }
+  .chevron {
+    // flex-grow:0;
+    color: $custom4;
+    font-size:110%;
+    margin-right: 10px;
+  }
+}
+
+.values {
+
+
+
+}
+//Need to set height/width to 100% for leaflet to work
+.full {
+  width:100%;
+}
+.dynamic {
+  border-left: 3px solid #ecf2f5;
+  padding-left:10px;
+  margin-left: 10px;
+  margin-bottom: 20px;
+  // height:100%;
+  flex-basis:30%;
+}
+
+.title {
+  color: #7e8ba4;
+  letter-spacing: 2px;
+  margin-bottom: 7px;
 }

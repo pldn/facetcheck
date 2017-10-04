@@ -138,7 +138,7 @@ export function getStatements(resource: string, className:string): Action {
   if (!className) throw new Error('missing classname. cannot get statements')
   if (!resource) throw new Error('missing resource IRI. cannot get statements')
   const q = `${getAsString()} ${CLASSES[className].resourceDescriptionQuery(resource)}`;
-  console.groupCollapsed('Querying for a resource description');console.info(resource,q);console.groupEnd()
+  console.groupCollapsed('Querying for resource description of ' + resource);console.info(q);console.groupEnd()
   return {
     types: [Actions.GET_STATEMENTS, Actions.GET_STATEMENTS_SUCCESS, Actions.GET_STATEMENTS_FAIL],
     promise: (client: ApiClient) =>
@@ -168,52 +168,55 @@ export function getStatementsAsTree(forIri:string, statements:Statements) {
 
 export interface RenderConfiguration {
   type?: 'textarea'
-  size?: 'dynamic' | 'full'
+  size?: 'dynamic' | 'full',
+  hideOnLoad?: boolean,
+  asToggle?:boolean
 }
-export interface RenderSelection {
+export interface WidgetConfig {
   label?:string,
-  values:Tree[]//a node in the tree,
+  values?:Tree[]//a node in the tree,
   config?: RenderConfiguration,
-
+  children?: WidgetConfig[]
+  key?:string
 }
-export type RenderSelector = (tree:Tree) => RenderSelection[];
+export type SelectWidget = (tree:Tree) => WidgetConfig;
 
 /**
  * Render selectors
  */
-const renderGeometry:RenderSelector = (t) => {
+const selectGeometry:SelectWidget = (t) => {
   const node = t.find([prefixes.geo + 'hasGeometry', null, prefixes.geo + 'asWKT']).limit(1).exec();
   if (node.length) {
-    return <RenderSelection[]>[{
+    return <WidgetConfig>{
       // value: node[0]
       values: node
-    }]
+    }
   }
 }
-const renderDescription:RenderSelector = (t) => {
+const selectDescription:SelectWidget = (t) => {
   const node = t.find([prefixes.dcterms + 'description', null]).limit(1).exec();
   if (node.length) {
-    return <RenderSelection[]>[{
+    return <WidgetConfig>{
       values: node,
       config: {
         type: 'textarea'
       }
-    }]
+    }
   }
 }
-const renderLabel:RenderSelector = (t) => {
+const selectLabel:SelectWidget = (t) => {
   const node = t.find([prefixes.rdfs + 'label', null]).limit(1).exec();
   if (node.length) {
-    return <RenderSelection[]>[{
+    return <WidgetConfig>{
       // value: node[0]
       values: node
-    }]
+    }
   }
 }
-const catchAll:RenderSelector = (t) => {
+const catchAll:SelectWidget = (t) => {
   const node = t.find().offset(1).exec();
   const groupedByPred = _.groupBy(node, (n) => n.getPredicate())
-  const selections:RenderSelection[] = [];
+  const selections:WidgetConfig[] = [];
   _.forEach(groupedByPred, (nodes, predicate) => {
     selections.push({
       label: getLabel(predicate,t),
@@ -223,29 +226,46 @@ const catchAll:RenderSelector = (t) => {
       }
     })
   })
-  return selections
+  if (selections.length) {
+    return <WidgetConfig>{
+      children: selections,
+      label: 'Show more',
+      config: {
+        asToggle: true,
+        hideOnLoad: true,
+      }
+    }
+  }
 }
-export var RenderSelectors:RenderSelector[] = [
+export var SelectWidgets:SelectWidget[] = [
   // renderLabel,
-  renderDescription,
-  renderGeometry,
+  selectDescription,
+  selectGeometry,
   catchAll
 ]
 
 
 
 
-export function selectRenderer(tree:Tree, renderSelectors:RenderSelector[] = RenderSelectors):RenderSelection[] {
-  var renderers:RenderSelection[] = [];
-  for (const renderSelector of  renderSelectors) {
-    const renderer = renderSelector(tree);
-    if (renderer && renderer.length) {
-      renderers = renderers.concat(renderer);
+export function getWidgets(tree:Tree, selectWidgets:SelectWidget[] = SelectWidgets):WidgetConfig {
+  const getWidgetKey = (widget:WidgetConfig):string => {
+    if (widget.values) return widget.values.map(value => value.getKey()).join();
+    if (widget.children) return widget.children.map(s => getWidgetKey(s)).join();
+    return '';
+  }
+  var widgets:WidgetConfig[] = [];
+  for (const selectWidget of selectWidgets) {
+    const widget = selectWidget(tree);
+    if (widget) {
+      widget.key = getWidgetKey(widget)
+      widgets = widgets.concat(widget);
     }
   }
-
   //make sure all renderers are unique. We don't want to draw these things twice
-  return _.uniqBy(renderers, (r => r.values.map(value => value.getKey()).join()))
+  //TODO: we're not taking into account widget children here...
+  return {
+    children: _.uniqBy(widgets, (r => r.key))
+  }
 }
 /**
  * borrowed from triply-node-utils

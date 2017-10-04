@@ -6,14 +6,14 @@ import * as _ from 'lodash'
 //import own dependencies
 import { Term, TermLink, TermLiteralTextarea } from "components";
 import * as Immutable from 'immutable';
-import { getLabel,RenderConfiguration} from 'reducers/statements'
+import { getLabel,RenderConfiguration,WidgetConfig} from 'reducers/statements'
 import Tree from 'helpers/Tree'
 const styles = require("./style.scss");
 namespace TermRenderer {
-  export interface Props {
-    label: string,
-    values: Tree[]
-    config?:RenderConfiguration
+  export interface Props extends WidgetConfig {
+    // label: string,
+    // values: Tree[]
+    // config?:RenderConfiguration
   }
 }
 

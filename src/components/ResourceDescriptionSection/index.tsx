@@ -3,76 +3,119 @@ import * as React from "react";
 import * as getClassNames from "classnames";
 // import * as UriJs from "urijs";
 import * as N3 from "n3";
-import * as Immutable from 'immutable'
+import * as Immutable from "immutable";
 //import own dependencies
 // import {getLabel,State as LabelsState,fetchLabel} from 'reducers/labels'
-import { TermRenderer} from "components";
-import { getLabel, selectRenderer} from 'reducers/statements'
-import Tree from 'helpers/Tree'
+import { Term } from "components";
+import { getLabel, getWidgets, WidgetConfig } from "reducers/statements";
+import Tree from "helpers/Tree";
 
 const styles = require("./style.scss");
 namespace ResourceDescriptionSection {
-
   export interface StatementContext {
-    path: N3.Statement[],
-    value: string
+    path: N3.Statement[];
+    value: string;
   }
   export interface GroupedStatements {
     [fingerPrint: string]: StatementContext[];
   }
-  // statementContext: Statement[
-  // <sub> geo:hasGemeometry _bnode .
-  // _bnode geo:asWkt "wktString"
-  // ],
-  // value: "wktString"
-  // resourceContext: Statement[]
-  //
-  //
-  //
+
   export interface Props {
-    className?: string;
     tree: Tree;
-    level?:number
+    level?: number;
+    widget: WidgetConfig;
+    // show?:boolean
+    // label?:string
+  }
+  export interface State {
+    show: boolean;
   }
 }
 
-class ResourceDescriptionSection extends React.PureComponent<ResourceDescriptionSection.Props, any> {
-  static defaultProps:Partial<ResourceDescriptionSection.Props> = {
+const indent = 10; //indent for subsections
+class ResourceDescriptionSection extends React.PureComponent<
+  ResourceDescriptionSection.Props,
+  ResourceDescriptionSection.State
+> {
+  constructor(props: ResourceDescriptionSection.Props) {
+    super(props);
+    this.state = {
+      show:
+        !props.widget ||
+        !props.widget.children ||
+        !props.widget.config ||
+        !props.widget.config.asToggle ||
+        !props.widget.config.hideOnLoad
+    };
+  }
+  static defaultProps: Partial<ResourceDescriptionSection.Props> = {
     level: 0
+  };
+  toggleShow() {
+    this.setState((prevState:ResourceDescriptionSection.State, props:ResourceDescriptionSection.Props) => {
+      return {show: !prevState.show};
+    })
   }
 
+  renderChildren(): JSX.Element {
+    if (!this.props.widget || !this.props.widget.children) return null;
+    const { widget, tree, level } = this.props;
+    const enableToggle = widget.config && !!widget.config.asToggle;
+    return (
+      <div className={styles.section} style={{ marginLeft: level * indent }}>
+        <div
+          className={getClassNames(styles.sectionHeader, styles.full, {
+            [styles.asToggle]: enableToggle
+          })}
+          onClick={enableToggle && this.toggleShow.bind(this)}
+        >
+          {widget.config &&
+            widget.config.asToggle && (
+              <i
+              className={getClassNames({
+                fa: true,
+                "fa-chevron-down": !this.state.show,
+                "fa-chevron-up": this.state.show,
 
+                [styles.chevron]: !!styles.chevron
+              })}
+              />
+            )}
+          {widget.label && <span className={styles.label}>{widget.label}</span>}
+        </div>
+        {this.state.show && widget.children.map(child => (
+          <ResourceDescriptionSection key={child.key} widget={child} tree={tree} level={level + 1} />
+        ))}
+      </div>
+    );
+  }
+  renderValues() {
+    if (!this.props.widget || !this.props.widget.values) return null;
+    const { widget, tree } = this.props;
+    const { values, config, label } = widget;
+
+    const enabledStyles: { [key: string]: boolean } = {
+      [styles.values]: !!styles.values,
+      [styles.dynamic]: config && config.size === "dynamic",
+      [styles.full]: !config || !config.size || config.size === "full"
+    };
+    return (
+      <div className={getClassNames(enabledStyles)}>
+        {label && (
+          <div className={styles.title}>
+            <span>{label}</span>
+          </div>
+        )}
+        <div className={styles.values}>
+          {values.map(value => (
+            <Term key={value.getKey()} className={styles.obj} term={value.getTerm()} config={config} tree={tree} />
+          ))}
+        </div>
+      </div>
+    );
+  }
   render() {
-    const {
-      tree,
-      level
-    } = this.props;
-    // const groupedPaths = groupPaths(getPaths(statements.toArray(), forIri));
-    const renderers = selectRenderer(tree);
-    const rows:any[] = []
-    for (const renderer of renderers) {
-      rows.push(<TermRenderer
-        key={renderer.label + renderer.values.map(node => node.getKey()).join(',')}
-        label={renderer.label}
-        values={renderer.values}
-        config={renderer.config}
-      />)
-    }
-
-    // for (var node of tree.getChildren()) {
-    //
-    // }
-    // for (var groupKey  in groupedPaths) {
-    //   rows.push(
-    //     <Statements
-    //       key={groupKey}
-    //       paths={groupedPaths[groupKey]}
-    //       resourceContext={tree}
-    //     />
-    //   );
-    // }
-    return <div className={styles.statements}>{rows}</div>;
-
+    return this.renderValues() || this.renderChildren();
   }
 }
 

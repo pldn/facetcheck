@@ -8,7 +8,7 @@ import * as Immutable from 'immutable'
 // import {getLabel,State as LabelsState,fetchLabel} from 'reducers/labels'
 import { ResourceDescriptionSection } from "components";
 import Tree from 'helpers/Tree'
-import {getLabel} from 'reducers/statements'
+import {getLabel, getWidgets,WidgetConfig,Statements,getStatementsAsTree} from 'reducers/statements'
 
 
 const styles = require("./style.scss");
@@ -32,8 +32,8 @@ namespace ResourceDescription {
   //
   export interface Props {
     className?: string;
-    // forIri: string;
-    tree: Tree;
+    forIri: string;
+    statements: Statements
   }
 }
 
@@ -45,30 +45,43 @@ class ResourceDescription extends React.PureComponent<ResourceDescription.Props,
     const {
       // forIri,
       className,
-      tree,
+      statements,
+      forIri
       // labels,fetchLabel
     } = this.props;
 
-    const rootTerm = tree.getTerm();
-    const label = getLabel(rootTerm,tree)
+    // const rootTerm = tree.getTerm();
+    // const label = getLabel(rootTerm,tree)
     var style = {
       [styles.resourceDescription]: styles.resourceDescription,
       whiteSink: true,
       [className]: !!className
     };
+
+    const tree=getStatementsAsTree(forIri, statements);
+    const rootWidget = getWidgets(tree);
+    // export interface RenderSelection {
+    //   label?:string,
+    //   values?:Tree[]//a node in the tree,
+    //   config?: RenderConfiguration,
+    //   subSections?: RenderSelection[]
+    //   key?:string
+    // }
+    const {label, ...widget} = rootWidget;
+    console.log(widget)
     return (
       <div className={getClassNames(style)}>
         <div className={styles.header}>
 
           <div className={styles.iri}>
-            <a href={rootTerm} target="_blank">
+            <a href={forIri} target="_blank">
               {
-                label || rootTerm
+                label || forIri
               }
             </a>
           </div>
         </div>
-        <ResourceDescriptionSection tree={tree}/>
+        <ResourceDescriptionSection tree={tree} widget={widget}/>
       </div>
     );
   }

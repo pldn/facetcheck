@@ -41,13 +41,12 @@ class Home extends React.PureComponent<Home.Props, any> {
       var els:any[] = [];
 
       if (this.props.resourceDescriptionErrors.size) {
-
         this.props.resourceDescriptionErrors.entrySeq().forEach(([forIri,error]) => {
           els.push( <Alert key={forIri} bsStyle="danger"><pre>{error}</pre></Alert>)
         })
       }
       this.props.resourceDescriptions.entrySeq().forEach(([forIri,statements]) => {
-          els.push(<ResourceDescription key={forIri} tree={getStatementsAsTree(forIri, statements)}/>)
+          els.push(<ResourceDescription key={forIri} statements={statements} forIri={forIri}/>)
       })
       if (els.length === 0) {
         return "no descriptions found...";
