@@ -213,7 +213,7 @@ export function facetsToQuery(state: GlobalState) {
   const sparqlBuilder = SparqlBuilder.get(prefixes);
   sparqlBuilder
     .vars("?_r")
-    .limit(2)
+    .limit(5)
     .distinct();
 
   /**
