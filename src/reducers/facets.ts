@@ -241,12 +241,13 @@ export function facetsToQuery(state: GlobalState) {
         ? facetsValues.optionList
         : _.values<FacetValue>(facetsValues.optionObject);
       const pattern = facetConfig.facetToQueryPatterns(
+        facetIri,
         listOfFacetValues.filter(v => facetsValues.selectedFacetValues.has(v.value))
       );
       if (pattern && pattern.length) bgp += `{ ${pattern} }`;
     } else {
       //just pass the object
-      const pattern = facetConfig.facetToQueryPatterns(facetsValues.selectedObject);
+      const pattern = facetConfig.facetToQueryPatterns(facetIri,facetsValues.selectedObject);
       if (pattern && pattern.length) {
         bgp += "{" + pattern + "}";
       }

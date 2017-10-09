@@ -5,11 +5,14 @@ import * as _ from "lodash";
 import {Facet} from 'components'
 import {Facet as GenericFacetProps} from 'reducers/facets'
 import {FACETS, FacetValue} from 'facetConf'
+import * as numeral from 'numeral'
 const Slider = require('rc-slider');
 const createSliderWithTooltip = Slider.createSliderWithTooltip;
 const Range = createSliderWithTooltip(Slider.Range);
 import SparqlJson from 'helpers/SparqlJson'
 import SparqlBuilder from 'helpers/SparqlBuilder'
+require("numeral/locales/nl-nl");
+numeral.locale("nl-nl");
 namespace FacetSlider {
   //Interface that extends the generic selectedObject from the facet reducer
   export interface Options {
@@ -52,13 +55,21 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, any> {
     const {facet} = this.props
     if (!facet.optionObject) return null
     const {min,max} = facet.optionObject;
+    var stepSize = 1;
+    if (!_.isInteger(min) || !_.isInteger(max)) {
+      stepSize = 0.1;
+    }
     return <div className={styles.range}>
       <Range
         min={min}
         max={max}
         defaultValue={[min,max]}
+        step={stepSize}
         marks={{
-          [min]: min,
+          //TODO: see how we can use numeral, AND use this for dates as well
+          // [min]: numeral(min).format('0,0'),
+          // [max]: numeral(max).format('0,0')
+          [min]:min,
           [max]:max
         }}
         // value={[min,max]}
