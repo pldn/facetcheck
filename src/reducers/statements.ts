@@ -91,7 +91,6 @@ export var epics: [(action: Action$, store: Store) => any] = [
   (action$: Action$, store: Store) => {
     return action$.ofType(FacetsActions.GET_MATCHING_IRIS_SUCCESS)
       .map((action:FacetAction) => action.result)
-      .filter(result => result.iris && result.iris.length > 0)
       .map((result) => {
         const matchingIris = result.iris
         const existingStatements = store.getState().statements.resourceDescriptions.keySeq().toArray();
@@ -174,8 +173,8 @@ export interface RenderConfiguration {
 }
 export interface WidgetConfig {
   label?:string,
-  values?:Tree[]//a node in the tree,
   config?: RenderConfiguration,
+  values?:Tree[]//a node in the tree,
   children?: WidgetConfig[]
   key?:string
 }
@@ -214,7 +213,7 @@ const selectLabel:SelectWidget = (t) => {
   }
 }
 const catchAll:SelectWidget = (t) => {
-  var nodes = t.find().offset(1).exec();
+  var nodes = t.find().depth(1).exec();
   const removeNodes:number[] = [];
   for (var i = 0; i < nodes.length; i++) {
     const node = nodes[i];
@@ -226,11 +225,11 @@ const catchAll:SelectWidget = (t) => {
     }
   }
   _.pullAt(nodes, removeNodes)
-  const groupedByPred = _.groupBy(nodes, (n) => n.getPredicate())
+  const groupedByPred = _.groupBy(nodes, (n) => n.getPredicate() + n.getParents().map(p => p.getPredicate()).join(','))
   const selections:WidgetConfig[] = [];
   _.forEach(groupedByPred, (nodes, predicate) => {
     selections.push({
-      label: getLabel(predicate,t),
+      label: getLabel(nodes[0].getPredicate(),t),
       values: nodes,
     })
   })

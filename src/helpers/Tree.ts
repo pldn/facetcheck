@@ -98,6 +98,13 @@ export default class TreeNode {
   public getParent() {
     return this.parent;
   }
+  public getParents():TreeNode[] {
+    const parents:TreeNode[] = [];
+    if (this.parent) {
+      return [this.parent].concat(this.parent.getParents())
+    }
+    return parents;
+  }
   public getTerm() {
     return this.term;
   }
@@ -140,7 +147,7 @@ export class Query {
 
     return !!this.pattern.find(p => !!p);
   }
-  public offset(offset:number) {
+  public depth(offset:number) {
     this.returnOffset = offset
     return this;
   }

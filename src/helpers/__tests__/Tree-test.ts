@@ -43,7 +43,7 @@ describe("Tree", function() {
       expect(matches[0].getLevel()).to.equal(2)//should be a literal
     })
     it("Should return other node if specified", function() {
-      var matches = pdokTree.find(['http://www.opengis.net/ont/geosparql#hasGeometry', null, 'http://www.opengis.net/ont/geosparql#asWKT']).offset(1).exec();
+      var matches = pdokTree.find(['http://www.opengis.net/ont/geosparql#hasGeometry', null, 'http://www.opengis.net/ont/geosparql#asWKT']).depth(1).exec();
       expect(matches).to.have.lengthOf(1);
       const match = matches[0];
       expect(match.getTerm().indexOf('http')).to.equal(0)//should be an iri
