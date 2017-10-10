@@ -8,7 +8,7 @@
   }
   column-count:1;
   column-gap: 1em;
-  column-fill: auto;
+  // column-fill: auto;//causes 1 col in firefox
   & > * {
     //This is VERY strange. I need this float, otherwise the divs might get split up accross columns
     float:left;
