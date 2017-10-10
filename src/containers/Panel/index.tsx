@@ -10,7 +10,7 @@ import { RadioGroup, RadioButton } from 'react-toolbox/lib/radio';
 
 import Checkbox from 'react-toolbox/lib/checkbox';
 import { GlobalState } from "reducers";
-import {setSelectedClass,FacetsProps,setSelectedFacetValue,setSelectedObject} from 'reducers/facets'
+import {setSelectedClass,FacetsProps,setSelectedFacetValue,setSelectedObject,StateRecordInterface} from 'reducers/facets'
 import {CLASSES,FACETS} from 'facetConf'
 import {
   Facet,
@@ -28,6 +28,7 @@ namespace Panel {
   export interface PropsFromState {
     selectedClass: string,
     facets: FacetsProps
+    facetLabels: StateRecordInterface['facetLabels']
   }
 
   export interface State {
@@ -71,7 +72,8 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
   render() {
     const {
       setSelectedObject,
-      setSelectedFacetValue
+      setSelectedFacetValue,
+      facetLabels,
     } = this.props;
 
     const classNames: { [className: string]: boolean } = {
@@ -85,7 +87,7 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
 
         {
           this.props.facets.valueSeq().map((facet) => {
-            return <Facet key={facet.iri} facet={facet} className={styles.section} setSelectedFacetValue={setSelectedFacetValue} setSelectedObject={setSelectedObject}/>
+            return <Facet key={facet.iri} facet={facet} label={facetLabels.get(facet.iri)} className={styles.section} setSelectedFacetValue={setSelectedFacetValue} setSelectedObject={setSelectedObject}/>
           })
         }
 
@@ -102,7 +104,8 @@ export default connect<GlobalState, Panel.PropsFromState, Panel.DispatchProps, {
   (state, ownProps) => {
     return {
       selectedClass: state.facets.selectedClass,
-      facets: state.facets.facets
+      facets: state.facets.facets,
+      facetLabels:state.facets.facetLabels
     };
   },
   //dispatch

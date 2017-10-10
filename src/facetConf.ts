@@ -4,7 +4,7 @@ import { FacetProps } from "reducers/facets";
 import * as _ from "lodash";
 export interface FacetConfig {
   iri: string;
-  label: string;
+  label?: string;
   // datatype: string;
   facetType: FacetTypes;
   getFacetValuesQuery?: (iri: string) => string;
@@ -147,7 +147,7 @@ export var FACETS: { [property: string]: FacetConfig } = {
   },
   "https://cultureelerfgoed.nl/vocab/province": {
     iri: "https://cultureelerfgoed.nl/vocab/province",
-    label: "Provincie",
+    // label: "Provincie",
     facetType: "nlProvinces",
     facetValues: {
       drenthe: {

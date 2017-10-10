@@ -24,6 +24,8 @@ export enum Actions {
   FETCH_FACET_PROPS_SUCCESS = "facetcheck/facets/FETCH_FACET_PROPS_SUCCESS" as any,
   FETCH_FACET_PROPS_FAIL = "facetcheck/facets/FETCH_FACET_PROPS_FAIL" as any,
   REFRESH_FACETS = "facetcheck/facets/REFRESH_FACETS" as any,
+  REFRESH_FACETS_SUCCESS = "facetcheck/facets/REFRESH_FACETS_SUCCESS" as any,
+  REFRESH_FACETS_FAIL = "facetcheck/facets/REFRESH_FACETS_FAIL" as any,
   SET_FACET_VALUE = "facetcheck/facets/SET_FACET_VALUE" as any
   // GET_FACET_CONFIG = "facetcheck/facets/GET_FACET_CONFIG" as any,
   // GET_FACET_CONFIG_SUCCESS = "facetcheck/facets/GET_FACET_CONFIG_SUCCESS" as any,
@@ -62,6 +64,7 @@ export type SelectedClasses = Immutable.OrderedMap<string, boolean>;
 export var StateRecord = Immutable.Record(
   {
     matchingIris: Immutable.List<string>(),
+    facetLabels: Immutable.Map<string,string>(),
     fetchResources: 0,
     updateFacetInfoQueue: Immutable.List<string>(),
     selectedClass: <string>_.values<ClassConfig>(CLASSES).find((val) => val.default).iri,
@@ -81,6 +84,7 @@ export interface Action extends GlobalActions<Actions> {
     optionList?: FacetProps["optionList"];
     optionObject?: FacetProps["optionObject"];
     iris?:string[];
+    labelKeys?: {[key:string]:string}
   };
   facetQueue?: string[];
   facetValueKey?: string;
@@ -123,6 +127,8 @@ export function reducer(state = initialState, action: Action) {
       return state.set('facets', Immutable.OrderedMap())//clear old facet configs
         .set('matchingIris', Immutable.List())//clear old facet configs
         .set("updateFacetInfoQueue", Immutable.List(action.facetQueue));
+    case Actions.REFRESH_FACETS_SUCCESS:
+      return state.set('facetLabels', Immutable.OrderedMap(action.result.labelKeys))
     case Actions.FETCH_FACET_PROPS:
       return state.update("updateFacetInfoQueue", list => {
         const i = list.indexOf(action.facetName);
@@ -331,9 +337,37 @@ export function refreshFacets(state: GlobalState, forClass?: string): Action {
     throw new Error("Could not find class config for " + forClass);
   }
   var facets: string[] = classConf.facets
+  const fetchLabelsFor:string[] = facets.filter(f => (!( 'label' in FACETS[f]) && !state.facets.facetLabels.has(f)));
+  const getLabelQuery = () => {
+    if (fetchLabelsFor.length === 0) return 'SELECT * WHERE {[] [] []} LIMIT 0'
+    return `
+      SELECT ${_.keys(fetchLabelsFor).map((k) => '?'+k).join(' ')} WHERE {
+        ${fetchLabelsFor.map((val,key) => {
+          return `OPTIONAL {
+            <${val}> rdfs:label ?${key} .
+          }`
+        }).join(' ')}
+      } LIMIT 1`
+  }
   return {
-    type: Actions.REFRESH_FACETS,
+    types: [Actions.REFRESH_FACETS, Actions.REFRESH_FACETS_SUCCESS, Actions.REFRESH_FACETS_FAIL],
     facetQueue: _.uniq(facets),
+    promise: (client: ApiClient) =>
+      client
+        .req<any, SparqlJson>({
+
+          sparqlSelect: getLabelQuery()
+        })
+        .then(sparql => {
+          const vals = sparql.getValues()[0]
+          var labels:{[key:string]:string} = {}
+          fetchLabelsFor.forEach((label, key) => {
+            labels[label] = vals[key] ? vals[key].value : null
+          })
+          return {
+            labelKeys: labels
+          }
+        })
   };
 }
 
@@ -361,7 +395,6 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
             optionObject: facetConf.facetValues
           },
           facetName: facetConf.iri,
-          rand: Math.random(),
           sync:true
         } as any;
       }

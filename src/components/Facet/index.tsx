@@ -18,6 +18,7 @@ namespace Facet {
   }
   export interface Props {
     className?: string;
+    label: string
     facet: FacetProps;
     setSelectedFacetValue: typeof setSelectedFacetValue;
     setSelectedObject: typeof setSelectedObject;
@@ -50,7 +51,7 @@ class Facet extends React.PureComponent<Facet.Props, any> {
 
 
   render() {
-    const { className } = this.props;
+    const { className,label } = this.props;
     var facet: any;
     if (this.props.facet.error) {
       facet = <Label bsStyle="danger">{this.props.facet.error}</Label>
@@ -62,7 +63,7 @@ class Facet extends React.PureComponent<Facet.Props, any> {
     if (facet) {
       return (
         <div className={getClassName(className)}>
-          <div className={styles.facetHeader}>{FACETS[this.props.facet.iri].label}</div>
+          <div className={styles.facetHeader}>{FACETS[this.props.facet.iri].label || label}</div>
           {facet}
         </div>
       );
