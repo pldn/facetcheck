@@ -16,7 +16,8 @@ namespace ResourceDescription {
   export interface Props {
     className?: string;
     forIri: string;
-    statements: Statements
+    statements: Statements,
+    fetchingMatchingIris: boolean
   }
 }
 
@@ -34,7 +35,7 @@ class ResourceDescription extends React.PureComponent<ResourceDescription.Props,
     var style = {
       [styles.resourceDescription]: styles.resourceDescription,
       whiteSink: true,
-      [className]: !!className
+      [className]: !!className,
     };
 
     const tree=getStatementsAsTree(forIri, statements);
@@ -42,6 +43,7 @@ class ResourceDescription extends React.PureComponent<ResourceDescription.Props,
     const {label, ...widget} = rootWidget;
     return (
       <div className={getClassNames(style)}>
+      {this.props.fetchingMatchingIris && <div className={styles.overlay}/>}
         <div className={styles.header}>
 
           <div className={styles.iri}>

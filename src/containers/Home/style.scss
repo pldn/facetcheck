@@ -3,6 +3,7 @@
 .home {
   padding: 10px;
   width:100%;
+  // height:100%;
   @media (min-width: $screen-lg-min) {
     column-count: 2;
   }
@@ -16,6 +17,10 @@
     page-break-inside: avoid;
     break-inside: avoid;
   }
+  &.singlePage {
+    column-count:1 !important;
+    height:100%;
+  }
 }
 div.description {
   &:first-child {
@@ -24,4 +29,11 @@ div.description {
   &:last-child {
     margin-bottom: 0px;
   }
+}
+.noDescriptionWrapper {
+  display: flex;
+    justify-content: center;
+    width: 100%;
+    height:100%;
+    align-items: center;
 }
