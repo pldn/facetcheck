@@ -1,10 +1,10 @@
 #!/bin/bash
+set -e
 
-
-docker-machine use -u;
+eval $(docker-machine env -u)
 docker-compose build;
 docker-compose push;
-docker-machine use lod;
+eval $(docker-machine env lod)
 docker-compose pull;
 docker-compose up -d;
 docker-compose logs -f
