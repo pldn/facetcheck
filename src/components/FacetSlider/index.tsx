@@ -59,6 +59,7 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, any> {
     if (!_.isInteger(min) || !_.isInteger(max)) {
       stepSize = 0.1;
     }
+    // console.log(facet.selectedObject)
     return <div className={styles.range}>
       <Range
         min={min}
@@ -77,11 +78,9 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, any> {
           const [selectedMin,selectedMax] = values;
           const selectedObject:FacetSlider.Options = {};
           //only set min/max when its different that the outer bounds (otherwise no use in including it in our query)
-          if (min !== selectedMin) selectedObject.min = selectedMin;
-          if (max !== selectedMax) selectedObject.max = selectedMax;
-          if (_.size(selectedObject)) {
-            this.props.setSelectedObject(facet.iri, selectedObject);
-          }
+          selectedObject.min = min !== selectedMin ? selectedMin: null;
+          selectedObject.max = min !== selectedMax ? selectedMax: null;
+          this.props.setSelectedObject(facet.iri, selectedObject);
         }}
       />
     </div>
