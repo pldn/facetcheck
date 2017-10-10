@@ -81,16 +81,6 @@ export default class ApiClient {
       return urlOrPath;
     }
     const adjustedPath = urlOrPath[0] !== "/" ? "/" + urlOrPath : urlOrPath;
-    if (__SERVER__) {
-      // Prepend host and port of the API server to the path.
-      return (
-        (this.config.serverConnection.ssl ? "https" : "http") +
-        "://" +
-        this.config.serverConnection.domain +
-        (this.config.serverConnection.ssl ? "" : ":" + this.config.serverConnection.publicPort) +
-        adjustedPath
-      );
-    }
     return "/_api" + adjustedPath;
   }
 

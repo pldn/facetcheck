@@ -19,17 +19,11 @@ export class Config extends ConfigTemplate {
     token?: string;
   };
   public internalPort: number;
-  public serverConnection: ConnectionConfig;
   public clientConnection: ConnectionConfig;
   public serverConnectionFromBrowser: ConnectionConfig;
   setDefaults() {
     this.internalPort = 5000;
     this.clientConnection = {
-      ssl: false,
-      publicPort: 5000,
-      domain: "localhost"
-    };
-    this.serverConnection = {
       ssl: false,
       publicPort: 5000,
       domain: "localhost"

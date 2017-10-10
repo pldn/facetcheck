@@ -33,7 +33,7 @@ declare var __DEVELOPMENT__: boolean;
 declare var __DISABLE_SSR__: boolean;
 __DISABLE_SSR__ = true;
 const config = getConfig();
-const targetUrl = "http://" + config.serverConnection.domain + ":" + config.serverConnection.publicPort;
+// const targetUrl = "http://" + config.clientConnection.domain + ":" + config.clientConnection.publicPort;
 const pretty = new PrettyError();
 const app = Express();
 const server = http.createServer(app);
@@ -42,30 +42,30 @@ const server = http.createServer(app);
 setup Proxy. Ideally we would call the api server directly, but we'll get into CORS
 and cookie issues...
 **/
-const proxy = httpProxy.createProxyServer({
-  target: targetUrl
-  // ws: true//websocket support
-});
+// const proxy = httpProxy.createProxyServer({
+//   // target: targetUrl
+//   // ws: true//websocket support
+// });
 app.disable("x-powered-by");
 app.set("trust proxy", true);
-
+app.use(Express.static(path.join(__dirname, "..", "assets")));
 app.use(favicon('./public/images/favicon.ico'));
 // Proxy to API server
-app.use("/sparql", (req: Express.Request, res: Express.Response) => {
-  proxy.web(req, res, { target: "http://lod.labs.vu.nl:8899/sparql" });
-});
-// added the error handling to avoid https://github.com/nodejitsu/node-http-proxy/issues/527
-proxy.on("error", (error: any, req: Express.Request, res: Express.Response) => {
-  let json: any;
-  if (error.code !== "ECONNRESET") {
-    console.error("proxy error", error);
-  }
-  if (!res.headersSent) {
-    res.writeHead(500, { "content-type": "application/json" });
-  }
-  json = { error: "proxy_error", reason: error.message };
-  res.end(JSON.stringify(json));
-});
+// app.use("/sparql", (req: Express.Request, res: Express.Response) => {
+//   proxy.web(req, res, { target: "http://lod.labs.vu.nl:8899/sparql" });
+// });
+// // added the error handling to avoid https://github.com/nodejitsu/node-http-proxy/issues/527
+// proxy.on("error", (error: any, req: Express.Request, res: Express.Response) => {
+//   let json: any;
+//   if (error.code !== "ECONNRESET") {
+//     console.error("proxy error", error);
+//   }
+//   if (!res.headersSent) {
+//     res.writeHead(500, { "content-type": "application/json" });
+//   }
+//   json = { error: "proxy_error", reason: error.message };
+//   res.end(JSON.stringify(json));
+// });
 declare var webpackIsomorphicTools: any;
 declare var global: any;
 app.use((req: Express.Request, res: Express.Response) => {
@@ -162,11 +162,6 @@ if (config.internalPort) {
     if (err) {
       console.error(err);
     }
-    console.info(
-      "----\n==> ✅  react frontend is running, talking to API server on http://%s:%s.",
-      config.serverConnection.domain,
-      config.serverConnection.publicPort
-    );
     console.info(
       "==> 💻  Open http://%s:%s in a browser to view the app.",
       config.clientConnection.domain,

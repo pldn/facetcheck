@@ -226,7 +226,7 @@ module.exports = {
       },
       {
         test: /\.raw\..*$/,
-        loader: 'raw-loader'
+        loader: "raw-loader"
       },
       // "url" loader works just like "file" loader but it also embeds
       // assets smaller than specified size as data URLs to avoid requests.
@@ -266,21 +266,40 @@ module.exports = {
       //   loader: "style-loader!css-loader"
       // },
       {
-       test: /\.css$/,
-       use: [
-         "style-loader",
-         {
-           loader: "css-loader",
-           options: {
-             modules: true, // default is false
-             sourceMap: true,
-             importLoaders: 1,
-             localIdentName: "[name]--[local]--[hash:base64:8]"
-           }
-         },
-         "postcss-loader"
-       ]
-     },
+        test: /\.css$/,
+        loader: isDev
+          ? [
+              "style-loader",
+              {
+                loader: "css-loader",
+                options: {
+                  modules: true, // default is false
+                  sourceMap: true,
+                  importLoaders: 1,
+                  localIdentName: "[name]--[local]--[hash:base64:8]"
+                }
+              },
+              "postcss-loader"
+            ]
+          : ExtractTextPlugin.extract({
+              fallback: "style-loader",
+              use: [
+                {
+                  loader: "css-loader",
+                  options: {
+                    modules: true, // default is false
+                    importLoaders: 1
+                  }
+                },
+                {
+                  loader: "postcss-loader",
+                  options: {
+                    sourceMap: isDev
+                  }
+                }
+              ]
+            })
+      },
       {
         test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
         loader: "url-loader",
