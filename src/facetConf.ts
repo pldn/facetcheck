@@ -54,10 +54,6 @@ export var CLASSES: { [className: string]: ClassConfig } = {
         OPTIONAL {?img ?imgX ?imgY}
       }
       OPTIONAL {
-        <${iri}> foaf:depiction ?depiction .
-        OPTIONAL {?depiction ?depictionX ?depictionY}
-      }
-      OPTIONAL {
         <${iri}> geo:hasGeometry ?geo .
         ?geo geo:asWKT ?wkt.
       }

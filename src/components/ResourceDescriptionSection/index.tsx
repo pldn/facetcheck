@@ -97,7 +97,8 @@ class ResourceDescriptionSection extends React.PureComponent<
         </div>
         <div className={getClassNames({
           [styles.children]: !!styles.children,
-          [styles.dynamic]: widget.config.size === 'dynamic'
+          [styles.dynamic]: widget.config.size === 'dynamic',
+          [styles.horizontalScroll]: widget.config.size === 'scroll-horizontal'
         })}>
           {this.state.show &&
             widget.children.map(child => (
@@ -111,7 +112,6 @@ class ResourceDescriptionSection extends React.PureComponent<
     if (!this.props.widget || !this.props.widget.values || !this.props.widget.values.length) return null;
     const { widget, tree } = this.props;
     const { values, config, label } = widget;
-
     const enabledStyles: { [key: string]: boolean } = {
       [styles.values]: !!styles.values,
     };

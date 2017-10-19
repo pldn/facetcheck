@@ -88,8 +88,8 @@ export default class TreeNode {
   public getNquads():Promise<string> {
     return ntriplyToNquads(this.statements)
   }
-  public find(pattern?:QueryPattern, root = true)  {
-    return new Query(this, pattern, root);
+  public find(...pattern:QueryPattern[])  {
+    return new Query(this, pattern).isRoot();
 
   }
   public getChildrenCount() {
@@ -112,7 +112,7 @@ export default class TreeNode {
     return this.depth;
   }
   public getKey():string {
-    return this.predicate + this.depth + this.childrenCount + this.term;
+    return this.predicate + this.depth + this.childrenCount + this.term.value;
   }
   public getPredicate():string {
     return this.predicate
@@ -146,12 +146,22 @@ export class Query {
   private returnDepth = -1;
   private _limit = -1;
   private rootQuery = false;
-  constructor(tree: TreeNode, pattern: QueryPattern, root: boolean) {
-    this.pattern = pattern || [];
-    this.tree = tree;
-    this.rootQuery = root;
-  }
+  private nextPatterns:QueryPattern[] = []
+  constructor(tree: TreeNode, _patterns: QueryPattern[]) {
+    console.log(_patterns.length)
+    var patterns = _.clone(_patterns)
+    this.pattern = patterns.shift();
+    if (!this.pattern) this.pattern = [];
 
+    this.tree = tree;
+
+    this.nextPatterns = patterns;
+    console.log(this.nextPatterns)
+  }
+  public isRoot(isRoot=true) {
+    this.rootQuery = isRoot
+    return this;
+  }
   private patternHasBoundVariables() {
     return !!this.pattern.find(p => !!p);
   }
@@ -163,14 +173,35 @@ export class Query {
     this._limit = limit;
     return this;
   }
-  private postProcessResults(results: TreeNode[]) {
-    if (!this.rootQuery) return results;
+  private adjustResultsPerLimit(results:TreeNode[]) {
     if (this._limit > 0) {
       results = results.slice(0, this._limit);
     }
     //make results unique. We could get non-distinct results if we're retrieving from e.g. a depth of 1, but at a depth
     //of 2 there are more than 1 leaf nodes
-    return _.uniqBy(results, n => n.getKey());
+    var finalResults = _.uniqBy(results, n => n.getKey());
+
+    return finalResults;
+  }
+  private postProcessResults(results: TreeNode[]) {
+    if (!this.rootQuery) return results;
+    var finalResults = this.adjustResultsPerLimit(results)
+    if (this._limit > 0 && finalResults.length >= this._limit) {
+      return finalResults;
+    }
+    if (!this.nextPatterns.length) {
+      return finalResults;
+    }
+    for (const nextPattern of this.nextPatterns) {
+      if (this._limit <= finalResults.length) return finalResults;
+      const q = this.copy(nextPattern);
+      q.limit(this._limit - finalResults.length);
+      finalResults = this.adjustResultsPerLimit(finalResults.concat(q.exec()));
+    }
+    return finalResults;
+  }
+  public or(pattern:QueryPattern) {
+    this.nextPatterns.push(pattern);
   }
   public exec(): TreeNode[] {
     const hasMatchesToBeMade = this.patternHasBoundVariables();
@@ -193,7 +224,7 @@ export class Query {
     }
 
     const results = pattern.length
-      ? _.flatten(matchingObjs.map(node => node.find(pattern, false).exec()))
+      ? _.flatten(matchingObjs.map(node => node.find(pattern).isRoot(false).exec()))
       : matchingObjs;
     if (this.returnDepth < 0) return this.postProcessResults(results);
 
@@ -209,7 +240,14 @@ export class Query {
       }
       selectedResults.push(selectedNode);
     }
-
     return this.postProcessResults(selectedResults);
+
+
+  }
+  private copy(withPattern:QueryPattern) {
+    const q = new Query(this.tree, [withPattern]);
+    q._limit = this._limit;
+    q.returnDepth = this.returnDepth;
+    return q;
   }
 }

@@ -26,11 +26,7 @@ class TermLiteralImage extends React.PureComponent<TermLiteral.Props, TermLitera
     };
   }
   static shouldRender(props: TermLiteral.Props) {
-    return (
-      props.term.datatype === "https://triply.cc/triply/def/imageURI" ||
-      (props.term.datatype === "http://www.w3.org/2001/XMLSchema#anyURI" &&
-        imageExtensions.indexOf(extname(props.term.value).toLowerCase()) >= 0)
-    );
+    return props.config.type === 'image'
   }
   componentDidMount() {
     if (!this.state.imageLoaded && this.img.complete) {
@@ -46,12 +42,13 @@ class TermLiteralImage extends React.PureComponent<TermLiteral.Props, TermLitera
   }
 
   render() {
-    const { term, className } = this.props;
+    const { term, className,config } = this.props;
     const { imageError, imageLoaded } = this.state;
     return (
       <div className={className}>
-        {!imageLoaded && !imageError && <i className={getClassName("fa fa-cog fa-spin", styles.spinner)} />}
-        <a href={term.value} target="_blank">
+        {
+          // !imageLoaded && !imageError && <i className={getClassName("fa fa-cog fa-spin", styles.spinner)} />
+        }
           <img
             ref={el => (this.img = el)}
             src={term.value}
@@ -60,8 +57,10 @@ class TermLiteralImage extends React.PureComponent<TermLiteral.Props, TermLitera
             onLoad={this.onLoad.bind(this)}
             onError={this.onError.bind(this)}
           />
-        </a>
-        {(imageError || !imageLoaded) && <TermLiteralDefault {...this.props} />}
+
+        {
+          // (imageError || !imageLoaded) && <TermLiteralDefault {...this.props} />
+        }
       </div>
     );
   }

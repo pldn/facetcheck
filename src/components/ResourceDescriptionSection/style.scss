@@ -52,7 +52,11 @@
 .full {
   width:100%;
 }
-
+.horizontalScroll {
+  display:flex;
+  width:100%;
+  overflow-x: auto;
+}
 
 .title {
   color: #7e8ba4;

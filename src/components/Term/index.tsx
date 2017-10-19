@@ -24,7 +24,6 @@ const styles = require("./style.scss");
 class Term extends React.PureComponent<Term.Props, any> {
   render() {
     const { term, className, label,config,tree } = this.props;
-
     // if (TermGeo.acceptsTerm(term, resourceContext)) return <TermGeo term={term} context={resourceContext} />;
     // if (TermLink.acceptsTerm(term, resourceContext)) return <TermLink className={className} iri={term} label={label} />;
     if (term.termType=== 'literal') {

@@ -1,14 +1,14 @@
 //external dependencies
 import * as _ from "lodash";
 import * as N3 from "n3";
-import {extname} from 'path'
+import { extname } from "path";
 import * as Immutable from "immutable";
 import ApiClient from "helpers/ApiClient";
 import { GlobalActions } from "reducers";
 import { default as prefixes, getAsString } from "prefixes";
 const urlParse = require("url-parse");
-import {default as Tree} from "helpers/Tree";
-import { Term, Statement, Statements} from '@triply/triply-node-utils/build/src/nTriply'
+import { default as Tree, QueryPattern, QueryObject } from "helpers/Tree";
+import { Term, Statement, Statements } from "@triply/triply-node-utils/build/src/nTriply";
 import { Actions as FacetsActions, Action as FacetAction } from "./facets";
 import * as ReduxObservable from "redux-observable";
 import * as Redux from "redux";
@@ -25,8 +25,6 @@ export enum Actions {
   GET_STATEMENTS_FAIL = "facetcheck/statements/GET_STATEMENTS_FAIL" as any,
   MARK_FOR_FETCHING_OR_DELETION = "facetcheck/statements/MARK_FOR_FETCHING_OR_DELETION" as any
 }
-
-
 
 export var StateRecord = Immutable.Record(
   {
@@ -163,7 +161,7 @@ export function getLabel(iri: string, tree: Tree): string {
   const labelStatement = tree
     .getStatements()
     .find(s => s[1].value === "http://www.w3.org/2000/01/rdf-schema#label" && s[0].value === iri);
-  if (labelStatement && labelStatement[2].termType === 'literal') return labelStatement[2].value
+  if (labelStatement && labelStatement[2].termType === "literal") return labelStatement[2].value;
   const lnameInfo = getLocalNameInfo(iri);
   if (lnameInfo.localName) {
     return lnameInfo.localName;
@@ -177,7 +175,7 @@ export function getStatementsAsTree(forIri: Term, statements: Statements) {
 
 export interface RenderConfiguration {
   type?: "textarea" | "image";
-  size?: "dynamic" | "full";
+  size?: "dynamic" | "full" | "scroll-horizontal";
   hideOnLoad?: boolean;
   asToggle?: boolean;
 }
@@ -220,27 +218,59 @@ const selectDescription: SelectWidget = t => {
   }
 };
 const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".svg", ".bmp", ".tiff"];
-export const selectImage: SelectWidget = t => {
-  const patterns = [
-    [prefixes.foaf + "depiction", null],
-    [null, { datatype: "https://triply.cc/triply/def/imageURI" }],
-    [
-      null,
-      {
-        datatype: "http://www.w3.org/2001/XMLSchema#anyURI",
-        validationFunction: (term: Term) => imageExtensions.indexOf(extname(term.value).toLowerCase()) >= 0
-      }
-    ]
-  ];
-  for (var i = 0; i < patterns.length; i++) {
-    const nodes = t.find(patterns[i]).limit(1).exec();
-    if (nodes.length) {
-      return {
-        values: nodes,
-        type: "image",
-        allowDuplicates: i === 0
-      };
+const findImageLiteralPatterns = [
+  [null, { datatype: "https://triply.cc/triply/def/imageURI" }],
+  [
+    null,
+    {
+      datatype: "http://www.w3.org/2001/XMLSchema#anyURI",
+      filter: (term: Term) => imageExtensions.indexOf(extname(term.value).toLowerCase()) >= 0
     }
+  ]
+];
+const selectImage: SelectWidget = t => {
+  const patterns: QueryPattern[] = [...findImageLiteralPatterns, [prefixes.foaf + "depiction", null]];
+  const images: WidgetConfig[] = [];
+  const nodes = t
+    .find(...patterns)
+    .limit(5)
+    .exec();
+  console.log(nodes)
+  for (const node of nodes) {
+    //this might be an image literal, or a depiction resource
+    if (node.hasChildren()) {
+      const label = node
+        .find([prefixes.rdfs + "label", null])
+        .depth(1)
+        .limit(1)
+        .exec();
+      var img: Tree[] = [];
+      for (const pattern of findImageLiteralPatterns) {
+        if (img.length) break;
+        img = node
+          .find(pattern)
+          .limit(1)
+          .exec();
+      }
+      if (img.length) {
+        var labelString = label && label.length ? label[0].getTerm().value : null;
+        images.push({ values: img, label: labelString, config: { type: "image" } });
+      }
+    } else {
+      images.push({
+        values: [node],
+        config: { type: "image" }
+      });
+    }
+  }
+  if (images.length > 1) {
+    console.log(images);
+    return {
+      config: { size: "scroll-horizontal" },
+      children: images
+    };
+  } else {
+    return images[0];
   }
 };
 const selectLabel: SelectWidget = t => {
@@ -263,7 +293,7 @@ const catchAll: SelectWidget = t => {
   const removeNodes: number[] = [];
   for (var i = 0; i < nodes.length; i++) {
     const node = nodes[i];
-    if (node.getTerm().termType === 'bnode') {
+    if (node.getTerm().termType === "bnode") {
       removeNodes.push(i);
       if (node.hasChildren()) {
         nodes = nodes.concat(node.getChildren());
@@ -301,6 +331,7 @@ const catchAll: SelectWidget = t => {
 };
 export var SelectWidgets: SelectWidget[] = [
   // renderLabel,
+  selectImage,
   selectDescription,
   selectGeometry,
   catchAll
@@ -347,7 +378,6 @@ export function getWidgets(tree: Tree, selectWidgets: SelectWidget[] = SelectWid
       widgets = widgets.concat(postprocessWidget(widget));
     }
   }
-
   return {
     children: widgets,
     config: {}
