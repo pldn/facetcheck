@@ -13,7 +13,7 @@ export default class TreeNode {
   /**
    * Private methods
    */
-  private constructor(term:string, statements:N3.Statement[],predicate:string, depth:number) {
+  private constructor(term:string, statements:N3.Statement[],predicate:string, depth:number, parent: TreeNode) {
     this.term = term;
     this.statements = statements;
     this.depth = depth;
@@ -24,14 +24,11 @@ export default class TreeNode {
     if (!this.parent) return this;
     return this.parent.getRoot();
   }
-  private setParent(parent:TreeNode) {
-    this.parent = parent;
-  }
+
   private addChild(predTerm:string, objTerm:string) {
     this.childrenCount++;
     if (!this.children[predTerm]) this.children[predTerm] = [];
-    const obj = TreeNode.fromStatements(objTerm,this.statements, predTerm,  this.depth+1);
-    obj.setParent(this);
+    const obj = TreeNode.fromStatements(objTerm,this.statements, predTerm,  this.depth+1, this);
     this.children[predTerm].push(obj)
   }
   private populateChildren(statements:N3.Statement[]) {
@@ -124,8 +121,8 @@ export default class TreeNode {
       children: this.getChildren().map((c => c.toJson()))
     }
   }
-  public static fromStatements(forIri:string, statements:N3.Statement[], predicate:string = null, level = 0) {
-    const tree = new TreeNode(forIri, statements, predicate, level);
+  public static fromStatements(forIri:string, statements:N3.Statement[], predicate:string = null, level = 0, parent:TreeNode = null) {
+    const tree = new TreeNode(forIri, statements, predicate, level, parent);
     tree.populateChildren(statements);
     return tree;
   }
