@@ -36,7 +36,8 @@ export var CLASSES: { [className: string]: ClassConfig } = {
         <${iri}> geo:hasGeometry ?geo .
         ?geo geo:asWKT ?wkt.
         ?y rdfs:label ?yLabel .
-
+        <${iri}> foaf:depiction ?img .
+        ?img ?imgX ?imgY
       `;
       var selectPattern = `
       <${iri}> ?x ?y.
@@ -46,7 +47,10 @@ export var CLASSES: { [className: string]: ClassConfig } = {
       OPTIONAL {
         ?x rdfs:label ?xLabel
       }
-
+      OPTIONAL {
+        ?img foaf:depicts <${iri}> .
+        OPTIONAL {?img ?imgX ?imgY}
+      }
       OPTIONAL {
         <${iri}> geo:hasGeometry ?geo .
         ?geo geo:asWKT ?wkt.
