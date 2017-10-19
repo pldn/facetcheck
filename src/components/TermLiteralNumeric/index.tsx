@@ -24,13 +24,13 @@ const numeric = [
 export /* this statement implements both normal interface & static interface */
 class TermLiteralNumeric extends React.PureComponent<TermLiteral.Props, any> {
   static shouldRender(props: TermLiteral.Props) {
-    return numeric.indexOf(props.datatype) >= 0;
+    return numeric.indexOf(props.term.datatype) >= 0;
   }
   render() {
-    const { value, className } = this.props;
+    const { term, className } = this.props;
     return (
-      <div className={className} title={value}>
-        {value.replace(/^([+-]?)(\d*)(\.?)(\d*)$/, function(match, p1, p2, p3, p4) {
+      <div className={className} title={term.value}>
+        {term.value.replace(/^([+-]?)(\d*)(\.?)(\d*)$/, function(match, p1, p2, p3, p4) {
           return (
             (p1 === "-" ? "-" : "") + (p2.replace(/\B(?=(\d{3})+(?!\d))/g, ".") || "0") + (p3 === "." ? "," : "") + p4
           );

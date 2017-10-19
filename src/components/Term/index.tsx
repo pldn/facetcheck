@@ -8,10 +8,11 @@ import * as Immutable from 'immutable'
 import { TermLink, TermLiteral} from "components";
 import Tree from 'helpers/Tree'
 import {RenderConfiguration,getLabel} from  'reducers/statements'
+import * as nTriply from '@triply/triply-node-utils/build/src/nTriply'
 export namespace Term {
   export interface Props {
     className?: string;
-    term: string;
+    term: nTriply.Term;
     label?: string;
     config?:RenderConfiguration
     tree:Tree
@@ -26,19 +27,16 @@ class Term extends React.PureComponent<Term.Props, any> {
 
     // if (TermGeo.acceptsTerm(term, resourceContext)) return <TermGeo term={term} context={resourceContext} />;
     // if (TermLink.acceptsTerm(term, resourceContext)) return <TermLink className={className} iri={term} label={label} />;
-    if (N3.Util.isLiteral(term)) {
+    if (term.termType=== 'literal') {
       return (
         <TermLiteral
           className={className}
-          datatype={N3.Util.getLiteralType(term)}
-          termType={"Literal"}
-          language={N3.Util.getLiteralLanguage(term)}
-          value={N3.Util.getLiteralValue(term)}
+          term={term}
           config={config}
         />
       );
     } else {
-      return <TermLink className={className} iri={term} label={label || getLabel(term, tree)} />
+      return <TermLink className={className} term={term} label={label || getLabel(term.value, tree)} />
     }
   }
 }

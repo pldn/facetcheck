@@ -1,7 +1,7 @@
 //external dependencies
 import * as React from "react";
 import * as getClassName from "classnames";
-
+import * as nTriply from '@triply/triply-node-utils/build/src/nTriply'
 import {
   TermLiteralBoolean,
   TermLiteralDefault,
@@ -20,11 +20,8 @@ import {RenderConfiguration} from 'reducers/statements'
 export namespace TermLiteral {
   export interface Props {
     className?: string;
-    termType: "NamedNode" | "BlankNode" | "Literal" | "Graph";
-    value: string;
-    language?: string;
-    datatype?: string;
     config?:RenderConfiguration
+    term: nTriply.Term
   }
   export interface State {
     showAll: boolean;
@@ -73,7 +70,7 @@ export class TermLiteral extends React.PureComponent<TermLiteral.Props, TermLite
   }
 
   render() {
-    const { className, datatype, language } = this.props;
+    const { className } = this.props;
     return (
       <div className={getClassName(className, styles.wrapper)}>
         {this.renderLiteral()}

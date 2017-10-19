@@ -1,10 +1,11 @@
 import * as N3 from 'n3';
 import * as _ from 'lodash'
+import {Statements,Term,ntriplyToNquads} from '@triply/triply-node-utils/build/src/nTriply'
 export default class TreeNode {
-  private term:string;
+  private term:Term;
   private childrenCount = 0
   private parent:TreeNode;
-  private statements:N3.Statement[]
+  private statements:Statements
   private predicate:string
   private children: {
     [pred:string]: TreeNode[]
@@ -13,7 +14,7 @@ export default class TreeNode {
   /**
    * Private methods
    */
-  private constructor(term:string, statements:N3.Statement[],predicate:string, depth:number, parent: TreeNode) {
+  private constructor(term:Term, statements:Statements,predicate:string, depth:number, parent: TreeNode) {
     this.term = term;
     this.statements = statements;
     this.depth = depth;
@@ -26,28 +27,29 @@ export default class TreeNode {
     return this.parent.getRoot();
   }
 
-  private addChild(predTerm:string, objTerm:string) {
+  private addChild(predTerm:Term, objTerm:Term) {
+    const predTermVal = predTerm.value;
     this.childrenCount++;
-    if (!this.children[predTerm]) this.children[predTerm] = [];
-    const obj = TreeNode.fromStatements(objTerm,this.statements, predTerm,  this.depth+1, this);
-    this.children[predTerm].push(obj)
+    if (!this.children[predTermVal]) this.children[predTermVal] = [];
+    const obj = TreeNode.fromStatements(objTerm,this.statements, predTermVal,  this.depth+1, this);
+    this.children[predTermVal].push(obj)
   }
-  private populateChildren(statements:N3.Statement[]) {
-    if (N3.Util.isLiteral(this.term)) {
+  private populateChildren(statements:Statements) {
+    if (this.term.termType === 'literal') {
       //nothing to pulate. it's a leaf
     } else {
       for (const statement of statements) {
         //avoid cyclic references. This is a _tree_
-        if (statement.subject === this.term && !this.parentExists(statement.object)) {
-          this.addChild(statement.predicate, statement.object);
+        if (this.termEquals(statement[0]) && !this.parentExists(statement[2])) {
+          this.addChild(statement[1], statement[2]);
         }
       }
     }
   }
 
-  private parentExists(term:string):boolean {
+  private parentExists(term:Term):boolean {
     //start checking self
-    if (this.getTerm() === term) return true;
+    if (this.termEquals(term)) return true;
     //now check parents
     const parent = this.getParent();
     if (parent) return parent.parentExists(term);
@@ -64,29 +66,29 @@ export default class TreeNode {
   public hasChildren():boolean {
     return !!_.size(this.children)
   }
-  public isBnode() {
-    return N3.Util.isBlank(this.term) || (N3.Util.isIRI(this.term) && this.term.indexOf('/.well-known/genid') > 0)
-  }
+
   public getStatements() {
     return this.statements;
   }
-  public termEquals(term:string) {
-    return this.term === term;
+  public termEquals(term:Term) {
+    return this.term.value === term.value;
   }
+  public termMatches(requirements: QueryObject) {
+  return !(
+    (requirements.value && requirements.value !== this.term.value) ||
+    (requirements.language && requirements.language !== this.term.language) ||
+    (requirements.datatype && requirements.datatype !== this.term.datatype) ||
+    (requirements.termType && requirements.termType !== this.term.termType) ||
+    (requirements.filter && !requirements.filter(this.term))
+  );
+}
   public getDepth() {
     return this.depth;
   }
   public getNquads():Promise<string> {
-    return new Promise<string>((resolve,reject) => {
-      const writer = N3.Writer();
-      this.statements.forEach(s => writer.addTriple(s));
-      writer.end(function(error:Error,result:string) {
-        if (error) return reject(error)
-        resolve(result);
-      })
-    })
+    return ntriplyToNquads(this.statements)
   }
-  public find(pattern?:string[], root = true)  {
+  public find(pattern?:QueryPattern, root = true)  {
     return new Query(this, pattern, root);
 
   }
@@ -122,81 +124,92 @@ export default class TreeNode {
       children: this.getChildren().map((c => c.toJson()))
     }
   }
-  public static fromStatements(forIri:string, statements:N3.Statement[], predicate:string = null, level = 0, parent:TreeNode = null) {
-    const tree = new TreeNode(forIri, statements, predicate, level, parent);
+  public static fromStatements(forTerm:Term, statements:Statements, predicate:string = null, level = 0, parent:TreeNode = null) {
+    const tree = new TreeNode(forTerm, statements, predicate, level, parent);
     tree.populateChildren(statements);
     return tree;
   }
 }
 
+export type QueryObject = {
+  value?: string;
+  language?: string;
+  datatype?: string;
+  termType?: Term["termType"];
+  filter?: (term: Term) => boolean;
+};
+export type QueryPattern = Array<string | QueryObject>;
+
 export class Query {
-  private pattern:string[]
-  private tree:TreeNode
-  private returnOffset = -1
+  private pattern: QueryPattern;
+  private tree: TreeNode;
+  private returnDepth = -1;
   private _limit = -1;
   private rootQuery = false;
-  constructor(tree:TreeNode, pattern:string[], root:boolean) {
+  constructor(tree: TreeNode, pattern: QueryPattern, root: boolean) {
     this.pattern = pattern || [];
     this.tree = tree;
     this.rootQuery = root;
   }
 
   private patternHasBoundVariables() {
-
     return !!this.pattern.find(p => !!p);
   }
-  public depth(offset:number) {
-    this.returnOffset = offset
+  public depth(depth: number) {
+    this.returnDepth = depth;
     return this;
   }
-  public limit(limit:number) {
+  public limit(limit: number) {
     this._limit = limit;
     return this;
   }
-  private postProcessResults(results:TreeNode[]) {
-    results = results.filter(n => !!n);
+  private postProcessResults(results: TreeNode[]) {
     if (!this.rootQuery) return results;
     if (this._limit > 0) {
       results = results.slice(0, this._limit);
     }
     //make results unique. We could get non-distinct results if we're retrieving from e.g. a depth of 1, but at a depth
     //of 2 there are more than 1 leaf nodes
-    return _.uniqBy(results.filter(n => !!n), (n) => n.getKey());
+    return _.uniqBy(results, n => n.getKey());
   }
-  public exec():TreeNode[] {
+  public exec(): TreeNode[] {
     const hasMatchesToBeMade = this.patternHasBoundVariables();
     //we've reached a leaf node. If there are no more matches to be made, just return this one
-    if (this.tree.getChildrenCount() === 0 && (this.pattern.length === 0  || !hasMatchesToBeMade)) return [this.tree];
+    if (this.tree.getChildrenCount() === 0 && (this.pattern.length === 0 || !hasMatchesToBeMade)) {
+      if (this.returnDepth >= 0 && this.returnDepth !== this.tree.getDepth()) {
+        return [];
+      }
+      return [this.tree];
+    }
 
-
-    const pattern = _.clone(this.pattern)
+    const pattern = _.clone(this.pattern);
     const matchPred = pattern.shift();
-    const matchingPreds = this.tree.getChildren(matchPred);
+    const matchingPreds = this.tree.getChildren(matchPred as string);
     const matchObj = pattern.shift();
 
     var matchingObjs = matchingPreds;
     if (matchObj) {
-      matchingObjs = matchingPreds.filter(node => node.termEquals(matchObj));
+      matchingObjs = matchingPreds.filter(node => node.termMatches(matchObj));
     }
 
-    const results = _.flatten(matchingObjs.map(node => node.find(pattern, false).exec()))
-    if (this.returnOffset < 0) return this.postProcessResults(results);
+    const results = pattern.length
+      ? _.flatten(matchingObjs.map(node => node.find(pattern, false).exec()))
+      : matchingObjs;
+    if (this.returnDepth < 0) return this.postProcessResults(results);
 
     /**
      * Traverse upwards in the tree to select the node we're interested in
      */
-    const selectedResults:TreeNode[] = []
+    const selectedResults: TreeNode[] = [];
     for (const result of results) {
       var selectedNode = result;
 
-      for (var l = selectedNode.getDepth(); l > this.returnOffset ; l--) {
-
+      for (var l = selectedNode.getDepth(); l > this.returnDepth; l--) {
         selectedNode = selectedNode.getParent();
       }
       selectedResults.push(selectedNode);
     }
 
     return this.postProcessResults(selectedResults);
-
   }
 }

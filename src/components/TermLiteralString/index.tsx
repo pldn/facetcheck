@@ -12,13 +12,13 @@ class TermLiteralString extends React.PureComponent<TermLiteral.Props, any> {
 
   constructor(props: TermLiteral.Props) {
     super(props);
-    this.tags = this.parseTags(props.language);
+    this.tags = this.parseTags(props.term.language);
     this.state = {
       imageSource: this.getSource(this.tags.regionCode)
     };
   }
   static shouldRender(props: TermLiteral.Props) {
-    return props.datatype === "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
+    return props.term.datatype === "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
   }
   getSource(regionCode: string) {
     if (regionCode)

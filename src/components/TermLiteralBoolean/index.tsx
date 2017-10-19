@@ -9,10 +9,10 @@ import * as styles from "./style.scss";
 export /* this statement implements both normal interface & static interface */
 class TermLiteralBoolean extends React.PureComponent<TermLiteral.Props, any> {
   static shouldRender(props: TermLiteral.Props) {
-    return props.datatype === "http://www.w3.org/2001/XMLSchema#boolean";
+    return props.term.datatype === "http://www.w3.org/2001/XMLSchema#boolean";
   }
   render() {
-    switch (this.props.value) {
+    switch (this.props.term.value) {
       case "true":
         return <i title="true" className={getClassName("fa fa-check", styles.boolean, styles.true)} />;
       case "false":

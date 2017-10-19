@@ -1,12 +1,14 @@
 //external dependencies
 import * as _ from "lodash";
 import * as N3 from "n3";
+import {extname} from 'path'
 import * as Immutable from "immutable";
 import ApiClient from "helpers/ApiClient";
 import { GlobalActions } from "reducers";
 import { default as prefixes, getAsString } from "prefixes";
 const urlParse = require("url-parse");
-import Tree from "helpers/Tree";
+import {default as Tree} from "helpers/Tree";
+import { Term, Statement, Statements} from '@triply/triply-node-utils/build/src/nTriply'
 import { Actions as FacetsActions, Action as FacetAction } from "./facets";
 import * as ReduxObservable from "redux-observable";
 import * as Redux from "redux";
@@ -24,8 +26,7 @@ export enum Actions {
   MARK_FOR_FETCHING_OR_DELETION = "facetcheck/statements/MARK_FOR_FETCHING_OR_DELETION" as any
 }
 
-export type Statement = N3.Statement;
-export type Statements = Immutable.List<Statement>;
+
 
 export var StateRecord = Immutable.Record(
   {
@@ -61,7 +62,7 @@ export function reducer(state = initialState, action: Action & FacetAction) {
         .update("errors", errors => errors.set(action.forIri, action.message));
     case Actions.GET_STATEMENTS_SUCCESS:
       return state.update("fetchRequests", num => num - 1).update("resourceDescriptions", resourceDescriptions => {
-        return resourceDescriptions.set(action.forIri, Immutable.List<Statement>(action.result));
+        return resourceDescriptions.set(action.forIri, action.result);
       });
     case Actions.MARK_FOR_FETCHING_OR_DELETION:
       if (action.toRemove && action.toRemove.length) {
@@ -161,8 +162,8 @@ export function getLabel(iri: string, tree: Tree): string {
   if (!N3.Util.isIRI(iri)) return null;
   const labelStatement = tree
     .getStatements()
-    .find(s => s.predicate === "http://www.w3.org/2000/01/rdf-schema#label" && s.subject === iri);
-  if (labelStatement && N3.Util.isLiteral(labelStatement.object)) return N3.Util.getLiteralValue(labelStatement.object);
+    .find(s => s[1].value === "http://www.w3.org/2000/01/rdf-schema#label" && s[0].value === iri);
+  if (labelStatement && labelStatement[2].termType === 'literal') return labelStatement[2].value
   const lnameInfo = getLocalNameInfo(iri);
   if (lnameInfo.localName) {
     return lnameInfo.localName;
@@ -170,8 +171,8 @@ export function getLabel(iri: string, tree: Tree): string {
   return null;
 }
 
-export function getStatementsAsTree(forIri: string, statements: Statements) {
-  return Tree.fromStatements(forIri, statements.toArray());
+export function getStatementsAsTree(forIri: Term, statements: Statements) {
+  return Tree.fromStatements(forIri, statements);
 }
 
 export interface RenderConfiguration {
@@ -218,6 +219,30 @@ const selectDescription: SelectWidget = t => {
     };
   }
 };
+const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".svg", ".bmp", ".tiff"];
+export const selectImage: SelectWidget = t => {
+  const patterns = [
+    [prefixes.foaf + "depiction", null],
+    [null, { datatype: "https://triply.cc/triply/def/imageURI" }],
+    [
+      null,
+      {
+        datatype: "http://www.w3.org/2001/XMLSchema#anyURI",
+        validationFunction: (term: Term) => imageExtensions.indexOf(extname(term.value).toLowerCase()) >= 0
+      }
+    ]
+  ];
+  for (var i = 0; i < patterns.length; i++) {
+    const nodes = t.find(patterns[i]).limit(1).exec();
+    if (nodes.length) {
+      return {
+        values: nodes,
+        type: "image",
+        allowDuplicates: i === 0
+      };
+    }
+  }
+};
 const selectLabel: SelectWidget = t => {
   const node = t
     .find([prefixes.rdfs + "label", null])
@@ -238,7 +263,7 @@ const catchAll: SelectWidget = t => {
   const removeNodes: number[] = [];
   for (var i = 0; i < nodes.length; i++) {
     const node = nodes[i];
-    if (node.isBnode()) {
+    if (node.getTerm().termType === 'bnode') {
       removeNodes.push(i);
       if (node.hasChildren()) {
         nodes = nodes.concat(node.getChildren());

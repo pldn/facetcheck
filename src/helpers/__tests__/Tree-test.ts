@@ -6,18 +6,19 @@ import * as fs from 'fs-extra'
 import * as path from 'path'
 import Tree from '../Tree'
 import prefixes from 'prefixes'
+import {Term, n3ToNtriply} from '@triply/triply-node-utils/build/src/nTriply'
 
-async function getTree(fromFile:string, forStatement:string) {
+async function getTree(fromFile:string, forStatement:Term) {
   const string = await fs.readFile(path.resolve(__dirname, 'data', fromFile), 'utf8')
-  const statements = N3.Parser().parse(string);
+  const statements = N3.Parser().parse(string).map(s => n3ToNtriply(s));
   return Tree.fromStatements(forStatement,statements)
 }
 describe.only("Tree", function() {
   var pdokTree:Tree
   var geosoupTree:Tree
   before(async function() {
-    pdokTree = await getTree('pdok_test.nt','https://data.pdok.nl/cbs/2015/id/buurt/BU01060710')
-    geosoupTree = await getTree('geosoup.ttl','https://cultureelerfgoed.nl/id/monument/511321')
+    pdokTree = await getTree('pdok_test.nt',{value: 'https://data.pdok.nl/cbs/2015/id/buurt/BU01060710', termType:'iri'})
+    geosoupTree = await getTree('geosoup.ttl',{value: 'https://cultureelerfgoed.nl/id/monument/511321', termType:'iri'})
   });
   it("Root node should have correct shape", function() {
     expect(pdokTree.getParent()).to.be.null;
@@ -39,14 +40,14 @@ describe.only("Tree", function() {
     it("Should find deep nodes", function() {
       var matches = pdokTree.find(['http://www.opengis.net/ont/geosparql#hasGeometry', null, 'http://www.opengis.net/ont/geosparql#asWKT']).exec();
       expect(matches).to.have.lengthOf(1);
-      expect(matches[0].getTerm().indexOf('"')).to.equal(0)//should be a literal
-      expect(matches[0].getLevel()).to.equal(2)//should be a literal
+      expect(matches[0].getTerm().termType).to.equal('literal')
+      expect(matches[0].getLevel()).to.equal(2)
     })
     it("Should return other node if specified", function() {
       var matches = pdokTree.find(['http://www.opengis.net/ont/geosparql#hasGeometry', null, 'http://www.opengis.net/ont/geosparql#asWKT']).depth(1).exec();
       expect(matches).to.have.lengthOf(1);
       const match = matches[0];
-      expect(match.getTerm().indexOf('http')).to.equal(0)//should be an iri
+      expect(match.getTerm().value.indexOf('http')).to.equal(0)//should be an iri
       expect(match.getChildrenCount()).to.equal(2)
     })
     it("Find WKT", function() {

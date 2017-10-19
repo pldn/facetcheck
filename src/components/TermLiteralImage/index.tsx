@@ -27,9 +27,9 @@ class TermLiteralImage extends React.PureComponent<TermLiteral.Props, TermLitera
   }
   static shouldRender(props: TermLiteral.Props) {
     return (
-      props.datatype === "https://triply.cc/triply/def/imageURI" ||
-      (props.datatype === "http://www.w3.org/2001/XMLSchema#anyURI" &&
-        imageExtensions.indexOf(extname(props.value).toLowerCase()) >= 0)
+      props.term.datatype === "https://triply.cc/triply/def/imageURI" ||
+      (props.term.datatype === "http://www.w3.org/2001/XMLSchema#anyURI" &&
+        imageExtensions.indexOf(extname(props.term.value).toLowerCase()) >= 0)
     );
   }
   componentDidMount() {
@@ -46,16 +46,16 @@ class TermLiteralImage extends React.PureComponent<TermLiteral.Props, TermLitera
   }
 
   render() {
-    const { value, className } = this.props;
+    const { term, className } = this.props;
     const { imageError, imageLoaded } = this.state;
     return (
       <div className={className}>
         {!imageLoaded && !imageError && <i className={getClassName("fa fa-cog fa-spin", styles.spinner)} />}
-        <a href={value} target="_blank">
+        <a href={term.value} target="_blank">
           <img
             ref={el => (this.img = el)}
-            src={value}
-            title={value}
+            src={term.value}
+            title={term.value}
             className={!imageError && imageLoaded ? styles.image : styles.hidden}
             onLoad={this.onLoad.bind(this)}
             onError={this.onError.bind(this)}

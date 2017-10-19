@@ -19,7 +19,7 @@ export class TermLiteralTextarea extends React.PureComponent<TermLiteral.Props, 
   render() {
     return (
       <div className={styles.textarea}>
-      {this.props.value}
+      {this.props.term.value}
       </div>
     );
   }

@@ -3,6 +3,7 @@ import * as superagent from "superagent";
 import { Request } from "express";
 import * as _ from "lodash";
 import * as N3 from 'n3'
+import * as NTriply from '@triply/triply-node-utils/build/src/nTriply'
 //import own dependencies
 import { GlobalState } from "reducers";
 import { getConfig, Config, ConnectionConfig } from "staticConfig";
@@ -218,7 +219,7 @@ export default class ApiClient {
 
         return resolve(
           <any>{
-            body:(args.sparqlConstruct? N3.Parser().parse(body): body),
+            body:(args.sparqlConstruct? N3.Parser().parse(body).map(s => NTriply.n3ToNtriply(s)): body),
             meta
           }
         );
