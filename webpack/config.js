@@ -108,6 +108,28 @@ module.exports = {
         ])
       },
       {
+        test: /\.js$/,
+        //node-modules is compiled to es6 (needed for immutable). Uglifying it won't work, so we need to transpile this on separately
+        include: [paths.nodeModules + "/@triply/triply-node-utils"],
+        loader: [
+          {
+            loader: "babel-loader",
+            options: {
+              presets: [
+                [
+                  "env",
+                  {
+                    targets: {
+                      browsers: SUPPORTED_BROWSERS
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      {
         test: /\.json$/,
         loader: "json-loader"
       },
