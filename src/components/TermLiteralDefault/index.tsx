@@ -9,7 +9,8 @@ class TermLiteralDefault extends React.PureComponent<TermLiteral.Props, any> {
     return true;
   }
   render() {
-    const { term, className } = this.props;
+    const {  className } = this.props;
+    const term = this.props.value.getTerm()
     return (
       <div className={className}>
         <Ellipsis value={term.value} />

@@ -235,13 +235,11 @@ const selectImage: SelectWidget = t => {
     .find(...patterns)
     .limit(5)
     .exec();
-  console.log(nodes)
   for (const node of nodes) {
     //this might be an image literal, or a depiction resource
     if (node.hasChildren()) {
       const label = node
-        .find([prefixes.rdfs + "label", null])
-        .depth(1)
+        .find([prefixes.rdfs + "label", null], [prefixes.dcterms+ "description", null])
         .limit(1)
         .exec();
       var img: Tree[] = [];
@@ -254,7 +252,8 @@ const selectImage: SelectWidget = t => {
       }
       if (img.length) {
         var labelString = label && label.length ? label[0].getTerm().value : null;
-        images.push({ values: img, label: labelString, config: { type: "image" } });
+        img[0].setLabel(labelString)
+        images.push({ values: img,  config: { type: "image" } });
       }
     } else {
       images.push({
@@ -264,7 +263,6 @@ const selectImage: SelectWidget = t => {
     }
   }
   if (images.length > 1) {
-    console.log(images);
     return {
       config: { size: "scroll-horizontal" },
       children: images

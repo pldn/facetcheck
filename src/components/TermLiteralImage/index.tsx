@@ -42,7 +42,9 @@ class TermLiteralImage extends React.PureComponent<TermLiteral.Props, TermLitera
   }
 
   render() {
-    const { term, className,config } = this.props;
+    const {  className ,value} = this.props;
+    const term = value.getTerm()
+    const label = value.getLabel();
     const { imageError, imageLoaded } = this.state;
     return (
       <div className={className}>
@@ -57,7 +59,9 @@ class TermLiteralImage extends React.PureComponent<TermLiteral.Props, TermLitera
             onLoad={this.onLoad.bind(this)}
             onError={this.onError.bind(this)}
           />
-
+        {
+          imageLoaded && label && <div className={styles.label}>{label}</div>
+        }
         {
           // (imageError || !imageLoaded) && <TermLiteralDefault {...this.props} />
         }

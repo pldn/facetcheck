@@ -1,12 +1,14 @@
 import * as N3 from 'n3';
 import * as _ from 'lodash'
 import {Statements,Term,ntriplyToNquads} from '@triply/triply-node-utils/build/src/nTriply'
+import { default as prefixes, prefix } from "prefixes";
 export default class TreeNode {
   private term:Term;
   private childrenCount = 0
   private parent:TreeNode;
   private statements:Statements
   private predicate:string
+  private label:string;
   private children: {
     [pred:string]: TreeNode[]
   } = {}
@@ -26,7 +28,16 @@ export default class TreeNode {
     if (!this.parent) return this;
     return this.parent.getRoot();
   }
-
+  public setLabel(label:string) {
+    this.label = label;
+    return;
+  }
+  public getLabel() {
+    if (this.label) return this.label;
+    const rdfsLabel =  this.find([prefix('rdfs', 'label'), null]).limit(1).exec();
+    if (rdfsLabel.length) return rdfsLabel[0].getTerm().value;
+    return null;
+  }
   private addChild(predTerm:Term, objTerm:Term) {
     const predTermVal = predTerm.value;
     this.childrenCount++;
@@ -148,7 +159,6 @@ export class Query {
   private rootQuery = false;
   private nextPatterns:QueryPattern[] = []
   constructor(tree: TreeNode, _patterns: QueryPattern[]) {
-    console.log(_patterns.length)
     var patterns = _.clone(_patterns)
     this.pattern = patterns.shift();
     if (!this.pattern) this.pattern = [];
@@ -156,7 +166,6 @@ export class Query {
     this.tree = tree;
 
     this.nextPatterns = patterns;
-    console.log(this.nextPatterns)
   }
   public isRoot(isRoot=true) {
     this.rootQuery = isRoot

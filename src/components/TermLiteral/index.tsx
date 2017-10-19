@@ -1,6 +1,7 @@
 //external dependencies
 import * as React from "react";
 import * as getClassName from "classnames";
+import Tree from 'helpers/Tree'
 import * as nTriply from '@triply/triply-node-utils/build/src/nTriply'
 import {
   TermLiteralBoolean,
@@ -21,7 +22,7 @@ export namespace TermLiteral {
   export interface Props {
     className?: string;
     config?:RenderConfiguration
-    term: nTriply.Term
+    value: Tree
   }
   export interface State {
     showAll: boolean;

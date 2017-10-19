@@ -115,6 +115,7 @@ class ResourceDescriptionSection extends React.PureComponent<
     const enabledStyles: { [key: string]: boolean } = {
       [styles.values]: !!styles.values,
     };
+
     return (
       <div className={getClassNames(enabledStyles)}>
         {label && (
@@ -124,7 +125,7 @@ class ResourceDescriptionSection extends React.PureComponent<
         )}
         <div className={styles.values}>
           {values.map(value => (
-            <Term key={value.getKey()} className={styles.obj} term={value.getTerm()} config={config} tree={tree} />
+            <Term key={value.getKey()} className={styles.obj} value={value} config={config} tree={tree} />
           ))}
         </div>
       </div>

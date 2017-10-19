@@ -3,6 +3,7 @@ import * as React from "react";
 import * as nTriply from '@triply/triply-node-utils/build/src/nTriply'
 import * as N3 from "n3";
 import * as getClassName from "classnames";
+import Tree from 'helpers/Tree'
 import * as Immutable from 'immutable'
 // import {Table,Button} from 'react-bootstrap';
 import { Link } from "react-router";
@@ -11,7 +12,7 @@ import { Link } from "react-router";
 export namespace TermLink {
   export interface Props {
     className?: string;
-    term: nTriply.Term
+    value: Tree
     label?: string;
     link?: {
       to: string;
@@ -27,7 +28,8 @@ class TermLink extends React.PureComponent<TermLink.Props, any> {
     return N3.Util.isIRI(term);
   }
   render() {
-    const { className, term, label } = this.props;
+    const { className, label } = this.props;
+    const term = this.props.value.getTerm()
     const link = this.props.link || { to: term.value, target: "_blank" };
     return (
       <div className={getClassName(styles.link, className)}>

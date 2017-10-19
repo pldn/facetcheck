@@ -1,8 +1,9 @@
+@import '../../theme/bootstrap.overrides/variables.scss';
 .image {
   max-width: 600px;
   max-height: 200px;
   margin-right: 10px;
-  float: left;
+  // float: left;
 }
 .hidden {
   display: none;
@@ -11,4 +12,9 @@
   float: left;
   margin-top: 3px;
   margin-right: 7px;
+}
+.label {
+  margin:5px;
+  font-size:90%;
+
 }

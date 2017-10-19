@@ -24,7 +24,7 @@ const wkt = [
 export /* this statement implements both normal interface & static interface */
 class TermLiteralWkt extends React.PureComponent<TermLiteral.Props, any> {
   static shouldRender(props: TermLiteral.Props) {
-    return wkt.indexOf(props.term.datatype) >= 0;
+    return wkt.indexOf(props.value.getTerm().datatype) >= 0;
   }
   getBorders(poly: Array<Coords>) {
     const x = poly.map(c => c[0]);
@@ -85,7 +85,7 @@ class TermLiteralWkt extends React.PureComponent<TermLiteral.Props, any> {
     );
   }
   renderImage() {
-    const wkt = parse(this.props.term.value);
+    const wkt = parse(this.props.value.getTerm().value);
     if (!wkt) return;
 
     if (wkt.type === "Polygon") return this.polygon(wkt);

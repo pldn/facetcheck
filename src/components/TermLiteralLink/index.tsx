@@ -7,10 +7,11 @@ import { TermLiteral, TermLiteralDefault } from "components";
 @TermLiteral.staticImplements<TermLiteral.TermLiteralRenderer>()
 class TermLiteralLink extends React.PureComponent<TermLiteral.Props, any> {
   static shouldRender(props: TermLiteral.Props) {
-    return props.term.datatype === "http://www.w3.org/2001/XMLSchema#anyURI";
+    return props.value.getTerm().datatype === "http://www.w3.org/2001/XMLSchema#anyURI";
   }
   render() {
-    const { term, className } = this.props;
+    const {  className } = this.props;
+    const term = this.props.value.getTerm()
     const parsed = url.parse(term.value);
     return parsed.protocol === "http:" || parsed.protocol === "https:"
       ? <div className={className}>
