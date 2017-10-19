@@ -153,13 +153,14 @@ export class Query {
     return this;
   }
   private postProcessResults(results:TreeNode[]) {
+    results = results.filter(n => !!n);
     if (!this.rootQuery) return results;
     if (this._limit > 0) {
       results = results.slice(0, this._limit);
     }
     //make results unique. We could get non-distinct results if we're retrieving from e.g. a depth of 1, but at a depth
     //of 2 there are more than 1 leaf nodes
-    return _.uniqBy(results, (n) => n.getKey());
+    return _.uniqBy(results.filter(n => !!n), (n) => n.getKey());
   }
   public exec():TreeNode[] {
     const hasMatchesToBeMade = this.patternHasBoundVariables();
