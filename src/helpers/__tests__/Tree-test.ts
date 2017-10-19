@@ -12,7 +12,7 @@ async function getTree(fromFile:string, forStatement:string) {
   const statements = N3.Parser().parse(string);
   return Tree.fromStatements(forStatement,statements)
 }
-describe("Tree", function() {
+describe.only("Tree", function() {
   var pdokTree:Tree
   var geosoupTree:Tree
   before(async function() {
@@ -20,10 +20,10 @@ describe("Tree", function() {
     geosoupTree = await getTree('geosoup.ttl','https://cultureelerfgoed.nl/id/monument/511321')
   });
   it("Root node should have correct shape", function() {
-    expect(pdokTree.getParent()).to.be.undefined;
-    expect(pdokTree['getChildren']()).to.have.lengthOf(54)
-    expect(pdokTree['childrenCount']).equal(54);
-  });
+    expect(pdokTree.getParent()).to.be.null;
+    expect(pdokTree['getChildren']()).to.have.lengthOf(55)
+    expect(pdokTree['childrenCount']).equal(55);
+  })
   describe("Find", function() {
     it ("Should find root level nodes", function() {
       const matches = pdokTree.find(['https://data.pdok.nl/cbs/2015/vocab/buurtNaam']).exec();
@@ -32,9 +32,9 @@ describe("Tree", function() {
     })
     it("Should return leafs when empty match is given", function() {
       var matches = pdokTree.find([]).exec();
-      expect(matches).to.have.lengthOf(55);
+      expect(matches).to.have.lengthOf(56);
       matches = pdokTree.find().exec();
-      expect(matches).to.have.lengthOf(55);
+      expect(matches).to.have.lengthOf(56);
     })
     it("Should find deep nodes", function() {
       var matches = pdokTree.find(['http://www.opengis.net/ont/geosparql#hasGeometry', null, 'http://www.opengis.net/ont/geosparql#asWKT']).exec();

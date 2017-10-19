@@ -1,3 +1,6 @@
+<https://someimage> <https://depicts> <https://data.pdok.nl/cbs/2015/id/buurt/BU01060710> .
+<https://data.pdok.nl/cbs/2015/id/buurt/BU01060710> <https://depicted> <https://someimage>  .
+
 <https://data.pdok.nl/cbs/2015/id/buurt/BU01060710> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
 <https://data.pdok.nl/cbs/2015/id/buurt/BU01060710> <http://www.opengis.net/ont/geosparql#hasGeometry> <https://data.pdok.nl/cbs/.well-known/genid/c37ac6f6-2a87-11e7-a6fd-0cc47a6be748> .
 <https://data.pdok.nl/cbs/.well-known/genid/c37ac6f6-2a87-11e7-a6fd-0cc47a6be748> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sometype> .

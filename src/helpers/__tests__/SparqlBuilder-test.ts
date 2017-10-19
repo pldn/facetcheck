@@ -7,13 +7,13 @@ import * as path from 'path'
 import Builder from '../SparqlBuilder'
 import prefixes from 'prefixes'
 
-describe.only("SparqlBuilder", function() {
+describe("SparqlBuilder", function() {
   it('should work without starting query', function() {
     const b = Builder.get();
-    expect(b.toString()).to.equal('SELECT * WHERE { ?s ?p ?o. }');
+    expect(b.toString()).to.equal('SELECT * WHERE {  }\nLIMIT 10');
   })
   it('add union clause', function() {
     const b = Builder.get();
-    
+
   })
 });

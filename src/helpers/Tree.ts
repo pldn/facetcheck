@@ -18,6 +18,7 @@ export default class TreeNode {
     this.statements = statements;
     this.depth = depth;
     this.predicate = predicate;
+    this.parent = parent;
   }
 
   public getRoot():TreeNode {
