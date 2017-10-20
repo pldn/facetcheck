@@ -53,6 +53,7 @@ class TermLiteralImage extends React.PureComponent<TermLiteral.Props, TermLitera
         {
           // !imageLoaded && !imageError && <i className={getClassName("fa fa-cog fa-spin", styles.spinner)} />
         }
+        <a href={term.value} target="_blank">
           <img
             ref={el => (this.img = el)}
             src={term.value}
@@ -60,7 +61,7 @@ class TermLiteralImage extends React.PureComponent<TermLiteral.Props, TermLitera
             className={!imageError && imageLoaded ? styles.image : styles.hidden}
             onLoad={this.onLoad.bind(this)}
             onError={this.onError.bind(this)}
-          />
+          /></a>
         {
           imageLoaded && label && <div className={styles.label}>{label}</div>
         }
