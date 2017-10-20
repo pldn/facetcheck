@@ -40,14 +40,16 @@ class TermLiteralImage extends React.PureComponent<TermLiteral.Props, TermLitera
   onError(e: any) {
     this.setState({ imageError: true });
   }
+  showModal() {
 
+  }
   render() {
     const {  className ,value} = this.props;
     const term = value.getTerm()
     const label = value.getLabel();
     const { imageError, imageLoaded } = this.state;
     return (
-      <div className={className}>
+      <div className={getClassName(styles.wrapper, className)} onClick={this.showModal}>
         {
           // !imageLoaded && !imageError && <i className={getClassName("fa fa-cog fa-spin", styles.spinner)} />
         }

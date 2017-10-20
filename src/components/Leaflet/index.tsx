@@ -1,7 +1,7 @@
 //external dependencies
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-
+const parse = require("wellknown");
 import * as getClassName from "classnames";
 // import {Table,Button} from 'react-bootstrap';
 //import own dependencies
@@ -10,7 +10,7 @@ export namespace Leaflet {
   export interface Props {
     className?: string;
     // context: Immutable.List<N3.Statement>;
-    value: string;
+    values: string[];
   }
 }
 
@@ -67,10 +67,10 @@ class Leaflet extends React.PureComponent<Leaflet.Props, any> {
 
   **/
   loadLeaflet() {
-    var wktString = this.props.value;
+    var wktStrings = this.props.values;
+    if (!wktStrings || !wktStrings.length)  return;
     // wktString = polygon; //works fine on OSM and on BRT
     // wktString = multi;//this is chili. gray on brt (correct). works fine on OSM
-    if (!wktString) return;
     var res = [3440.64, 1720.32, 860.16, 430.08, 215.04, 107.52, 53.76, 26.88, 13.44, 6.72, 3.36, 1.68, 0.84, 0.42];
     var scales: number[] = [];
     res.forEach(function(res) {
@@ -107,7 +107,6 @@ class Leaflet extends React.PureComponent<Leaflet.Props, any> {
 
 
     var wicket = new (global as any).Wkt.Wkt();
-    var feature: any;
 
     var myIcon = L.icon({
       // iconUrl: svgURL,
@@ -123,44 +122,17 @@ class Leaflet extends React.PureComponent<Leaflet.Props, any> {
       popupAnchor: [1, -34], //
       tooltipAnchor: [16, -28] //
     });
-    try {
-      feature = wicket.read(wktString).toObject({ icon: myIcon });
-    } catch (e) {
-      console.error(e);
-      return;
-    }
+    const features:any[] = [];
+    for (const val of this.props.values) {
+      try {
+        features.push(wicket.read(val).toObject({ icon: myIcon }));
 
-    var features: any[] = [];
-    var markerPos;
-    if (feature.getBounds) {
-      //get center of polygon or something
-      markerPos = feature.getBounds().getCenter();
-    } else if (feature.getLatLng) {
-      //its a point, just get the lat/lng
-      markerPos = feature.getLatLng();
-    }
-    var zoomToEl = function(e: any) {
-      map.setView(e.latlng, 15);
-    };
-    function addPopupAndEventsToMarker(el: any) {
-      el.on("dblclick", zoomToEl);
-      // 	var popupContent = options.formatPopup && options.formatPopup(yasr, L, plotVariable, binding);
-      // 	if (popupContent) {
-      // 		hasLabel = true;
-      // 		el.bindPopup(popupContent)
-      // 	}
-    }
-
-    if (markerPos) {
-      var shouldDrawSeparateMarker = !!feature.getBounds; //a lat/lng is already a marker
-      if (shouldDrawSeparateMarker) {
-        //not drawing a marker for a polygon. Don't have any popup content!
-        // addPopupAndEventsToMarker(L.marker(markerPos, { icon: myIcon }).addTo(map))
-      } else {
-        addPopupAndEventsToMarker(feature);
+      } catch (e) {
+        console.error('failed to read wkt value', e);
+        continue
       }
+
     }
-    features.push(feature);
     var group = new L.featureGroup(features).addTo(map);
     map.fitBounds(group.getBounds());
   }
@@ -170,7 +142,6 @@ class Leaflet extends React.PureComponent<Leaflet.Props, any> {
 
   render() {
     const { className } = this.props;
-
     const style = {
       [className]: !!className
     };

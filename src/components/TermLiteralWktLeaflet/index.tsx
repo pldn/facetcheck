@@ -26,7 +26,7 @@ class TermLiteralWktLeaflet extends React.PureComponent<TermLiteral.Props, any> 
     const wkt = parse(term.value);
     if (!wkt) return null;
     return (
-      <Leaflet value={term.value}/>
+      <Leaflet values={[term.value]}/>
     );
   }
 }

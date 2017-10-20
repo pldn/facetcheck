@@ -174,7 +174,7 @@ export function getStatementsAsTree(forIri: Term, statements: Statements) {
 }
 
 export interface RenderConfiguration {
-  type?: "textarea" | "image";
+  type?: "textarea" | "image" | "leaflet";
   size?: "dynamic" | "full" | "scroll-horizontal";
   hideOnLoad?: boolean;
   asToggle?: boolean;
@@ -194,12 +194,14 @@ export type SelectWidget = (tree: Tree) => WidgetConfig;
 const selectGeometry: SelectWidget = t => {
   const node = t
     .find([prefixes.geo + "hasGeometry", null, prefixes.geo + "asWKT"])
-    .limit(1)
     .exec();
   if (node.length) {
     return <WidgetConfig>{
       // value: node[0]
-      values: node
+      values: node,
+      config: {
+        type: "leaflet"
+      }
     };
   }
 };

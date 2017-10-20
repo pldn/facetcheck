@@ -6,7 +6,7 @@ import * as N3 from "n3";
 import * as Immutable from "immutable";
 //import own dependencies
 // import {getLabel,State as LabelsState,fetchLabel} from 'reducers/labels'
-import { Term } from "components";
+import { Term,Leaflet } from "components";
 import { getLabel, getWidgets, WidgetConfig } from "reducers/statements";
 import Tree from "helpers/Tree";
 
@@ -124,9 +124,16 @@ class ResourceDescriptionSection extends React.PureComponent<
           </div>
         )}
         <div className={styles.values}>
-          {values.map(value => (
-            <Term key={value.getKey()} className={styles.obj} value={value} config={config} tree={tree} />
-          ))}
+          {
+            config.type === 'leaflet'?
+
+            //leaflet is special: we don't want to render each value independently, but we want to render all values in a single widget
+            <Leaflet values={values.map(v => v.getTerm().value)}/>
+            :
+              values.map(value => (
+              <Term key={value.getKey()} className={styles.obj} value={value} config={config} tree={tree} />
+            ))
+        }
         </div>
       </div>
     );
