@@ -2,7 +2,8 @@ import * as React from "react";
 
 import Checkbox from 'react-toolbox/lib/checkbox';
 import {Facet} from 'components'
-import {FACETS,FacetValue} from 'facetConf'
+import {FACETS} from 'facetConf'
+import {FacetValue} from 'facetConfUtils'
 import SparqlJson from 'helpers/SparqlJson'
 import SparqlBuilder from 'helpers/SparqlBuilder'
 namespace FacetMultiSelect {

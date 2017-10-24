@@ -4,7 +4,8 @@ import * as _ from "lodash";
 // import * as getClassName from "classnames";
 import {Facet} from 'components'
 import {Facet as GenericFacetProps} from 'reducers/facets'
-import {FACETS, FacetValue} from 'facetConf'
+import {FACETS} from 'facetConf'
+import {FacetValue} from 'facetConfUtils'
 import * as numeral from 'numeral'
 const Slider = require('rc-slider');
 const createSliderWithTooltip = Slider.createSliderWithTooltip;

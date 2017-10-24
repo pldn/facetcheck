@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Facet as GenericFacetProps } from "reducers/facets";
-import { FacetValue, FACETS } from "facetConf";
+import { FACETS } from "facetConf";
+import { FacetValue } from "facetConfUtils";
 var provincesSvg = "";
 if (__CLIENT__) {
   provincesSvg = require("./provinces.raw.svg");
