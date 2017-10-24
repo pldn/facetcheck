@@ -1,3 +1,7 @@
+### Running facetcheck
+
+`npm run dev`
+
 ### Configuration
 
 The facetcheck configuration is stored in `/src/facetConf.ts` (called conf file from now on). Feel free to use this as a boilerplate. If you'd like to add facets or change the config, feel free to send me snippets of the below config.
