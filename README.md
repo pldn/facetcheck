@@ -4,10 +4,10 @@
 
 ### Configuration
 
-The facetcheck configuration is stored in `/src/facetConf.ts` (called conf file from now on). Feel free to use this as a boilerplate. If you'd like to add facets or change the config, feel free to send me snippets of the below config.
+The facetcheck configuration files are stored in `/src/config_*.ts`
 
 #### Configure available classes
-The configuration object for classes (called `CLASSES` in the conf file) is an object of class configurations. One class configuration has these properties:
+The configuration file for classes (`/src/config_classes.ts`) is an object of class configurations. One class configuration has these properties:
 ```
 /*
 this class is checked on page-load. There can only be one class that has this set;
@@ -52,7 +52,7 @@ var CLASSES = {
 ```
 
 #### Configure facets
-The configuration object for facets (called `FACETS` in the conf file) is an object of facet configurations. The key of a facet configuration is the 'facet id' that is referenced from the class config. One facet configuration has these properties:
+The configuration object for facets (`/src/config_facets.ts`) is an object of facet configurations. The key of a facet configuration is the 'facet id' that is referenced from the class config. One facet configuration has these properties:
 
 ```
 /*
