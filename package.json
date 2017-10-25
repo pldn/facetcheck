@@ -97,7 +97,7 @@
     "node": ">=5.6.0"
   },
   "dependencies": {
-    "@triply/triply-node-utils": "^1.0.46",
+    "@triply/triply-node-utils": "git+ssh://git@git.triply.cc:10072/triply/triply-node-utils.git",
     "@types/chai": "^4.0.4",
     "@types/fs-extra": "^4.0.2",
     "@types/mocha": "^2.2.43",

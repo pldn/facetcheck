@@ -1,6 +1,7 @@
 ### Running facetcheck
 
-`npm run dev`
+* `npm install` (need to run this once)
+* `npm run dev`
 
 ### Configuration
 
