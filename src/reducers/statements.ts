@@ -207,7 +207,7 @@ const selectGeometry: SelectWidget = t => {
 };
 const selectDescription: SelectWidget = t => {
   const node = t
-    .find([prefixes.dcterms + "description", null])
+    .find([prefixes.dct + "description", null])
     .limit(1)
     .exec();
   if (node.length) {
@@ -230,6 +230,11 @@ const findImageLiteralPatterns = [
     }
   ]
 ];
+/*
+$(IRI) foaf:depiction ?img .
+?img <https://cultureelerfgoed.nl/vocab/locator> ?url ;
+     dct:description ?desc .
+*/
 const selectImage: SelectWidget = t => {
   const patterns: QueryPattern[] = [...findImageLiteralPatterns, [prefixes.foaf + "depiction", null]];
   const images: WidgetConfig[] = [];
@@ -241,7 +246,7 @@ const selectImage: SelectWidget = t => {
     //this might be an image literal, or a depiction resource
     if (node.hasChildren()) {
       const label = node
-        .find([prefixes.rdfs + "label", null], [prefixes.dcterms+ "description", null])
+        .find([prefixes.rdfs + "label", null], [prefixes.dct + "description", null])
         .limit(1)
         .exec();
       var img: Tree[] = [];

@@ -1,50 +1,50 @@
 import {ClassConfig} from 'facetConfUtils'
 const CLASSES: { [className: string]: ClassConfig } = {
+  // rce:Monument
   "https://cultureelerfgoed.nl/vocab/Monument": {
-    default: true, //default
+    default: true,
     iri: "https://cultureelerfgoed.nl/vocab/Monument",
     label: "Monument",
-    facets: ["https://cultureelerfgoed.nl/vocab/province", "http://schema.org/dateCreated", "http://dbpedia.org/ontology/code"],
+    facets: [
+      //"https://cultureelerfgoed.nl/vocab/province",
+      "https://cultureelerfgoed.nl/vocab/bouwjaar",
+      "https://cultureelerfgoed.nl/vocab/monumentCode"
+    ],
     resourceDescriptionQuery: function(iri: string) {
       var projectPattern = `
-        <${iri}> ?x ?y.
-        <${iri}> brt:lijnGeometrie ?brtGeo .
-        ?brtGeo geo:asWKT ?wkt.
-        <${iri}> geo:hasGeometry ?geo .
-        ?geo geo:asWKT ?wkt.
-        ?y rdfs:label ?yLabel .
-        <${iri}> foaf:depiction ?img .
-        ?img ?imgX ?imgY .
-        <${iri}> foaf:depiction ?depiction .
-        ?depiction ?depictionX ?depictionY .
-      `;
+        <${iri}> ?p ?o .
+        ?p rdfs:label ?pLabel .
+        ?o rdfs:label ?oLabel .
+        ?geo geo:asWKT ?wkt .
+        <$(iri)> foaf:depiction ?img .
+        ?img rdfs:label ?imgLabel .`
       var selectPattern = `
-      <${iri}> ?x ?y.
-      OPTIONAL {
-        ?y rdfs:label ?yLabel
-      }
-      OPTIONAL {
-        ?x rdfs:label ?xLabel
-      }
-      OPTIONAL {
-        ?img foaf:depicts <${iri}> .
-        OPTIONAL {?img ?imgX ?imgY}
-      }
-      OPTIONAL {
-        <${iri}> geo:hasGeometry ?geo .
-        ?geo geo:asWKT ?wkt.
-      }
-
-      `;
-      return `CONSTRUCT { ${projectPattern} } WHERE { ${selectPattern} } `;
+        <${iri}> ?p ?o .
+        optional { ?p rdfs:label ?pLabel . }
+        optional { ?o rdfs:label ?oLabel . }
+        optional {
+          ?img foaf:depicts <${iri}> ; rce:locator ?url .
+          optional {
+            ?img rce:fotograaf ?fotograaf ;
+                 dct:created ?created ;
+                 dct:description ?description .
+            bind (concat("“",?description,"” (",
+                         ?fotograaf,", ",?created,")") as ?imgLabel)
+          }
+        }
+        optional {
+          <${iri}> geo:hasGeometry ?geo .
+          ?geo geo:asWKT ?wkt .
+        }`;
+      return `construct { ${projectPattern} } { ${selectPattern} }`;
     }
   },
+  // cbs:Gemeente
   "https://data.pdok.nl/cbs/vocab/Gemeente": {
-    default: false, //default
+    default: false,
     iri: "https://data.pdok.nl/cbs/vocab/Gemeente",
     label: "Gemeente",
     facets: [
-      // "https://cultureelerfgoed.nl/vocab/province",
       "https://data.pdok.nl/cbs/vocab/stedelijkheid",
       "https://data.pdok.nl/cbs/vocab/bedrijfsvestigingen",
       "https://data.pdok.nl/cbs/vocab/huisartsenpraktijkAfstand",
@@ -54,32 +54,21 @@ const CLASSES: { [className: string]: ClassConfig } = {
     ],
     resourceDescriptionQuery: function(iri: string) {
       var projectPattern = `
-        <${iri}> ?x ?y.
-        <${iri}> brt:lijnGeometrie ?brtGeo .
-        ?brtGeo geo:asWKT ?wkt.
-        <${iri}> geo:hasGeometry ?geo .
-        ?geo geo:asWKT ?wkt.
-        ?y rdfs:label ?yLabel .
-
-      `;
+        <${iri}> ?p ?o .
+        ?geo geo:asWKT ?wkt .
+        ?p rdfs:label ?pLabel .
+        ?o rdfs:label ?oLabel .`,
       var selectPattern = `
-      GRAPH <https://data.pdok.nl/cbs/id/graph/2015> {
-          <${iri}> ?x ?y.
-          OPTIONAL {
-            ?y rdfs:label ?yLabel
-          }
-          OPTIONAL {
-            ?x rdfs:label ?xLabel
-          }
-
-          OPTIONAL {
+        graph <https://data.pdok.nl/cbs/graph/2015> {
+          <${iri}> ?p ?o
+          optional { ?p rdfs:label ?pLabel }
+          optional { ?o rdfs:label ?oLabel }
+          optional {
             <${iri}> geo:hasGeometry ?geo .
-            ?geo geo:asWKT ?wkt.
+            ?geo geo:asWKT ?wkt
           }
-        }
-
-      `;
-      return `CONSTRUCT { ${projectPattern} } WHERE { ${selectPattern} } `;
+        }`;
+      return `construct { ${projectPattern} } { ${selectPattern} }`;
     }
   }
 };

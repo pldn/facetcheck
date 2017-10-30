@@ -1,29 +1,51 @@
 import {FacetConfig,toEntity} from 'facetConfUtils'
 
-
 const FACETS: { [property: string]: FacetConfig } = {
-  "http://dbpedia.org/ontology/code": {
-    iri: "http://dbpedia.org/ontology/code",
-    label: "Monument code",
-    facetType: "multiselect",
+  // rce:bouwjaar
+  "https://cultureelerfgoed.nl/vocab/bouwjaar": {
+    iri: "https://cultureelerfgoed.nl/vocab/bouwjaar",
+    facetType: "slider",
     getFacetValuesQuery: iri => {
       return `
-      SELECT DISTINCT ?_value ?_valueLabel WHERE {
-        ?_r <${iri}> ?_value.
-        OPTIONAL {
-          ?_value rdfs:label ?_valueLabel
-        }
-      } LIMIT 100`;
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        ?_r <${iri}> ?value .
+      }`;
     },
-    facetToQueryPatterns: (iri, values) => {
-      if (values instanceof Array && values.length) {
-        return values.map(v => `?_r <${iri}> ${toEntity(v)} .`).join('} UNION {')
+    facetToQueryPatterns: (iri,values) => {
+      if (Array.isArray(values)) {
+        return null;
+      }
+      if (values.min || values.max) {
+        var pattern = `?_r <${iri}> ?year .`;
+        if (values.min) pattern += `filter (year(xsd:dateTime(?year)) >= ${values.min}) `;
+        if (values.max) pattern += `filter (year(xsd:dateTime(?year)) <= ${values.max}) `;
+        return pattern;
       }
     }
   },
-  "https://cultureelerfgoed.nl/vocab/province": {
-    iri: "https://cultureelerfgoed.nl/vocab/province",
-    // label: "Provincie",
+  // rce:monumentCode
+  "https://cultureelerfgoed.nl/vocab/monumentCode": {
+    iri: "https://cultureelerfgoed.nl/vocab/monumentCode",
+    facetType: "multiselect",
+    getFacetValuesQuery: iri => {
+      return `
+      select distinct ?_value ?_valueLabel {
+        ?_r <${iri}> ?_value
+        optional { ?_value rdfs:label ?_valueLabel }
+      }
+      order by asc(?_valueLabel)
+      limit 100`;
+    },
+    facetToQueryPatterns: (iri,values) => {
+      if (values instanceof Array && values.length) {
+        return values.map(v => `?_r <${iri}> ${toEntity(v)} .`).join('} union {')
+      }
+    }
+  },
+  // rce:provincie
+  "https://cultureelerfgoed.nl/vocab/provincie": {
+    iri: "https://cultureelerfgoed.nl/vocab/provincie",
+    label: "Provincie",
     facetType: "nlProvinces",
     facetValues: {
       drenthe: {
@@ -34,195 +56,193 @@ const FACETS: { [property: string]: FacetConfig } = {
         value: "http://www.gemeentegeschiedenis.nl/provincie/Flevoland",
         label: "Flevoland"
       },
-
-      friesland: { value: "http://www.gemeentegeschiedenis.nl/provincie/Friesland", label: "Friesland" },
-      gelderland: { value: "http://www.gemeentegeschiedenis.nl/provincie/Gelderland", label: "Gelderland`" },
-      limburg: { value: "http://www.gemeentegeschiedenis.nl/provincie/Limburg", label: "Limburg" },
-      "n-brabant": { value: "http://www.gemeentegeschiedenis.nl/provincie/Noord-Brabant", label: "Noord-Brabant" },
-      "n-holland": { value: "http://www.gemeentegeschiedenis.nl/provincie/Noord-Holland", label: "Noord-Hollandd" },
-      overijssel: { value: "http://www.gemeentegeschiedenis.nl/provincie/Overijssel", label: "Overijssel" },
-      zeeland: { value: "http://www.gemeentegeschiedenis.nl/provincie/Zeeland", label: "Zeeland" },
-      "z-holland": { value: "http://www.gemeentegeschiedenis.nl/provincie/Zuid-Holland", label: "Zuid-holland" },
-      "utrecht": { value: "http://www.gemeentegeschiedenis.nl/provincie/Utrecht", label: "Utrecht" },
-      "groningen": { value: "http://www.gemeentegeschiedenis.nl/provincie/Groningen", label: "Groningen" },
+      friesland: {
+        value: "http://www.gemeentegeschiedenis.nl/provincie/Friesland",
+        label: "Friesland"
+      },
+      gelderland: {
+        value: "http://www.gemeentegeschiedenis.nl/provincie/Gelderland",
+        label: "Gelderland"
+      },
+      limburg: {
+        value: "http://www.gemeentegeschiedenis.nl/provincie/Limburg",
+        label: "Limburg"
+      },
+      "n-brabant": {
+        value: "http://www.gemeentegeschiedenis.nl/provincie/Noord-Brabant",
+        label: "Noord-Brabant"
+      },
+      "n-holland": {
+        value: "http://www.gemeentegeschiedenis.nl/provincie/Noord-Holland",
+        label: "Noord-Holland"
+      },
+      overijssel: {
+        value: "http://www.gemeentegeschiedenis.nl/provincie/Overijssel",
+        label: "Overijssel"
+      },
+      zeeland: {
+        value: "http://www.gemeentegeschiedenis.nl/provincie/Zeeland",
+        label: "Zeeland"
+      },
+      "z-holland": {
+        value: "http://www.gemeentegeschiedenis.nl/provincie/Zuid-Holland",
+        label: "Zuid-holland"
+      },
+      "utrecht": {
+        value: "http://www.gemeentegeschiedenis.nl/provincie/Utrecht",
+        label: "Utrecht"
+      },
+      "groningen": {
+        value: "http://www.gemeentegeschiedenis.nl/provincie/Groningen",
+        label: "Groningen"
+      },
     },
     facetToQueryPatterns: (iri, values) => {
       if (values instanceof Array && values.length) {
-        return values.map(v => `?_r <${iri}> <${v.value}> .`).join('} UNION {')
+        return values.map(v => `?_r geo:sfWithin* <${v.value}> .`).join('} union {')
       }
     }
   },
-  "http://schema.org/dateCreated": {
-    iri: "http://schema.org/dateCreated",
-    label: "Bouwjaar",
-    facetType: "slider",
-    getFacetValuesQuery: iri => {
-      return `
-      SELECT DISTINCT (MIN(xsd:integer(?value)) as ?_min) (MAX(xsd:integer(?value)) as ?_max) WHERE {
-        ?_r <${iri}> ?value.
-        FILTER(strlen(?value) = 4)
-        FILTER(REGEX(?value, '^\\\\d{4}$'))
-
-      } LIMIT 1`;
-    },
-    facetToQueryPatterns: (iri,values) => {
-      if (Array.isArray(values)) {
-        return null;
-      }
-      if (values.min || values.max) {
-        var pattern = `?_r <${iri}> ?createdAt .
-        FILTER(strlen(?createdAt) = 4)
-        FILTER(REGEX(?createdAt, '^\\\\d{4}$'))
-        `;
-
-        if (values.min) pattern += `FILTER(xsd:integer(?createdAt) >= ${values.min}) `;
-        if (values.max) pattern += `FILTER(xsd:integer(?createdAt) <= ${values.max}) `;
-        return pattern;
-      }
-    }
-  },
+  // cbs:huisartsenpraktijkAfstand
   "https://data.pdok.nl/cbs/vocab/huisartsenpraktijkAfstand": {
     iri: "https://data.pdok.nl/cbs/vocab/huisartsenpraktijkAfstand",
-    label: "Afstand tot huisartsenpraktijk",
     facetType: "slider",
-    getFacetValuesQuery: iri => {
-      return `
-      SELECT DISTINCT (MIN(xsd:float(?value)) as ?_min) (MAX(xsd:float(?value)) as ?_max) WHERE {
-        ?_r <${iri}> ?value.
-      } LIMIT 1`;
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
+        graph <https://data.pdok.nl/cbs/graph/2015> {
+          ?_r <${iri}> ?value
+        }
+      }`;
     },
     facetToQueryPatterns: (iri,values) => {
       if (Array.isArray(values)) {
         return null;
       }
       if (values.min || values.max) {
-        var pattern = `?_r <${iri}> ?value .
-        `;
-
-        if (values.min) pattern += `FILTER(xsd:float(?value) >= ${values.min}) `;
-        if (values.max) pattern += `FILTER(xsd:float(?value) <= ${values.max}) `;
+        var pattern = `
+          graph <https://data.pdok.nl/cbs/graph/2015> {
+            ?_r <${iri}> ?value .`;
+        if (values.min) pattern += `filter(xsd:float(?value) >= ${values.min})` ;
+        if (values.max) pattern += `filter(xsd:float(?value) <= ${values.max})`;
+        pattern += `}`;
         return pattern;
       }
     }
   },
   "https://data.pdok.nl/cbs/vocab/bedrijfsvestigingen": {
     iri: "https://data.pdok.nl/cbs/vocab/bedrijfsvestigingen",
-    label: "bedrijfsvestigingen",
     facetType: "slider",
-    getFacetValuesQuery: iri => {
-      return `
-      SELECT DISTINCT (MIN(?value) as ?_min) (MAX(?value) as ?_max) WHERE {
-        GRAPH <https://data.pdok.nl/cbs/id/graph/2015>  {
-          ?_r <${iri}> ?value.
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        graph <https://data.pdok.nl/cbs/graph/2015> {
+          ?_r <${iri}> ?value .
         }
-      } LIMIT 1`;
+      }`;
     },
     facetToQueryPatterns: (iri,values) => {
       if (Array.isArray(values)) {
         return null;
       }
       if (values.min || values.max) {
-        var pattern = `?_r <${iri}> ?count .`;
-
-        if (values.min) pattern += `FILTER(?count >= ${values.min}) `;
-        if (values.max) pattern += `FILTER(?count <= ${values.max}) `;
+        var pattern = `
+          graph <https://data.pdok.nl/cbs/graph/2015> {
+            ?_r <${iri}> ?count .`;
+        if (values.min) pattern += `filter(?count >= ${values.min}) `;
+        if (values.max) pattern += `filter(?count <= ${values.max}) `;
+        pattern += '}';
         return pattern;
       }
     }
   },
   "https://data.pdok.nl/cbs/vocab/woz": {
     iri: "https://data.pdok.nl/cbs/vocab/woz",
-    label: "WOZ waarde",
     facetType: "slider",
-    getFacetValuesQuery: iri => {
-      return `
-      SELECT DISTINCT (MIN(?value) as ?_min) (MAX(?value) as ?_max) WHERE {
-        GRAPH <https://data.pdok.nl/cbs/id/graph/2015>  {
-          ?_r <${iri}> ?value.
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        graph <https://data.pdok.nl/cbs/graph/2015> {
+          ?_r <${iri}> ?value .
         }
-      } LIMIT 1`;
+      }`;
     },
     facetToQueryPatterns: (iri,values) => {
       if (Array.isArray(values)) {
         return null;
       }
       if (values.min || values.max) {
-        var pattern = `?_r <${iri}> ?count .`;
-
-        if (values.min) pattern += `FILTER(?count >= ${values.min}) `;
-        if (values.max) pattern += `FILTER(?count <= ${values.max}) `;
+        var pattern = `
+          graph <https://data.pdok.nl/cbs/graph/2015> {
+            ?_r <${iri}> ?count .`;
+        if (values.min) pattern += `filter (?count >= ${values.min}) `;
+        if (values.max) pattern += `filter (?count <= ${values.max}) `;
+        pattern += '}';
         return pattern;
       }
     }
   },
   "https://data.pdok.nl/cbs/vocab/inwoners": {
     iri: "https://data.pdok.nl/cbs/vocab/inwoners",
-    label: "Aantal inwoners",
     facetType: "slider",
-    getFacetValuesQuery: iri => {
-      return `
-      SELECT DISTINCT (MIN(?value) as ?_min) (MAX(?value) as ?_max) WHERE {
-        GRAPH <https://data.pdok.nl/cbs/id/graph/2015>  {
-          ?_r <${iri}> ?value.
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        graph <https://data.pdok.nl/cbs/graph/2015> {
+          ?_r <${iri}> ?value .
         }
-      } LIMIT 1`;
+      }`;
     },
     facetToQueryPatterns: (iri,values) => {
       if (Array.isArray(values)) {
         return null;
       }
       if (values.min || values.max) {
-        var pattern = `?_r <${iri}> ?count .`;
-
-        if (values.min) pattern += `FILTER(?count >= ${values.min}) `;
-        if (values.max) pattern += `FILTER(?count <= ${values.max}) `;
+        var pattern = `
+          graph <https://data.pdok.nl/cbs/graph/2015> {
+            ?_r <${iri}> ?count .`;
+        if (values.min) pattern += `filter (?count >= ${values.min}) `;
+        if (values.max) pattern += `filter (?count <= ${values.max}) `;
+        pattern += '}';
         return pattern;
       }
     }
   },
   "https://data.pdok.nl/cbs/vocab/personenautos6+": {
     iri: "https://data.pdok.nl/cbs/vocab/personenautos6+",
-    label: "Personenauto's ouder dan 6 jaar",
     facetType: "slider",
-    getFacetValuesQuery: iri => {
-      return `
-      SELECT DISTINCT (MIN(?value) as ?_min) (MAX(?value) as ?_max) WHERE {
-        GRAPH <https://data.pdok.nl/cbs/id/graph/2015>  {
-          ?_r <${iri}> ?value.
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        graph <https://data.pdok.nl/cbs/graph/2015> {
+          ?_r <${iri}> ?value .
         }
-      } LIMIT 1`;
+      } limit 1`;
     },
     facetToQueryPatterns: (iri,values) => {
       if (Array.isArray(values)) {
         return null;
       }
       if (values.min || values.max) {
-        var pattern = `?_r <${iri}> ?count .`;
-
-        if (values.min) pattern += `FILTER(?count >= ${values.min}) `;
-        if (values.max) pattern += `FILTER(?count <= ${values.max}) `;
+        var pattern = `
+          graph <https://data.pdok.nl/cbs/graph/2015> {
+            ?_r <${iri}> ?count .`;
+        if (values.min) pattern += `filter (?count >= ${values.min}) `;
+        if (values.max) pattern += `filter (?count <= ${values.max}) `;
+        pattern += '}';
         return pattern;
       }
     }
   },
   "https://data.pdok.nl/cbs/vocab/stedelijkheid": {
     iri: "https://data.pdok.nl/cbs/vocab/stedelijkheid",
-    label: "Stedelijkheid",
     facetType: "multiselect",
-    getFacetValuesQuery: iri => {
-      return `
-      SELECT DISTINCT ?_value ?_valueLabel WHERE {
-        GRAPH <https://data.pdok.nl/cbs/id/graph/2015>  {
-          ?_r <${iri}> ?_value.
+    getFacetValuesQuery: iri => { return `
+      select distinct ?_value ?_valueLabel {
+        graph <https://data.pdok.nl/cbs/graph/2015> {
+          ?_r <${iri}> ?_value .
+          ?_value rdfs:label ?_valueLabel .
         }
-        OPTIONAL {
-          ?_value rdfs:label ?_valueLabel
-        }
-      } LIMIT 100`;
+      }`;
     },
     facetToQueryPatterns: (iri, values) => {
       if (values instanceof Array && values.length) {
-        return values.map(v => `?_r <${iri}> ${toEntity(v)} .`).join('} UNION {')
+        return values.map(v => `?_r <${iri}> ${toEntity(v)} .`).join('} union {')
       }
     }
   }

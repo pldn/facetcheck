@@ -1,44 +1,61 @@
-### Running facetcheck
+# FacetCheck
 
-* `npm install` (need to run this once)
-* `npm run dev`
+A faceted browser for navigating Linked Data.
 
-### Configuration
+## Install & run FacetCheck
 
-The facetcheck configuration files are stored in `/src/config_*.ts`
-
-#### Configure available classes
-The configuration file for classes (`/src/config_classes.ts`) is an object of class configurations. One class configuration has these properties:
-```
-/*
-this class is checked on page-load. There can only be one class that has this set;
-*/
-default: boolean
-
-/*
-Class IRI
-*/
-iri: string
-
-/*
-label of the class
-*/
-label: string
-
-/*
-an array of facet identifiers (see below on how to configure these
-*/
-facets: string[]
-
-/*
-The construct query that retrieves the triples we'd like to render for a particular IRI. Common prefixes are appended automatically
-*/
-resourceDescriptionQuery: (iri: string) => string
+```sh
+npm install` (need to run this once)
+npm run dev
 ```
 
-An example class configuration:
+## Configuration of FacetCheck
 
-```
+FacetCheck delivers a good out of the box browsing experience that
+works on any standard-compliant SPARQL endpoint.  In addition to that,
+FacetCheck can also be configured in order to deliver a *great*
+browsing experience.  This section explains how configurations are
+constructed.
+
+FacetCheck configuration files are stored in `/src/config_*.ts`
+
+### Configuration of a class in FacetCheck
+
+The configuration file for classes (`/src/config_classes.ts`) is an
+object of class configurations.  A class configuration has the
+following properties:
+
+  - `default: boolean`
+
+    Optionally denotes whether the class is automatically selected
+    when the page is loaded.  The default value is `false`.  At most
+    one class in a FacetCheck configuration can have this property set
+    to `true`.
+
+  - `iri: string`
+
+    The IRI that denotes the class in the data.
+
+  - `label: string`
+
+    The optional human-readable label that is used to denote the class
+    in the UI.  If this option is not set, FacetCheck tries to
+    retrieve the label from the data (e.g., from an `rdfs:label`
+    statement).  If no label can be found, the IRI that denotes the
+    class is used as a last resolt.
+
+  - `facets: string[]`
+
+    An array of facet names.
+
+  - `resourceDescriptionQuery: (iri: string) => string`
+
+    The SPARQL construct query that retrieves the rendering graph for
+    a particular IRI.  Common prefixes are appended automatically.
+
+Here is an example of such a class configuration object:
+
+```javascript
 var CLASSES = {
   'https://cultureelerfgoed.nl/vocab/Monument': {
     default: true,
@@ -52,51 +69,66 @@ var CLASSES = {
 }
 ```
 
-#### Configure facets
-The configuration object for facets (`/src/config_facets.ts`) is an object of facet configurations. The key of a facet configuration is the 'facet id' that is referenced from the class config. One facet configuration has these properties:
+### Configuration of a facet in FacetCheck
 
-```
-/*
-Facet IRI
-*/
-iri: string;
+The configuration object for facets (`/src/config_facets.ts`) is an
+object of facet configurations.  The key of a facet configuration is
+the facet ID that is referenced from the class configuration (see
+above).  A facet configuration contains the following properties:
 
-/*
-Facet label. If unset, facetchecks tries to query for the label
-*/
-label?: string;
+  - `iri: string`
 
-/*
-A string identifying the widget. Possible values: 'slider' | 'nlProvinces' | 'multiselect'
-*/
-facetType: string;
+     The IRI denoting the facet.  In the common case of a
+     property-facet mapping, this is the IRI that denotes the
+     property.  For example `ex:age` for a slider widget where people
+     can be filtered based on their age.
 
-/*
-Return the query to fetch the facet values. If this is a multi-select, use a ?_value and ?_valueLabel variable for the different multi-select values.
-If this is a slider, select ?_min and ?_max
-*/
-getFacetValuesQuery?: (iri: string) => string;
+  - `label: string`
 
-/*
-If you know the values beforehand, you might want to set these directly instead of specifying the query above.
-If this is a multi-select, you can set an array of objects with the shape `{value: <value>, label: <label>}`
-If this is a slider, you can set an object with keys: {min:<min>, max:<max>}
-*/
-facetValues?: {} | [{}]
-/*
+    Optional label that is used to name the facet in the UI.  If no
+    label is given, the value of the `rdfs:label` property is used
+    instead.
 
-*/
-Return a BGP query that allows us to find the IRIs that match the currently selected facet values.
-An important query variable is ?_r. This variable denotes the IRI that we'd like to retrieve.
-Arguments to this function are:
-facetIri: the IRI of the facet
-values: the selected facet values (this variable has the same shape as the facetValues from above)
-*/
-facetToQueryPatterns: (facetIri:string, values:{} | [{}]) => string
-```
+  - `facetType: string`
 
-An example facets configuration:
-```
+    A string identifying the type of widget that is used.  Possible
+    values are `"slider"`, `"nlProvinces"`, and `"multiselect"`.
+
+  - `getFacetValuesQuery?: (iri: string) => string;`
+
+    Optional query that returns facet values.  For multi-select
+    facets, the variables `?_value` and `?_valueLabel` are bound to
+    the multi-select values.  For slider facets, the variables `?_min`
+    and `?_max` are bound to the outer limits of the slider.
+
+  - `facetValues?: {} | [{}]`
+
+    If the values for a facet are known beforehand, they can be
+    supplies directly (without requiring a query lookup).  For
+    multi-select facets, this must be an array of JSON objects of the
+    following form: `{"value": $(VALUE), "label": $(STRING)}`.  For
+    slider facets, this must be an object of the following form::
+    `{"min": $(INT), "max": $(INT)}`.
+
+  - `facetToQueryPatterns: (facetIri:string, values:{} | [{}]) => string`
+
+    Returns the SPARQL BGP that retrieves the IRIs that match the
+    currently selected facet values.  The query variable `?_r` is
+    bound to the IRIs that match the given facet-indiced restrictions.
+    This functions takes the following arguments:
+
+      - `facetIri`
+
+         The IRI of the facet.
+
+      - `values`
+
+        The selected facet values (see the documentation for the
+        `facetValues` property above).
+
+An example of a facet configuration:
+
+```javascript
 var FACETS = {
   "https://data.pdok.nl/cbs/vocab/stedelijkheid": {
     iri: "https://data.pdok.nl/cbs/vocab/stedelijkheid",
