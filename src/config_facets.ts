@@ -45,7 +45,8 @@ const FACETS: { [property: string]: FacetConfig } = {
   "https://cultureelerfgoed.nl/vocab/provincie": {
     iri: "https://cultureelerfgoed.nl/vocab/provincie",
     label: "Provincie",
-    facetType: "multiselect",
+    //facetType: "multiselect",
+    facetType: "nlProvinces",
     getFacetValuesQuery: iri => { return `
       select ?_value (min(?label) as ?_valueLabel) {
         ?_r geo:sfWithin* ?_value .
