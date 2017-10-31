@@ -17,7 +17,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
         ?o rdfs:label ?oLabel .
         ?geo geo:asWKT ?wkt .
         <$(iri)> foaf:depiction ?img .
-        ?img rdfs:label ?imgLabel .`
+        ?img rce:locator ?url ; rdfs:label ?imgLabel .`
       var selectPattern = `
         <${iri}> ?p ?o .
         optional { ?p rdfs:label ?pLabel . }
