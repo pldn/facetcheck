@@ -57,7 +57,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
         <${iri}> ?p ?o .
         ?geo geo:asWKT ?wkt .
         ?p rdfs:label ?pLabel .
-        ?o rdfs:label ?oLabel .`,
+        ?o rdfs:label ?oLabel .`;
       var selectPattern = `
         graph <https://data.pdok.nl/cbs/graph/2015> {
           <${iri}> ?p ?o
