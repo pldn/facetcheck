@@ -338,7 +338,7 @@ export function refreshFacets(state: GlobalState, forClass?: string): Action {
     throw new Error("Could not find class config for " + forClass);
   }
   var facets: string[] = classConf.facets
-  const fetchLabelsFor:string[] = facets.filter(f => (!( 'label' in FACETS[f]) && !state.facets.facetLabels.has(f)));
+  const fetchLabelsFor:string[] = facets.filter(f => (FACETS[f] && !( 'label' in FACETS[f]) && !state.facets.facetLabels.has(f)));
   const getLabelQuery = () => {
     if (fetchLabelsFor.length === 0) return 'SELECT * WHERE {[] [] []} LIMIT 0'
     return `
