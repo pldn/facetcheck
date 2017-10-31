@@ -47,11 +47,12 @@ const FACETS: { [property: string]: FacetConfig } = {
     label: "Provincie",
     facetType: "multiselect",
     getFacetValuesQuery: iri => { return `
-      select distinct ?_value ?_valueLabel {
+      select ?_value (min(?label) as ?_valueLabel) {
         ?_r geo:sfWithin* ?_value .
         ?_value a <http://www.gemeentegeschiedenis.nl/provincie> ;
-               rdfs:label ?_valueLabel .
-      }`;
+                rdfs:label ?label .
+      }
+      group by ?_value`;
     },
 /*  facetValues: {
       drenthe: {
