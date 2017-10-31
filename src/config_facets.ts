@@ -27,8 +27,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   "https://cultureelerfgoed.nl/vocab/monumentCode": {
     iri: "https://cultureelerfgoed.nl/vocab/monumentCode",
     facetType: "multiselect",
-    getFacetValuesQuery: iri => {
-      return `
+    getFacetValuesQuery: iri => { return `
       select distinct ?_value ?_valueLabel {
         ?_r <${iri}> ?_value
         optional { ?_value rdfs:label ?_valueLabel }
@@ -46,8 +45,15 @@ const FACETS: { [property: string]: FacetConfig } = {
   "https://cultureelerfgoed.nl/vocab/provincie": {
     iri: "https://cultureelerfgoed.nl/vocab/provincie",
     label: "Provincie",
-    facetType: "nlProvinces",
-    facetValues: {
+    facetType: "multiselect",
+    getFacetValuesQuery: iri => { return `
+      select distinct ?_value ?_valueLabel {
+        ?_r geo:sfWithin* ?_value .
+        ?_value a <http://www.gemeentegeschiedenis.nl/provincie> ;
+               rdfs:label ?_valueLabel .
+      }`;
+    },
+/*  facetValues: {
       drenthe: {
         value: "http://www.gemeentegeschiedenis.nl/provincie/Drenthe",
         label: "Drenthe"
@@ -96,7 +102,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         value: "http://www.gemeentegeschiedenis.nl/provincie/Groningen",
         label: "Groningen"
       },
-    },
+    },*/
     facetToQueryPatterns: (iri, values) => {
       if (values instanceof Array && values.length) {
         return values.map(v => `?_r geo:sfWithin* <${v.value}> .`).join('} union {')

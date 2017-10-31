@@ -6,7 +6,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
     iri: "https://cultureelerfgoed.nl/vocab/Monument",
     label: "Monument",
     facets: [
-      //"https://cultureelerfgoed.nl/vocab/province",
+      "https://cultureelerfgoed.nl/vocab/province",
       "https://cultureelerfgoed.nl/vocab/bouwjaar",
       "https://cultureelerfgoed.nl/vocab/monumentCode"
     ],
