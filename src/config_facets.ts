@@ -45,8 +45,9 @@ const FACETS: { [property: string]: FacetConfig } = {
   "https://cultureelerfgoed.nl/vocab/provincie": {
     iri: "https://cultureelerfgoed.nl/vocab/provincie",
     label: "Provincie",
-    //facetType: "multiselect",
     facetType: "nlProvinces",
+/*
+    facetType: "multiselect",
     getFacetValuesQuery: iri => { return `
       select ?_value (min(?label) as ?_valueLabel) {
         ?_r geo:sfWithin* ?_value .
@@ -55,7 +56,8 @@ const FACETS: { [property: string]: FacetConfig } = {
       }
       group by ?_value`;
     },
-/*  facetValues: {
+*/
+    facetValues: {
       drenthe: {
         value: "http://www.gemeentegeschiedenis.nl/provincie/Drenthe",
         label: "Drenthe"
@@ -104,7 +106,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         value: "http://www.gemeentegeschiedenis.nl/provincie/Groningen",
         label: "Groningen"
       },
-    },*/
+    },
     facetToQueryPatterns: (iri, values) => {
       if (values instanceof Array && values.length) {
         return values.map(v => `?_r geo:sfWithin* <${v.value}> .`).join('} union {')
