@@ -245,9 +245,9 @@ const FACETS: { [property: string]: FacetConfig } = {
     getFacetValuesQuery: iri => { return `
       select distinct ?_value ?_valueLabel {
         graph <https://data.pdok.nl/cbs/graph/2015> {
-          ?_r <${iri}> ?_value .
-          ?_value rdfs:label ?_valueLabel .
+          ?_r <${iri}> ?_value
         }
+        ?_value rdfs:label ?_valueLabel
       }`;
     },
     facetToQueryPatterns: (iri, values) => {
