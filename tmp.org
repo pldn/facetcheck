@@ -9,3 +9,22 @@
       group by ?_value`;
     },
 #+END_SRC
+
+#+BEGIN_SRC js
+  "https://cultureelerfgoed.nl/vocab/Complex": {
+    default: true,
+    iri: "https://cultureelerfgoed.nl/vocab/Complex",
+    label: "Complex",
+    facets: [
+    ],
+    resourceDescriptionQuery: function(iri: string) {
+      var projectPattern = `
+        <${iri}> dct:hasPart ?monument .
+        ?monument rdfs:label ?monumentLabel .`;
+      var selectPattern = `
+        ?monument dct:isPartOf <${iri}> ;
+                  rdfs:label ?monumentLabel .`;
+      return `construct { ${projectPattern} } { ${selectPattern} }`;
+    }
+  }
+#+END_SRC

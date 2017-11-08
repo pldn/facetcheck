@@ -1,9 +1,208 @@
 import {FacetConfig,toEntity} from 'facetConfUtils'
 
 const FACETS: { [property: string]: FacetConfig } = {
-  // cbs:jeugdzorgtrajecten_Perspectief_Diagnostiek_aantal_D_JeugdhulpMetVerblijf
-  "https://data.pdok.nl/cbs/vocab/jeugdzorgtrajecten_Perspectief_Diagnostiek_aantal_D_JeugdhulpMetVerblijf": {
-    iri: "https://data.pdok.nl/cbs/vocab/jeugdzorgtrajecten_Perspectief_Diagnostiek_aantal_D_JeugdhulpMetVerblijf",
+  // cbs:afstandCafé
+  "https://data.pdok.nl/cbs/vocab/afstandCafé": {
+    iri: "https://data.pdok.nl/cbs/vocab/afstandCafé",
+    facetType: "slider",
+    label: "Afstand tot café (km)",
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        ?_r <${iri}> ?afstand . bind (xsd:float(?afstand) as ?value)
+      }`;
+    },
+    facetToQueryPatterns: (iri,values) => {
+      if (Array.isArray(values)) {
+        return null;
+      }
+      if (values.min || values.max) {
+        var pattern = `?_r <${iri}> ?count .`;
+        if (values.min) pattern += `filter(xsd:float(?count) >= ${values.min}) `;
+        if (values.max) pattern += `filter(xsd:float(?count) <= ${values.max}) `;
+        return pattern;
+      }
+    }
+  },
+  // cbs:attractieAfstand
+  "https://data.pdok.nl/cbs/vocab/attractieAfstand": {
+    iri: "https://data.pdok.nl/cbs/vocab/attractieAfstand",
+    facetType: "slider",
+    label: "Afstand tot attractie (km)",
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        ?_r <${iri}> ?afstand . bind (xsd:float(?afstand) as ?value)
+      }`;
+    },
+    facetToQueryPatterns: (iri,values) => {
+      if (Array.isArray(values)) {
+        return null;
+      }
+      if (values.min || values.max) {
+        var pattern = `?_r <${iri}> ?count .`;
+        if (values.min) pattern += `filter(xsd:float(?count) >= ${values.min}) `;
+        if (values.max) pattern += `filter(xsd:float(?count) <= ${values.max}) `;
+        return pattern;
+      }
+    }
+  },
+  // cbs:bedrijfsvestigingenA
+  "https://data.pdok.nl/cbs/vocab/bedrijfsvestigingenA": {
+    iri: "https://data.pdok.nl/cbs/vocab/bedrijfsvestigingenA",
+    facetType: "slider",
+    label: "Bedrijven (landbouw/bosbouw/visserij)",
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        ?_r <${iri}> ?value .
+      }`;
+    },
+    facetToQueryPatterns: (iri,values) => {
+      if (Array.isArray(values)) {
+        return null;
+      }
+      if (values.min || values.max) {
+        var pattern = `?_r <${iri}> ?count .`;
+        if (values.min) pattern += `filter(?count >= ${values.min}) `;
+        if (values.max) pattern += `filter(?count <= ${values.max}) `;
+        return pattern;
+      }
+    }
+  },
+  // cbs:bedrijfsvestigingenBF
+  "https://data.pdok.nl/cbs/vocab/bedrijfsvestigingenBF": {
+    iri: "https://data.pdok.nl/cbs/vocab/bedrijfsvestigingenBF",
+    facetType: "slider",
+    label: "Bedrijven (nijverheid/energie)",
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        ?_r <${iri}> ?value .
+      }`;
+    },
+    facetToQueryPatterns: (iri,values) => {
+      if (Array.isArray(values)) {
+        return null;
+      }
+      if (values.min || values.max) {
+        var pattern = `?_r <${iri}> ?count .`;
+        if (values.min) pattern += `filter(?count >= ${values.min}) `;
+        if (values.max) pattern += `filter(?count <= ${values.max}) `;
+        return pattern;
+      }
+    }
+  },
+  // cbs:bedrijfsvestigingenGI
+  "https://data.pdok.nl/cbs/vocab/bedrijfsvestigingenGI": {
+    iri: "https://data.pdok.nl/cbs/vocab/bedrijfsvestigingenGI",
+    facetType: "slider",
+    label: "Bedrijven (handel/horeca)",
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        ?_r <${iri}> ?value .
+      }`;
+    },
+    facetToQueryPatterns: (iri,values) => {
+      if (Array.isArray(values)) {
+        return null;
+      }
+      if (values.min || values.max) {
+        var pattern = `?_r <${iri}> ?count .`;
+        if (values.min) pattern += `filter(?count >= ${values.min}) `;
+        if (values.max) pattern += `filter(?count <= ${values.max}) `;
+        return pattern;
+      }
+    }
+  },
+  // cbs:bedrijfsvestigingenHJ
+  "https://data.pdok.nl/cbs/vocab/bedrijfsvestigingenHJ": {
+    iri: "https://data.pdok.nl/cbs/vocab/bedrijfsvestigingenHJ",
+    facetType: "slider",
+    label: "Bedrijven (vervoer/informatie/communicatie)",
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        ?_r <${iri}> ?value .
+      }`;
+    },
+    facetToQueryPatterns: (iri,values) => {
+      if (Array.isArray(values)) {
+        return null;
+      }
+      if (values.min || values.max) {
+        var pattern = `?_r <${iri}> ?count .`;
+        if (values.min) pattern += `filter(?count >= ${values.min}) `;
+        if (values.max) pattern += `filter(?count <= ${values.max}) `;
+        return pattern;
+      }
+    }
+  },
+  // cbs:bedrijfsvestigingenKL
+  "https://data.pdok.nl/cbs/vocab/bedrijfsvestigingenKL": {
+    iri: "https://data.pdok.nl/cbs/vocab/bedrijfsvestigingenKL",
+    facetType: "slider",
+    label: "Bedrijven (financiën/onroerend goed)",
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        ?_r <${iri}> ?value .
+      }`;
+    },
+    facetToQueryPatterns: (iri,values) => {
+      if (Array.isArray(values)) {
+        return null;
+      }
+      if (values.min || values.max) {
+        var pattern = `?_r <${iri}> ?count .`;
+        if (values.min) pattern += `filter(?count >= ${values.min}) `;
+        if (values.max) pattern += `filter(?count <= ${values.max}) `;
+        return pattern;
+      }
+    }
+  },
+  // cbs:bedrijfsvestigingenMN
+  "https://data.pdok.nl/cbs/vocab/bedrijfsvestigingenMN": {
+    iri: "https://data.pdok.nl/cbs/vocab/bedrijfsvestigingenMN",
+    facetType: "slider",
+    label: "Bedrijven (zakelijke dienstverlening)",
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        ?_r <${iri}> ?value .
+      }`;
+    },
+    facetToQueryPatterns: (iri,values) => {
+      if (Array.isArray(values)) {
+        return null;
+      }
+      if (values.min || values.max) {
+        var pattern = `?_r <${iri}> ?count .`;
+        if (values.min) pattern += `filter(?count >= ${values.min}) `;
+        if (values.max) pattern += `filter(?count <= ${values.max}) `;
+        return pattern;
+      }
+    }
+  },
+  // cbs:bedrijfsvestigingenRU
+  "https://data.pdok.nl/cbs/vocab/bedrijfsvestigingenRU": {
+    iri: "https://data.pdok.nl/cbs/vocab/bedrijfsvestigingenRU",
+    facetType: "slider",
+    label: "Bedrijven (cultuur/recreatie)",
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        ?_r <${iri}> ?value .
+      }`;
+    },
+    facetToQueryPatterns: (iri,values) => {
+      if (Array.isArray(values)) {
+        return null;
+      }
+      if (values.min || values.max) {
+        var pattern = `?_r <${iri}> ?count .`;
+        if (values.min) pattern += `filter(?count >= ${values.min}) `;
+        if (values.max) pattern += `filter(?count <= ${values.max}) `;
+        return pattern;
+      }
+    }
+  },
+  /*
+  // cbs:huisartsenpraktijkAfstand
+  "https://data.pdok.nl/cbs/vocab/huisartsenpraktijkAfstand": {
+    iri: "https://data.pdok.nl/cbs/vocab/huisartsenpraktijkAfstand",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
@@ -16,8 +215,88 @@ const FACETS: { [property: string]: FacetConfig } = {
       }
       if (values.min || values.max) {
         var pattern = `?_r <${iri}> ?value .`;
-        if (values.min) pattern += `filter(xsd:float(?value) >= ${values.min})`;
+        if (values.min) pattern += `filter(xsd:float(?value) >= ${values.min})` ;
         if (values.max) pattern += `filter(xsd:float(?value) <= ${values.max})`;
+        return pattern;
+      }
+    }
+  },
+  */
+  // cbs:inwoners
+  "https://data.pdok.nl/cbs/vocab/inwoners": {
+    iri: "https://data.pdok.nl/cbs/vocab/inwoners",
+    facetType: "slider",
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        ?_r <${iri}> ?value .
+      }`;
+    },
+    facetToQueryPatterns: (iri,values) => {
+      if (Array.isArray(values)) {
+        return null;
+      }
+      if (values.min || values.max) {
+        var pattern = `?_r <${iri}> ?count .`;
+        if (values.min) pattern += `filter (?count >= ${values.min}) `;
+        if (values.max) pattern += `filter (?count <= ${values.max}) `;
+        return pattern;
+      }
+    }
+  },
+  // cbs:personenautos6+
+  "https://data.pdok.nl/cbs/vocab/personenautos6+": {
+    iri: "https://data.pdok.nl/cbs/vocab/personenautos6+",
+    facetType: "slider",
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        ?_r <${iri}> ?value .
+      } limit 1`;
+    },
+    facetToQueryPatterns: (iri,values) => {
+      if (Array.isArray(values)) {
+        return null;
+      }
+      if (values.min || values.max) {
+        var pattern = `?_r <${iri}> ?count .`;
+        if (values.min) pattern += `filter (?count >= ${values.min}) `;
+        if (values.max) pattern += `filter (?count <= ${values.max}) `;
+        return pattern;
+      }
+    }
+  },
+  // cbs:stedelijkheid
+  "https://data.pdok.nl/cbs/vocab/stedelijkheid": {
+    iri: "https://data.pdok.nl/cbs/vocab/stedelijkheid",
+    facetType: "multiselect",
+    getFacetValuesQuery: iri => { return `
+      select distinct ?_value ?_valueLabel {
+        ?_r <${iri}> ?_value .
+        ?_value rdfs:label ?_valueLabel .
+      }`;
+    },
+    facetToQueryPatterns: (iri, values) => {
+      if (values instanceof Array && values.length) {
+        return values.map(v => `?_r <${iri}> ${toEntity(v)} .`).join('} union {')
+      }
+    }
+  },
+  // cbs:woz
+  "https://data.pdok.nl/cbs/vocab/woz": {
+    iri: "https://data.pdok.nl/cbs/vocab/woz",
+    facetType: "slider",
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        ?_r <${iri}> ?value .
+      }`;
+    },
+    facetToQueryPatterns: (iri,values) => {
+      if (Array.isArray(values)) {
+        return null;
+      }
+      if (values.min || values.max) {
+        var pattern = `?_r <${iri}> ?count .`;
+        if (values.min) pattern += `filter (?count >= ${values.min}) `;
+        if (values.max) pattern += `filter (?count <= ${values.max}) `;
         return pattern;
       }
     }
@@ -43,8 +322,8 @@ const FACETS: { [property: string]: FacetConfig } = {
         return pattern;
       }
     }
-  }
-/*  // rce:monumentCode
+  },
+  // rce:monumentCode
   "https://cultureelerfgoed.nl/vocab/monumentCode": {
     iri: "https://cultureelerfgoed.nl/vocab/monumentCode",
     facetType: "multiselect",
@@ -122,150 +401,6 @@ const FACETS: { [property: string]: FacetConfig } = {
         return values.map(v => `?_r geo:sfWithin* <${v.value}> .`).join('} union {')
       }
     }
-  },
-  // cbs:huisartsenpraktijkAfstand
-  "https://data.pdok.nl/cbs/vocab/huisartsenpraktijkAfstand": {
-    iri: "https://data.pdok.nl/cbs/vocab/huisartsenpraktijkAfstand",
-    facetType: "slider",
-    getFacetValuesQuery: iri => { return `
-      select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
-        graph <https://data.pdok.nl/cbs/graph/2015> {
-          ?_r <${iri}> ?value
-        }
-      }`;
-    },
-    facetToQueryPatterns: (iri,values) => {
-      if (Array.isArray(values)) {
-        return null;
-      }
-      if (values.min || values.max) {
-        var pattern = `
-          graph <https://data.pdok.nl/cbs/graph/2015> {
-            ?_r <${iri}> ?value .`;
-        if (values.min) pattern += `filter(xsd:float(?value) >= ${values.min})` ;
-        if (values.max) pattern += `filter(xsd:float(?value) <= ${values.max})`;
-        pattern += `}`;
-        return pattern;
-      }
-    }
-  },
-  "https://data.pdok.nl/cbs/vocab/bedrijfsvestigingen": {
-    iri: "https://data.pdok.nl/cbs/vocab/bedrijfsvestigingen",
-    facetType: "slider",
-    getFacetValuesQuery: iri => { return `
-      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph <https://data.pdok.nl/cbs/graph/2015> {
-          ?_r <${iri}> ?value .
-        }
-      }`;
-    },
-    facetToQueryPatterns: (iri,values) => {
-      if (Array.isArray(values)) {
-        return null;
-      }
-      if (values.min || values.max) {
-        var pattern = `
-          graph <https://data.pdok.nl/cbs/graph/2015> {
-            ?_r <${iri}> ?count .`;
-        if (values.min) pattern += `filter(?count >= ${values.min}) `;
-        if (values.max) pattern += `filter(?count <= ${values.max}) `;
-        pattern += '}';
-        return pattern;
-      }
-    }
-  },
-  "https://data.pdok.nl/cbs/vocab/woz": {
-    iri: "https://data.pdok.nl/cbs/vocab/woz",
-    facetType: "slider",
-    getFacetValuesQuery: iri => { return `
-      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph <https://data.pdok.nl/cbs/graph/2015> {
-          ?_r <${iri}> ?value .
-        }
-      }`;
-    },
-    facetToQueryPatterns: (iri,values) => {
-      if (Array.isArray(values)) {
-        return null;
-      }
-      if (values.min || values.max) {
-        var pattern = `
-          graph <https://data.pdok.nl/cbs/graph/2015> {
-            ?_r <${iri}> ?count .`;
-        if (values.min) pattern += `filter (?count >= ${values.min}) `;
-        if (values.max) pattern += `filter (?count <= ${values.max}) `;
-        pattern += '}';
-        return pattern;
-      }
-    }
-  },
-  "https://data.pdok.nl/cbs/vocab/inwoners": {
-    iri: "https://data.pdok.nl/cbs/vocab/inwoners",
-    facetType: "slider",
-    getFacetValuesQuery: iri => { return `
-      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph <https://data.pdok.nl/cbs/graph/2015> {
-          ?_r <${iri}> ?value .
-        }
-      }`;
-    },
-    facetToQueryPatterns: (iri,values) => {
-      if (Array.isArray(values)) {
-        return null;
-      }
-      if (values.min || values.max) {
-        var pattern = `
-          graph <https://data.pdok.nl/cbs/graph/2015> {
-            ?_r <${iri}> ?count .`;
-        if (values.min) pattern += `filter (?count >= ${values.min}) `;
-        if (values.max) pattern += `filter (?count <= ${values.max}) `;
-        pattern += '}';
-        return pattern;
-      }
-    }
-  },
-  "https://data.pdok.nl/cbs/vocab/personenautos6+": {
-    iri: "https://data.pdok.nl/cbs/vocab/personenautos6+",
-    facetType: "slider",
-    getFacetValuesQuery: iri => { return `
-      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph <https://data.pdok.nl/cbs/graph/2015> {
-          ?_r <${iri}> ?value .
-        }
-      } limit 1`;
-    },
-    facetToQueryPatterns: (iri,values) => {
-      if (Array.isArray(values)) {
-        return null;
-      }
-      if (values.min || values.max) {
-        var pattern = `
-          graph <https://data.pdok.nl/cbs/graph/2015> {
-            ?_r <${iri}> ?count .`;
-        if (values.min) pattern += `filter (?count >= ${values.min}) `;
-        if (values.max) pattern += `filter (?count <= ${values.max}) `;
-        pattern += '}';
-        return pattern;
-      }
-    }
-  },
-  "https://data.pdok.nl/cbs/vocab/stedelijkheid": {
-    iri: "https://data.pdok.nl/cbs/vocab/stedelijkheid",
-    facetType: "multiselect",
-    getFacetValuesQuery: iri => { return `
-      select distinct ?_value ?_valueLabel {
-        graph <https://data.pdok.nl/cbs/graph/2015> {
-          ?_r <${iri}> ?_value
-        }
-        ?_value rdfs:label ?_valueLabel
-      }`;
-    },
-    facetToQueryPatterns: (iri, values) => {
-      if (values instanceof Array && values.length) {
-        return values.map(v => `?_r <${iri}> ${toEntity(v)} .`).join('} union {')
-      }
-    }
   }
-*/
 };
 export default FACETS;
