@@ -236,7 +236,7 @@ $(IRI) foaf:depiction ?img .
      dct:description ?desc .
 */
 const selectImage: SelectWidget = t => {
-  console.log(t)
+  // console.log(t)
   const patterns: QueryPattern[] = [...findImageLiteralPatterns, [prefixes.foaf + "depiction", null]];
   const images: WidgetConfig[] = [];
   const nodes = t
@@ -244,7 +244,7 @@ const selectImage: SelectWidget = t => {
     .limit(5)
     .exec();
   for (const node of nodes) {
-    console.log('found node', node)
+    // console.log('found node', node)
     //this might be an image literal, or a depiction resource
     if (node.hasChildren()) {
       const label = node
@@ -272,13 +272,13 @@ const selectImage: SelectWidget = t => {
     }
   }
   if (images.length > 1) {
-    console.log({images})
+    // console.log({images})
     return {
       config: { size: "scroll-horizontal" },
       children: images
     };
   } else {
-    console.log({image:images[0]})
+    // console.log({image:images[0]})
     return images[0];
   }
 };
