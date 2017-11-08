@@ -4,8 +4,15 @@ A faceted browser for navigating Linked Data.
 
 ## Install & run FacetCheck
 
+One-time installation:
+
 ```sh
-npm install` (need to run this once)
+npm install
+```
+
+Startup:
+
+```sh
 npm run dev
 ```
 
