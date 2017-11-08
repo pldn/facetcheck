@@ -1,16 +1,11 @@
 import {ClassConfig} from 'facetConfUtils'
 const CLASSES: { [className: string]: ClassConfig } = {
   "https://data.pdok.nl/cbs/vocab/Buurt": {
-    default: false,
+    default: true,
     iri: "https://data.pdok.nl/cbs/vocab/Buurt",
     label: "Buurt",
     facets: [
-      "https://data.pdok.nl/cbs/vocab/stedelijkheid",
-      "https://data.pdok.nl/cbs/vocab/bedrijfsvestigingen",
-      "https://data.pdok.nl/cbs/vocab/huisartsenpraktijkAfstand",
-      "https://data.pdok.nl/cbs/vocab/woz",
-      "https://data.pdok.nl/cbs/vocab/inwoners",
-      "https://data.pdok.nl/cbs/vocab/personenautos6+"
+      "https://data.pdok.nl/cbs/vocab/jeugdzorgtrajecten_Perspectief_Diagnostiek_aantal_D_JeugdhulpMetVerblijf"
     ],
     resourceDescriptionQuery: function(iri: string) {
       var projectPattern = `
@@ -19,20 +14,18 @@ const CLASSES: { [className: string]: ClassConfig } = {
         ?p rdfs:label ?pLabel .
         ?o rdfs:label ?oLabel .`;
       var selectPattern = `
-        graph <https://data.pdok.nl/cbs/graph/2015> {
-          <${iri}> ?p ?o
-          optional { ?p rdfs:label ?pLabel }
-          optional { ?o rdfs:label ?oLabel }
-          optional {
-            <${iri}> geo:hasGeometry ?geo .
-            ?geo geo:asWKT ?wkt
-          }
+        <${iri}> ?p ?o
+        optional { ?p rdfs:label ?pLabel }
+        optional { ?o rdfs:label ?oLabel }
+        optional {
+          <${iri}> geo:hasGeometry ?geo .
+          ?geo geo:asWKT ?wkt
         }`;
       return `construct { ${projectPattern} } { ${selectPattern} }`;
     }
-  },
+  },/*
   "https://data.pdok.nl/cbs/vocab/Gemeente": {
-    default: true,
+    default: false,
     iri: "https://data.pdok.nl/cbs/vocab/Gemeente",
     label: "Gemeente",
     facets: [
@@ -92,15 +85,15 @@ const CLASSES: { [className: string]: ClassConfig } = {
         }`;
       return `construct { ${projectPattern} } { ${selectPattern} }`;
     }
-  },
+  },*/
   "https://cultureelerfgoed.nl/vocab/Monument": {
-    default: false,
+    default: true,
     iri: "https://cultureelerfgoed.nl/vocab/Monument",
     label: "Monument",
     facets: [
-      "https://cultureelerfgoed.nl/vocab/provincie",
-      "https://cultureelerfgoed.nl/vocab/bouwjaar",
-      "https://cultureelerfgoed.nl/vocab/monumentCode"
+      //"https://cultureelerfgoed.nl/vocab/provincie",
+      "https://cultureelerfgoed.nl/vocab/bouwjaar"//,
+      //"https://cultureelerfgoed.nl/vocab/monumentCode"
     ],
     resourceDescriptionQuery: function(iri: string) {
       var projectPattern = `

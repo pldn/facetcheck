@@ -1,6 +1,27 @@
 import {FacetConfig,toEntity} from 'facetConfUtils'
 
 const FACETS: { [property: string]: FacetConfig } = {
+  // cbs:jeugdzorgtrajecten_Perspectief_Diagnostiek_aantal_D_JeugdhulpMetVerblijf
+  "https://data.pdok.nl/cbs/vocab/jeugdzorgtrajecten_Perspectief_Diagnostiek_aantal_D_JeugdhulpMetVerblijf": {
+    iri: "https://data.pdok.nl/cbs/vocab/jeugdzorgtrajecten_Perspectief_Diagnostiek_aantal_D_JeugdhulpMetVerblijf",
+    facetType: "slider",
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
+        ?_r <${iri}> ?value
+      }`;
+    },
+    facetToQueryPatterns: (iri,values) => {
+      if (Array.isArray(values)) {
+        return null;
+      }
+      if (values.min || values.max) {
+        var pattern = `?_r <${iri}> ?value .`;
+        if (values.min) pattern += `filter(xsd:float(?value) >= ${values.min})`;
+        if (values.max) pattern += `filter(xsd:float(?value) <= ${values.max})`;
+        return pattern;
+      }
+    }
+  },
   // rce:bouwjaar
   "https://cultureelerfgoed.nl/vocab/bouwjaar": {
     iri: "https://cultureelerfgoed.nl/vocab/bouwjaar",
@@ -22,8 +43,8 @@ const FACETS: { [property: string]: FacetConfig } = {
         return pattern;
       }
     }
-  },
-  // rce:monumentCode
+  }
+/*  // rce:monumentCode
   "https://cultureelerfgoed.nl/vocab/monumentCode": {
     iri: "https://cultureelerfgoed.nl/vocab/monumentCode",
     facetType: "multiselect",
@@ -46,17 +67,6 @@ const FACETS: { [property: string]: FacetConfig } = {
     iri: "https://cultureelerfgoed.nl/vocab/provincie",
     label: "Provincie",
     facetType: "nlProvinces",
-/*
-    facetType: "multiselect",
-    getFacetValuesQuery: iri => { return `
-      select ?_value (min(?label) as ?_valueLabel) {
-        ?_r geo:sfWithin* ?_value .
-        ?_value a <http://www.gemeentegeschiedenis.nl/provincie> ;
-                rdfs:label ?label .
-      }
-      group by ?_value`;
-    },
-*/
     facetValues: {
       drenthe: {
         value: "http://www.gemeentegeschiedenis.nl/provincie/Drenthe",
@@ -256,5 +266,6 @@ const FACETS: { [property: string]: FacetConfig } = {
       }
     }
   }
+*/
 };
 export default FACETS;

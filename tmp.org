@@ -1,0 +1,11 @@
+#+BEGIN_SRC js
+    facetType: "multiselect",
+    getFacetValuesQuery: iri => { return `
+      select ?_value (min(?label) as ?_valueLabel) {
+        ?_r geo:sfWithin* ?_value .
+        ?_value a <http://www.gemeentegeschiedenis.nl/provincie> ;
+                rdfs:label ?label .
+      }
+      group by ?_value`;
+    },
+#+END_SRC
