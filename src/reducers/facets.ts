@@ -405,6 +405,9 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
     sparqlBuilder.distinct();
     facetComponent.prepareOptionsQuery(sparqlBuilder);
     sparqlBuilder.hasClasses(getSelectedClass(state.facets));
+    console.groupCollapsed(`Querying for ${forProp} facet values`)
+    console.log(sparqlBuilder.toString())
+    console.groupEnd();
     return {
       types: [Actions.FETCH_FACET_PROPS, Actions.FETCH_FACET_PROPS_SUCCESS, Actions.FETCH_FACET_PROPS_FAIL],
       facetName: forProp,
