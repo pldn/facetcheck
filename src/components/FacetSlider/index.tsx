@@ -60,6 +60,10 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, any> {
     if (!_.isInteger(min) || !_.isInteger(max)) {
       stepSize = 0.1;
     }
+    if (min === undefined || max === undefined) {
+      console.warn('Trying to render a slider, but no minimum and/or maximum value is given:', {min,max})
+      return null;
+    }
     // console.log(facet.selectedObject)
     return <div className={styles.range}>
       <Range
