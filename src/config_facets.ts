@@ -795,9 +795,30 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        ?_r <${iri}> ?value .
+      }`;
+    },
+    facetToQueryPatterns: (iri,values) => {
+      if (Array.isArray(values)) {
+        return null;
+      }
+      if (values.min || values.max) {
+        var pattern = `?_r <${iri}> ?count220 .`;
+          if (values.min) pattern += `filter (?count220 >= ${values.min}) `;
+          if (values.max) pattern += `filter (?count220 <= ${values.max}) `;
+        return pattern;
+      }
+    }
+  },
+  // cbs:mannen-procent
+  "https://data.pdok.nl/cbs/vocab/mannen-procent": {
+    iri: "https://data.pdok.nl/cbs/vocab/mannen-procent",
+    facetType: "slider",
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
         ?_r <${iri}> ?some ; cbs:inwoners ?all .
         filter (?some > 5.0e1)
-        bind (?some / ?all * 1.0e2 as ?value)
+        bind (xsd:double(?some) / xsd:double(?all) * 1.0e2 as ?value)
       }`;
     },
     facetToQueryPatterns: (iri,values) => {
@@ -807,8 +828,8 @@ const FACETS: { [property: string]: FacetConfig } = {
       if (values.min || values.max) {
         var pattern = `
           ?_r <${iri}> ?some220 ; cbs:inwoners ?all220 .
-          filter (?some220 > 5.0e1)
-          bind (?some220 / ?all220 * 1.0e2) as ?value220) `;
+          filter (xsd:double(?some220) > 5.0e1)
+          bind (xsd:double(?some220) / xsd:double(?all220) * 1.0e2 as ?value220) `;
         if (values.min) pattern += `filter (?value220 >= ${values.min}) `;
         if (values.max) pattern += `filter (?value220 <= ${values.max}) `;
         return pattern;
