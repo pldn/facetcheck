@@ -27,7 +27,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   "https://data.pdok.nl/cbs/vocab/antillianen": {
     iri: "https://data.pdok.nl/cbs/vocab/antillianen",
     facetType: "slider",
-    label: "Afstand tot attractie (km)",
+    label: "Aantal antillianen",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
         ?_r <${iri}> ?afstand . bind("1" as ?bla) bind (xsd:float(?afstand) as ?value)
