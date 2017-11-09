@@ -22,11 +22,11 @@ const FACETS: { [property: string]: FacetConfig } = {
         // console.log(values)
         const val = values[0]
         if (val.value === '1') {
-          return `?_r <${iri}> ${toEntity(val)} .`;
+          return `?_r <${iri}> [] .`;
         } else if (val.value === '0') {
           return [
           `filter not exists { ?_r <${iri}> [] }`,
-          `?_r <${iri}> ${toEntity(val)}`
+          // `?_r <${iri}> ${toEntity(val)}`
           ].join('} UNION {')
         }
       }

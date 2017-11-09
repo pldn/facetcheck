@@ -7,7 +7,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
     label: "Gemeente",
     facets: [
       "https://cultureelerfgoed.nl/vocab/provincie",
-      // "krimpgebied",
+      "krimpgebied",
       "https://data.pdok.nl/cbs/vocab/stedelijkheid",
       //"https://data.pdok.nl/cbs/vocab/afstandCafé",
       "https://data.pdok.nl/cbs/vocab/antillianen",
