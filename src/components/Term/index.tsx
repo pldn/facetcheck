@@ -16,6 +16,7 @@ export namespace Term {
     label?: string;
     config?:RenderConfiguration
     tree:Tree
+    selectedClass:string
     // fetchLabel: typeof fetchLabel
   }
 }
@@ -30,6 +31,7 @@ class Term extends React.PureComponent<Term.Props, any> {
     if (term.termType=== 'literal') {
       return (
         <TermLiteral
+        selectedClass={this.props.selectedClass}
           className={className}
           value={value}
           config={config}

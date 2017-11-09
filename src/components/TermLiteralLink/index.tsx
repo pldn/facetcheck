@@ -9,6 +9,7 @@ class TermLiteralLink extends React.PureComponent<TermLiteral.Props, any> {
   static shouldRender(props: TermLiteral.Props) {
     return props.value.getTerm().datatype === "http://www.w3.org/2001/XMLSchema#anyURI";
   }
+  static WidgetName:TermLiteral.WidgetIdentifiers = 'LiteralLink'
   render() {
     const {  className } = this.props;
     const term = this.props.value.getTerm()

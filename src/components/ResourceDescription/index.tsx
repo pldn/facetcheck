@@ -19,6 +19,7 @@ namespace ResourceDescription {
     forIri: string;
     statements: nTriply.Statements,
     fetchingMatchingIris: boolean
+    selectedClass: string
   }
 }
 
@@ -55,7 +56,7 @@ class ResourceDescription extends React.PureComponent<ResourceDescription.Props,
             </a>
           </div>
         </div>
-        <ResourceDescriptionSection tree={tree} widget={widget}/>
+        <ResourceDescriptionSection tree={tree} selectedClass={this.props.selectedClass} widget={widget}/>
       </div>
     );
   }

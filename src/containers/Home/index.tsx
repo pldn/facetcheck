@@ -21,6 +21,7 @@ namespace Home {
     error:string
     resourceDescriptionErrors: Errors,
     fetchingMatchingIris: boolean
+    selectedClass: string
   }
   export interface State {
     // modalShown: boolean
@@ -49,7 +50,7 @@ class Home extends React.PureComponent<Home.Props, any> {
         })
       }
       this.props.resourceDescriptions.entrySeq().forEach(([forIri,statements]) => {
-          els.push(<ResourceDescription key={forIri} fetchingMatchingIris={this.props.fetchingMatchingIris} statements={statements} forIri={forIri}/>)
+          els.push(<ResourceDescription key={forIri} selectedClass={this.props.selectedClass} fetchingMatchingIris={this.props.fetchingMatchingIris} statements={statements} forIri={forIri}/>)
       })
       if (els.length <= 0 ) {
         singleCol = true;
@@ -78,7 +79,8 @@ export default connect<GlobalState, Home.PropsFromState, Home.DispatchProps, {}>
       fetchingResources: state.statements.fetchRequests > 0,
       error:state.statements.getMatchingIrisError,
       resourceDescriptionErrors: state.statements.errors,
-      fetchingMatchingIris: state.facets.fetchResources > 0
+      fetchingMatchingIris: state.facets.fetchResources > 0,
+      selectedClass: state.facets.selectedClass
     };
   },
   //dispatch

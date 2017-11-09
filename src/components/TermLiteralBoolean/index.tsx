@@ -11,6 +11,7 @@ class TermLiteralBoolean extends React.PureComponent<TermLiteral.Props, any> {
   static shouldRender(props: TermLiteral.Props) {
     return props.value.getTerm().datatype === "http://www.w3.org/2001/XMLSchema#boolean";
   }
+  static WidgetName:TermLiteral.WidgetIdentifiers = 'LiteralBoolean'
   render() {
     const term = this.props.value.getTerm()
     switch (term.value) {

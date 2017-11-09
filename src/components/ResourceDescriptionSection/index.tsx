@@ -24,6 +24,7 @@ namespace ResourceDescriptionSection {
     tree: Tree;
     level?: number;
     widget: WidgetConfig;
+    selectedClass: string
     // show?:boolean
     // label?:string
   }
@@ -102,7 +103,7 @@ class ResourceDescriptionSection extends React.PureComponent<
         })}>
           {this.state.show &&
             widget.children.map(child => (
-              <ResourceDescriptionSection key={child.key} widget={child} tree={tree} level={level + 1} />
+              <ResourceDescriptionSection key={child.key} selectedClass={this.props.selectedClass} widget={child} tree={tree} level={level + 1} />
             ))}
         </div>
       </div>
@@ -131,7 +132,7 @@ class ResourceDescriptionSection extends React.PureComponent<
             <Leaflet values={values.map(v => v.getTerm().value)}/>
             :
               values.map(value => (
-              <Term key={value.getKey()} className={styles.obj} value={value} config={config} tree={tree} />
+              <Term key={value.getKey()} className={styles.obj} selectedClass={this.props.selectedClass} value={value} config={config} tree={tree} />
             ))
         }
         </div>

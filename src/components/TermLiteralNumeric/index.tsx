@@ -26,6 +26,7 @@ class TermLiteralNumeric extends React.PureComponent<TermLiteral.Props, any> {
   static shouldRender(props: TermLiteral.Props) {
     return numeric.indexOf(props.value.getTerm().datatype) >= 0;
   }
+  static WidgetName:TermLiteral.WidgetIdentifiers = 'LiteralNumeric'
   render() {
     const {  className } = this.props;
     const term = this.props.value.getTerm()

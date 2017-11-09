@@ -60,7 +60,6 @@ export var Facet = Immutable.Record<FacetProps>(
   "facetValues"
 );
 export type Facet = Immutable.Record.Inst<FacetProps>;
-export type SelectedClasses = Immutable.OrderedMap<string, boolean>;
 
 export var StateRecord = Immutable.Record(
   {

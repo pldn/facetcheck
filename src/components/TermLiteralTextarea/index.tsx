@@ -11,6 +11,7 @@ export class TermLiteralTextarea extends React.PureComponent<TermLiteral.Props, 
   constructor(props: TermLiteral.Props) {
     super(props);
   }
+  static WidgetName:TermLiteral.WidgetIdentifiers = 'LiteralTextarea'
   static shouldRender(props: TermLiteral.Props) {
     return props.config && props.config.type === 'textarea';
   }

@@ -20,6 +20,8 @@ export interface ClassConfig {
   label: string;
   facets: string[];
   resourceDescriptionQuery: (iri: string) => string;
+  //todo: make key use WidgetIdentifier from TermLiteral (need new ts version for this)
+  widgetConfigs?:{[key:string]: {}}
 }
 const escape = /["\\\t\n\r\b\f]/g;
 const escapeReplacer = function (c:string) { return escapeReplacements[c]; };

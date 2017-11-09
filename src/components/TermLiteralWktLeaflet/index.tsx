@@ -1,7 +1,6 @@
 //external dependencies
 import * as React from "react";
 const parse = require("wellknown");
-
 import { TermLiteral, Leaflet } from "components";
 
 const wkt = [
@@ -17,12 +16,13 @@ class TermLiteralWktLeaflet extends React.PureComponent<TermLiteral.Props, any> 
   static shouldRender(props: TermLiteral.Props) {
     return wkt.indexOf(props.value.getTerm().datatype) >= 0;
   }
-
+static WidgetName:TermLiteral.WidgetIdentifiers = 'LiteralWktLeaflet'
 
 
 
   render() {
     const term = this.props.value.getTerm()
+
     const wkt = parse(term.value);
     if (!wkt) return null;
     return (

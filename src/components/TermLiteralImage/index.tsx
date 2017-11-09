@@ -28,6 +28,7 @@ class TermLiteralImage extends React.PureComponent<TermLiteral.Props, TermLitera
   static shouldRender(props: TermLiteral.Props) {
     return props.config.type === 'image'
   }
+  static WidgetName:TermLiteral.WidgetIdentifiers = 'LiteralImage'
   componentDidMount() {
     if (!this.state.imageLoaded && this.img.complete) {
       this.img.naturalHeight ? this.onLoad() : this.onError(null);

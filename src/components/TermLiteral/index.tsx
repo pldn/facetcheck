@@ -22,16 +22,18 @@ export namespace TermLiteral {
   export interface Props {
     className?: string;
     config?:RenderConfiguration
+    selectedClass:string
     value: Tree
   }
   export interface State {
     showAll: boolean;
   }
-
+  export type WidgetIdentifiers = 'LiteralString' | 'LiteralTextarea' | 'LiteralBoolean' | 'LiteralWktLeaflet' | 'LiteralWktSvg' | 'LiteralNumeric' | 'LiteralImage' | 'LiteralLink' | 'LiteralDefault'
   //Hacky interface so we can define a static function in an interface
   export interface TermLiteralRenderer {
     new (props?: TermLiteral.Props): React.PureComponent<TermLiteral.Props, any>;
     shouldRender(props: TermLiteral.Props): boolean;
+    WidgetName:WidgetIdentifiers
   }
 }
 

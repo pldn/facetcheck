@@ -26,6 +26,7 @@ class TermLiteralWkt extends React.PureComponent<TermLiteral.Props, any> {
   static shouldRender(props: TermLiteral.Props) {
     return wkt.indexOf(props.value.getTerm().datatype) >= 0;
   }
+  static WidgetName:TermLiteral.WidgetIdentifiers = 'LiteralWktSvg'
   getBorders(poly: Array<Coords>) {
     const x = poly.map(c => c[0]);
     const y = poly.map(c => c[1]);

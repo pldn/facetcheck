@@ -20,6 +20,7 @@ class TermLiteralString extends React.PureComponent<TermLiteral.Props, any> {
   static shouldRender(props: TermLiteral.Props) {
     return props.value.getTerm().datatype === "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
   }
+  static WidgetName: 'LiteralString'
   getSource(regionCode: string) {
     if (regionCode)
       return `https://d2salfytceyqoe.cloudfront.net/wp-content/plugins/sitepress-multilingual-cms/res/flags/${regionCode.toLowerCase()}.png`;

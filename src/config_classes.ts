@@ -318,6 +318,11 @@ const CLASSES: { [className: string]: ClassConfig } = {
     default: false,
     iri: "https://triply.cc/ontology/TemporalSlice",
     label: "Land (historisch)",
+    widgetConfigs: {
+      "literalWktLeaflet": {
+        map: 'osm'
+      }
+    },
     facets: [
       "https://iisg.amsterdam/vocab/area",
       "https://iisg.amsterdam/vocab/cowEnd",
