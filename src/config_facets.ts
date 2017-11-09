@@ -30,7 +30,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     label: "Afstand tot attractie (km)",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        ?_r <${iri}> ?afstand . bind (xsd:float(?afstand) as ?value)
+        ?_r <${iri}> ?afstand . bind("1" as ?bla) bind (xsd:float(?afstand) as ?value)
       }`;
     },
     facetToQueryPatterns: (iri,values) => {
