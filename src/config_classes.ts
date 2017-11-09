@@ -2,7 +2,7 @@ import {ClassConfig} from 'facetConfUtils'
 const CLASSES: { [className: string]: ClassConfig } = {
   // cbs:Gemeente
   "https://data.pdok.nl/cbs/vocab/Gemeente": {
-    default: false,
+    default: true,
     iri: "https://data.pdok.nl/cbs/vocab/Gemeente",
     label: "Gemeente",
     facets: [
@@ -211,7 +211,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
   },
   // cbs:Buurt
   "https://data.pdok.nl/cbs/vocab/Buurt": {
-    default: true,
+    default: false,
     iri: "https://data.pdok.nl/cbs/vocab/Buurt",
     label: "Buurt",
     facets: [
