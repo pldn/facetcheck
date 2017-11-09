@@ -50,7 +50,10 @@ class Facet extends React.PureComponent<Facet.Props, any> {
     this.FacetComponents = [FacetMultiSelect, FacetSlider, FacetProvinces];
   }
 
-
+  componentDidCatch(e:Error) {
+    console.error(e)
+    return <div></div>
+  }
   render() {
     const { className,label } = this.props;
     var facet: any;
