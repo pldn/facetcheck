@@ -844,9 +844,9 @@ const FACETS: { [property: string]: FacetConfig } = {
     label: "Percentage mannen (%)",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        ?_r cbs:mannen ?some ; cbs:inwoners ?all .
-        filter (?some > 5.0e1)
-        bind (xsd:double(?some) / xsd:double(?all) * 1.0e2 as ?value)
+        ?_r cbs:mannen ?some1 ; cbs:inwoners ?all1 .
+        filter (?some1 > 5.0e1)
+        bind (xsd:double(?some1) / xsd:double(?all1) * 1.0e2 as ?value)
       }`;
     },
     facetToQueryPatterns: (iri,values) => {
@@ -855,11 +855,11 @@ const FACETS: { [property: string]: FacetConfig } = {
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
         var pattern = `
-          ?_r cbs:mannen ?some220 ; cbs:inwoners ?all220 .
-          filter (xsd:double(?some220) > 5.0e1)
-          bind (xsd:double(?some220) / xsd:double(?all220) * 1.0e2 as ?value220) `;
-        if (_.isFinite(values.min)) pattern += `filter (?value220 >= ${values.min}) `;
-        if (_.isFinite(values.max)) pattern += `filter (?value220 <= ${values.max}) `;
+          ?_r cbs:mannen ?some1 ; cbs:inwoners ?all1 .
+          filter (xsd:double(?some1) > 5.0e1)
+          bind (xsd:double(?some1) / xsd:double(?all1) * 1.0e2 as ?value1) `;
+        if (_.isFinite(values.min)) pattern += `filter (?value1 >= ${values.min}) `;
+        if (_.isFinite(values.max)) pattern += `filter (?value1 <= ${values.max}) `;
         return pattern;
       }
     }
@@ -1203,9 +1203,9 @@ const FACETS: { [property: string]: FacetConfig } = {
     label: "Percentage vrouwen (%)",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        ?_r cbs:vrouwen ?some ; cbs:inwoners ?all .
-        filter (?some > 5.0e1)
-        bind (xsd:double(?some) / xsd:double(?all) * 1.0e2 as ?value)
+        ?_r cbs:vrouwen ?some2 ; cbs:inwoners ?all2 .
+        filter (?some2 > 5.0e1)
+        bind (xsd:double(?some2) / xsd:double(?all2) * 1.0e2 as ?value)
       }`;
     },
     facetToQueryPatterns: (iri,values) => {
@@ -1214,11 +1214,11 @@ const FACETS: { [property: string]: FacetConfig } = {
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
         var pattern = `
-          ?_r cbs:mannen ?some220 ; cbs:inwoners ?all220 .
-          filter (xsd:double(?some220) > 5.0e1)
-          bind (xsd:double(?some220) / xsd:double(?all220) * 1.0e2 as ?value220) `;
-        if (_.isFinite(values.min)) pattern += `filter (?value220 >= ${values.min}) `;
-        if (_.isFinite(values.max)) pattern += `filter (?value220 <= ${values.max}) `;
+          ?_r cbs:vrouwen ?some2 ; cbs:inwoners ?all2 .
+          filter (xsd:double(?some2) > 5.0e1)
+          bind (xsd:double(?some2) / xsd:double(?all2) * 1.0e2 as ?value2) `;
+        if (_.isFinite(values.min)) pattern += `filter (?value2 >= ${values.min}) `;
+        if (_.isFinite(values.max)) pattern += `filter (?value2 <= ${values.max}) `;
         return pattern;
       }
     }

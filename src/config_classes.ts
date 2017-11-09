@@ -315,6 +315,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
       return `construct { ${projectPattern} } { ${selectPattern} }`;
     }
   },
+/*
   // iisg:Land
   "https://triply.cc/ontology/TemporalSlice": {
     default: false,
@@ -342,6 +343,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
       return `construct { ${projectPattern} } { ${selectPattern} }`;
     }
   },
+*/
   // rce:Monument
   "https://cultureelerfgoed.nl/vocab/Monument": {
     default: false,
