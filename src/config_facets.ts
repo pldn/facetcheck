@@ -1,6 +1,33 @@
 import {FacetConfig,toEntity} from 'facetConfUtils'
 import * as _ from 'lodash'
 const FACETS: { [property: string]: FacetConfig } = {
+  "krimpgebied": {
+    iri: "krimpgebied",
+    facetType: "multiselect",
+    label: "Krimpgebied",
+    getFacetValuesQuery: iri => { return `
+      select ?_value ?_valueLabel {
+        values (?_value ?_valueLabel) {
+          ("false"^^xsd:boolean "❌")
+          ("true"^^xsd:boolean "✓")
+        }
+      }`;
+    },
+    facetToQueryPatterns: (iri, values) => {
+      if (values instanceof Array && values.length) {
+        if (values.length === 2) {
+            //no need to apply pattern. should be either true or false
+            return;
+        }
+        const val = values[0]
+        if (val.value === 'true') {
+          return `?_r <http://purl.org/dc/terms/partOf> ?x }`;
+        } else if (val.value === 'false') {
+          return `filter not exists { ?_r <http://purl.org/dc/terms/partOf> ?x }`;
+        }
+      }
+    }
+  },
   // cbs:afstandCafé
   "https://data.pdok.nl/cbs/vocab/afstandCafé": {
     iri: "https://data.pdok.nl/cbs/vocab/afstandCafé",
@@ -1165,6 +1192,33 @@ const FACETS: { [property: string]: FacetConfig } = {
         var pattern = `?_r <${iri}> ?count310 .`;
         if (_.isFinite(values.min)) pattern += `filter (?count310 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter (?count310 <= ${values.max}) `;
+        return pattern;
+      }
+    }
+  },
+  // cbs:vrouwen-procent
+  "https://data.pdok.nl/cbs/vocab/vrouwen-procent": {
+    iri: "https://data.pdok.nl/cbs/vocab/vrouwen-procent",
+    facetType: "slider",
+    label: "Percentage vrouwen (%)",
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        ?_r cbs:vrouwen ?some ; cbs:inwoners ?all .
+        filter (?some > 5.0e1)
+        bind (xsd:double(?some) / xsd:double(?all) * 1.0e2 as ?value)
+      }`;
+    },
+    facetToQueryPatterns: (iri,values) => {
+      if (Array.isArray(values)) {
+        return null;
+      }
+      if (_.isFinite(values.min) || _.isFinite(values.max)) {
+        var pattern = `
+          ?_r cbs:mannen ?some220 ; cbs:inwoners ?all220 .
+          filter (xsd:double(?some220) > 5.0e1)
+          bind (xsd:double(?some220) / xsd:double(?all220) * 1.0e2 as ?value220) `;
+        if (_.isFinite(values.min)) pattern += `filter (?value220 >= ${values.min}) `;
+        if (_.isFinite(values.max)) pattern += `filter (?value220 <= ${values.max}) `;
         return pattern;
       }
     }
