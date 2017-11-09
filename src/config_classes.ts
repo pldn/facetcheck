@@ -7,6 +7,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
     label: "Gemeente",
     facets: [
       "https://cultureelerfgoed.nl/vocab/provincie",
+      "krimpgebied",
       "https://data.pdok.nl/cbs/vocab/stedelijkheid",
       //"https://data.pdok.nl/cbs/vocab/afstandCafé",
       "https://data.pdok.nl/cbs/vocab/antillianen",
@@ -79,6 +80,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
       //"https://data.pdok.nl/cbs/vocab/turken",
       //"https://data.pdok.nl/cbs/vocab/verweduwd",
       "https://data.pdok.nl/cbs/vocab/vrouwen",
+      "https://data.pdok.nl/cbs/vocab/vrouwen-procent",
       //"https://data.pdok.nl/cbs/vocab/warenhuisAfstand",
       //"https://data.pdok.nl/cbs/vocab/water",
       //"https://data.pdok.nl/cbs/vocab/westerseAllochtonen",
@@ -313,6 +315,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
       return `construct { ${projectPattern} } { ${selectPattern} }`;
     }
   },
+/*
   // iisg:Land
   "https://triply.cc/ontology/TemporalSlice": {
     default: false,
@@ -345,6 +348,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
       return `construct { ${projectPattern} } { ${selectPattern} }`;
     }
   },
+*/
   // rce:Monument
   "https://cultureelerfgoed.nl/vocab/Monument": {
     default: false,
