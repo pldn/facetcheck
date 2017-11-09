@@ -814,9 +814,10 @@ const FACETS: { [property: string]: FacetConfig } = {
   "https://data.pdok.nl/cbs/vocab/mannen-procent": {
     iri: "https://data.pdok.nl/cbs/vocab/mannen-procent",
     facetType: "slider",
+    label: "Percentage mannen (%)",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        ?_r <${iri}> ?some ; cbs:inwoners ?all .
+        ?_r cbs:mannen ?some ; cbs:inwoners ?all .
         filter (?some > 5.0e1)
         bind (xsd:double(?some) / xsd:double(?all) * 1.0e2 as ?value)
       }`;
@@ -827,7 +828,7 @@ const FACETS: { [property: string]: FacetConfig } = {
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
         var pattern = `
-          ?_r <${iri}> ?some220 ; cbs:inwoners ?all220 .
+          ?_r cbs:mannen ?some220 ; cbs:inwoners ?all220 .
           filter (xsd:double(?some220) > 5.0e1)
           bind (xsd:double(?some220) / xsd:double(?all220) * 1.0e2 as ?value220) `;
         if (_.isFinite(values.min)) pattern += `filter (?value220 >= ${values.min}) `;
@@ -1232,7 +1233,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     label: "Eind datum",
     getFacetValuesQuery: iri => { return `
-      select distinct (min(xsd:dateTime(?value)) as ?_min) (max(xsd:dateTime(?value)) as ?_max) {
+      select distinct (min(year(xsd:dateTime(?value))) as ?_min) (max(year(xsd:dateTime(?value))) as ?_max) {
         ?_r <${iri}> ?value .
       }`;
     },
@@ -1242,8 +1243,8 @@ const FACETS: { [property: string]: FacetConfig } = {
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
         var pattern = `?_r <${iri}> ?date1 .`;
-        if (_.isFinite(values.min)) pattern += `filter (xsd:dateTime(?date1) >= ${values.min}) `;
-        if (_.isFinite(values.max)) pattern += `filter (xsd:dateTime(?date1) <= ${values.max}) `;
+        if (_.isFinite(values.min)) pattern += `filter (year(xsd:dateTime(?date1)) >= ${values.min}) `;
+        if (_.isFinite(values.max)) pattern += `filter (year(xsd:dateTime(?date1)) <= ${values.max}) `;
         return pattern;
       }
     }
@@ -1254,7 +1255,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     label: "Begin datum",
     getFacetValuesQuery: iri => { return `
-      select distinct (min(xsd:dateTime(?value)) as ?_min) (max(xsd:dateTime(?value)) as ?_max) {
+      select distinct (min(year(xsd:dateTime(?value))) as ?_min) (max(year(xsd:dateTime(?value))) as ?_max) {
         ?_r <${iri}> ?value .
       }`;
     },
@@ -1264,8 +1265,8 @@ const FACETS: { [property: string]: FacetConfig } = {
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
         var pattern = `?_r <${iri}> ?date2 .`;
-        if (_.isFinite(values.min)) pattern += `filter (xsd:dateTime(?date2) >= ${values.min}) `;
-        if (_.isFinite(values.max)) pattern += `filter (xsd:dateTime(?date2) <= ${values.max}) `;
+        if (_.isFinite(values.min)) pattern += `filter (year(xsd:dateTime(?date2)) >= ${values.min}) `;
+        if (_.isFinite(values.max)) pattern += `filter (year(xsd:dateTime(?date2)) <= ${values.max}) `;
         return pattern;
       }
     }
