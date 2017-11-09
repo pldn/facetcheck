@@ -240,9 +240,10 @@ export function facetsToQuery(state: GlobalState) {
   });
 
   var queryPatterns: sparqljs.QueryPattern[] = [];
-  for (const facetIri of facetsToCheck) {
-    const facetConfig = FACETS[facetIri];
-    const facetsValues = state.facets.facets.get(facetIri);
+  for (const facetKey of facetsToCheck) {
+    const facetConfig = FACETS[facetKey];
+    const facetIri = facetConfig.iri
+    const facetsValues = state.facets.facets.get(facetKey);
     var bgp = "";
     if (facetsValues.selectedFacetValues.size) {
       const listOfFacetValues = facetsValues.optionList

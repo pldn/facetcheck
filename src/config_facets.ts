@@ -2,7 +2,7 @@ import {FacetConfig,toEntity} from 'facetConfUtils'
 import * as _ from 'lodash'
 const FACETS: { [property: string]: FacetConfig } = {
   "krimpgebied": {
-    iri: "krimpgebied",
+    iri: 'http://purl.org/dc/terms/partOf',//NOTE: just a showcase of a boolean val, not the right iri for this facet
     facetType: "multiselect",
     label: "Krimpgebied",
     getFacetValuesQuery: iri => { return `
@@ -19,11 +19,15 @@ const FACETS: { [property: string]: FacetConfig } = {
             //no need to apply pattern. should be either true or false
             return;
         }
+        // console.log(values)
         const val = values[0]
-        if (val.value === 'true') {
-          return `?_r <http://purl.org/dc/terms/partOf> ?x }`;
-        } else if (val.value === 'false') {
-          return `filter not exists { ?_r <http://purl.org/dc/terms/partOf> ?x }`;
+        if (val.value === '1') {
+          return `?_r <${iri}> ${toEntity(val)} .`;
+        } else if (val.value === '0') {
+          return [
+          `filter not exists { ?_r <${iri}> [] }`,
+          `?_r <${iri}> ${toEntity(val)}`
+          ].join('} UNION {')
         }
       }
     }
