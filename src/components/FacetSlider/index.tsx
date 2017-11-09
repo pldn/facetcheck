@@ -56,13 +56,14 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, any> {
     const {facet} = this.props
     if (!facet.optionObject) return null
     const {min,max} = facet.optionObject;
+
+    if (!_.isFinite(min) || !_.isFinite(max)) {
+      console.warn('Trying to render a slider for prop ' + facet.iri + ', but no minimum and/or maximum value is given:', {min,max})
+      return null;
+    }
     var stepSize = 1;
     if (!_.isInteger(min) || !_.isInteger(max)) {
       stepSize = 0.1;
-    }
-    if (min === undefined || max === undefined) {
-      console.warn('Trying to render a slider for prop ' + facet.iri + ', but no minimum and/or maximum value is given:', {min,max})
-      return null;
     }
     // console.log(facet.selectedObject)
     return <div className={styles.range}>
