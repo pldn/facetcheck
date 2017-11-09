@@ -129,7 +129,9 @@ export function reducer(state = initialState, action: Action) {
         .set('matchingIris', Immutable.List())//clear old facet configs
         .set("updateFacetInfoQueue", Immutable.List(action.facetQueue));
     case Actions.REFRESH_FACETS_SUCCESS:
-      return state.set('facetLabels', Immutable.OrderedMap(action.result.labelKeys))
+      return state.update('facetLabels', map => {
+        return map.merge(action.result.labelKeys)
+      })
     case Actions.FETCH_FACET_PROPS:
       return state.update("updateFacetInfoQueue", list => {
         const i = list.indexOf(action.facetName);
@@ -405,7 +407,7 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
     sparqlBuilder.distinct();
     facetComponent.prepareOptionsQuery(sparqlBuilder);
     sparqlBuilder.hasClasses(getSelectedClass(state.facets));
-    
+
     const sparqlString = sparqlBuilder.toString();
     console.groupCollapsed(`Querying for ${forProp} facet values`)
     console.log(sparqlString)
