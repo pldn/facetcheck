@@ -85,10 +85,15 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, any> {
         // value={[min,max]}
         onAfterChange={(values:number[]) => {
           const [selectedMin,selectedMax] = values;
-          const selectedObject:FacetSlider.Options = {};
+          var selectedObject:FacetSlider.Options = {};
           //only set min/max when its different that the outer bounds (otherwise no use in including it in our query)
           selectedObject.min = min !== selectedMin ? selectedMin: null;
           selectedObject.max = min !== selectedMax ? selectedMax: null;
+
+          //one caveat: _do_ set min/max when they are at its bounds, and are the same (otherwise, the filter wont apply)
+          if (selectedMin === selectedMax) {
+            selectedObject = {min:selectedMin, max:selectedMax}
+          }
           this.props.setSelectedObject(facet.iri, selectedObject);
         }}
       />
