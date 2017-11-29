@@ -483,6 +483,7 @@ declare module "~react-router/lib/match" {
     history?: H.History;
     location?: H.Location | string;
     parseQueryString?: Router.ParseQueryString;
+    basename?:string
     stringifyQuery?: Router.StringifyQuery;
   }
   interface MatchState extends Router.RouterState {

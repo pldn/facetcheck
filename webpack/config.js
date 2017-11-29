@@ -63,7 +63,7 @@ module.exports = {
     //using dev server url. setting this to actual path will let webpack write files to disk
     //NOTE: using a _relative_ dist dir in production, so we can proxy to this webservice via a location directive
     //This relative path will create issues if we implement a multi-page facetcheck
-    publicPath: isDev ? "http://" + host + ":" + appConfig.getDevServerPort() + "/dist/" : "dist/"
+    publicPath: isDev ? "http://" + host + ":" + appConfig.getDevServerPort() + "/dist/" : (process.env['BASENAME'] || '') + '/dist/'
   },
   resolve: {
     alias: {
@@ -392,6 +392,7 @@ module.exports = {
       __CLIENT__: true,
       __SERVER__: false,
       __DEVELOPMENT__: isDev,
+      __BASENAME__: process.env['BASENAME'] || '',
       __DEVTOOLS__: isDev // <-------- DISABLE redux-devtools HERE
     }),
     ifProd(new LodashModuleReplacementPlugin()),

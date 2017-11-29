@@ -31,6 +31,7 @@ import customTheme from "muiTheme";
 var favicon = require('serve-favicon');
 declare var __DEVELOPMENT__: boolean;
 declare var __DISABLE_SSR__: boolean;
+declare var __BASENAME__:string;
 __DISABLE_SSR__ = true;
 const config = getConfig();
 // const targetUrl = "http://" + config.clientConnection.domain + ":" + config.clientConnection.publicPort;
@@ -68,6 +69,11 @@ app.use(favicon('./public/images/favicon.ico'));
 // });
 declare var webpackIsomorphicTools: any;
 declare var global: any;
+
+if (__DISABLE_SSR__) {
+  console.warn("Server side rendering disabled!");
+}
+
 app.use((req: Express.Request, res: Express.Response) => {
   //we need the useragent for MUI-theme to work on the server...
   //see https://github.com/callemall/material-ui/blob/599a5327a015147699e6ef742b1939426b6b8d0b/docs/src/app/components/pages/get-started/serverRendering.md
@@ -95,12 +101,11 @@ app.use((req: Express.Request, res: Express.Response) => {
   }
 
   if (__DISABLE_SSR__) {
-    console.warn("Server side rendering disabled!");
     hydrateOnClient();
     return;
   }
   // match({ history, routes: getRoutes(store), location: req.originalUrl }, (error, redirectLocation, renderProps) => {
-  var bla: any = { syncedHistory, routes: getRoutes(store), location: req.originalUrl };
+  var bla: any = { syncedHistory, routes: getRoutes(store), basename: __BASENAME__,location: req.originalUrl };
   match(bla, (error: any, redirectLocation: any, renderProps: any) => {
     if (redirectLocation) {
       res.redirect(redirectLocation.pathname + redirectLocation.search);

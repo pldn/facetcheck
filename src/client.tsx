@@ -63,7 +63,7 @@ const getComponent = (renderProps: any = {}) => {
 };
 
 const renderApp = () => {
-  match({ routes: getRoutes(store), history: syncedHistory as any }, (error, redirectLocation, renderProps) => {
+  match({ routes: getRoutes(store), basename: (global as any)['__BASENAME__'], history: syncedHistory as any }, (error, redirectLocation, renderProps) => {
     ReactDOM.render(
       <AppContainer>
         <Provider store={store} key="provider">
