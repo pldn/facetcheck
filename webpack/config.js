@@ -61,7 +61,9 @@ module.exports = {
     filename: "[name]-[hash].js",
     chunkFilename: "[name]-[chunkhash].js",
     //using dev server url. setting this to actual path will let webpack write files to disk
-    publicPath: isDev ? "http://" + host + ":" + appConfig.getDevServerPort() + "/dist/" : "/dist/"
+    //NOTE: using a _relative_ dist dir in production, so we can proxy to this webservice via a location directive
+    //This relative path will create issues if we implement a multi-page facetcheck
+    publicPath: isDev ? "http://" + host + ":" + appConfig.getDevServerPort() + "/dist/" : "dist/"
   },
   resolve: {
     alias: {
