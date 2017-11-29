@@ -1,6 +1,5 @@
 FROM node
 ARG BASENAME
-ENV BASE_DIR="/facetcheck"
 EXPOSE 5000
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y rsync && apt-get clean
 WORKDIR ${BASE_DIR}
