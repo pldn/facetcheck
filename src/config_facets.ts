@@ -1179,6 +1179,28 @@ const FACETS: { [property: string]: FacetConfig } = {
       }
     }
   },
+  // cbs:treinstation
+  "https://data.pdok.nl/cbs/vocab/treinstation": {
+    iri: "https://data.pdok.nl/cbs/vocab/treinstation",
+    facetType: "slider",
+    label: "Afstand tot treinstation (km)",
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        ?_r <${iri}> ?afstand . bind (xsd:float(?afstand) as ?value)
+      }`;
+    },
+    facetToQueryPatterns: (iri,values) => {
+      if (Array.isArray(values)) {
+        return null;
+      }
+      if (_.isFinite(values.min) || _.isFinite(values.max)) {
+        var pattern = `?_r <${iri}> ?count1010 .`;
+        if (_.isFinite(values.min)) pattern += `filter(xsd:float(?count1010) >= ${values.min}) `;
+        if (_.isFinite(values.max)) pattern += `filter(xsd:float(?count1010) <= ${values.max}) `;
+        return pattern;
+      }
+    }
+  },
   // cbs:vrouwen
   "https://data.pdok.nl/cbs/vocab/vrouwen": {
     iri: "https://data.pdok.nl/cbs/vocab/vrouwen",
