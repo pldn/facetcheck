@@ -197,6 +197,7 @@ export default class ApiClient {
 
       request.end((err: Error, res: superagent.Response) => {
         const getBody = (res: superagent.Response) => {
+          if (!res) return undefined
           if (res.body) return res.body;
           if (res.text) {
             return res.text
