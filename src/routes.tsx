@@ -41,11 +41,7 @@ export default (store: Store<GlobalState> = null) => {
     <Route component={Containers.App}>
       <Route path="/" component={Containers.Nav}>
         <IndexRoute component={Containers.Home} />
-        <Route
-          path="*"
-          component={() =>
-            <Containers.ErrorPage title="Not found" message="The page you're looking for does not exist" />}
-        />
+        <Route path="*" component={Containers.Home} />
       </Route>
       <Route
         path="*"
