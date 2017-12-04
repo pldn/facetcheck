@@ -40,6 +40,7 @@ export default (store: Store<GlobalState> = null) => {
   return (
     <Route component={Containers.App}>
       <Route path="/" component={Containers.Nav}>
+        <IndexRoute component={Containers.Home} />
         <Route path="*" component={Containers.Home} />
       </Route>
       <Route
