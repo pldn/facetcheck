@@ -160,3 +160,23 @@ var FACETS = {
   }
 }
 ```
+
+# Supported facets
+
+## multiselect
+
+A collection of checkboxes, denoting a disjuctive set of values (e.g.,
+select things that are X, Y, or Z).
+
+## slider
+
+A double slider selecting things that have at least MIN and at most MAX
+value.
+
+## nlProvinces
+
+A map of the Netherlands selecting things located in either of the selected provinces.
+
+## multiselectText
+
+Do not use this one, it does not work yet.
