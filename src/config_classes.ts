@@ -6,6 +6,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
     iri: "http://brt.basisregistraties.overheid.nl/def/top10nl#Gebouw",
     label: "Gebouw",
     facets: [
+      "gebouwsoort",
       "http://brt.basisregistraties.overheid.nl/def/top10nl#status"
     ],
     resourceDescriptionQuery: function(iri: string) {

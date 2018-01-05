@@ -1,8 +1,26 @@
 import {FacetConfig,toEntity} from 'facetConfUtils'
 import * as _ from 'lodash'
 const FACETS: { [property: string]: FacetConfig } = {
+  "gebouwsoort": {
+    iri: 'http://purl.org/dc/terms/partOf', // Dummy IRI is required.
+    label: "Soort gebouw",
+    facetType: "multiselect",
+    getFacetValuesQuery: iri => { return `
+      select distinct ?_value ?_valueLabel {
+        ?_r a ?_value .
+        ?_value rdfs:subClassOf brt:Gebouw ;
+                rdfs:label ?_valueLabel .
+      }
+      order by asc(?_valueLabel)`;
+    },
+    facetToQueryPatterns: (iri, values) => {
+      if (values instanceof Array && values.length) {
+        return values.map(v => `?_r a <${v.value}> .`).join('} union {')
+      }
+    }
+  },
   "krimpgebied": {
-    iri: 'http://purl.org/dc/terms/partOf',//NOTE: just a showcase of a boolean val, not the right iri for this facet
+    iri: 'http://purl.org/dc/terms/partOf', // Dummy IRI is required.
     facetType: "multiselect",
     label: "Krimpgebied",
     getFacetValuesQuery: iri => { return `
@@ -36,6 +54,12 @@ const FACETS: { [property: string]: FacetConfig } = {
   "http://brt.basisregistraties.overheid.nl/def/top10nl#status": {
     iri: "http://brt.basisregistraties.overheid.nl/def/top10nl#status",
     facetType: "multiselect",
+    getFacetValuesQuery: iri => { return `
+      select distinct ?_value ?_valueLabel {
+        ?_r <${iri}> ?_value .
+        ?_value rdfs:label ?_valueLabel .
+      }`;
+    },
     facetToQueryPatterns: (iri, values) => {
       if (values instanceof Array && values.length) {
         return values.map(v => `?_r <${iri}> ${toEntity(v)} .`).join('} union {')
