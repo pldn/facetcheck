@@ -2,17 +2,19 @@ import {FacetConfig,toEntity} from 'facetConfUtils'
 import * as _ from 'lodash'
 const FACETS: { [property: string]: FacetConfig } = {
   "gebouwsoort": {
-    iri: 'http://purl.org/dc/terms/partOf', // Dummy IRI is required.
+    iri: 'gebouwsoort', // Dummy IRI is required.
     label: "Soort gebouw",
     facetType: "multiselect",
-    getFacetValuesQuery: iri => { return `
-      select distinct ?_value ?_valueLabel {
-        ?_r a ?_value .
-        ?_value rdfs:subClassOf brt:Gebouw ;
-                rdfs:label ?_valueLabel .
-      }
-      order by asc(?_valueLabel)`;
-    },
+    facetValues: [{
+       label: "Water",
+       value: "http://bag.basisregistraties.overheid.nl/def/bag#Water"
+     }
+     ,
+     {
+       label: "Weg",
+       value: "http://bag.basisregistraties.overheid.nl/def/bag#Weg"
+     }
+   ],
     facetToQueryPatterns: (iri, values) => {
       if (values instanceof Array && values.length) {
         return values.map(v => `?_r a <${v.value}> .`).join('} union {')
