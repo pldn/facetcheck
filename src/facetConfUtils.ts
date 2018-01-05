@@ -2,7 +2,7 @@ import { Term as SparqlTerm } from "helpers/SparqlJson";
 export type FacetTypes = "multiselect" | "slider" | "nlProvinces" | "multiselectText";
 import { FacetProps } from "reducers/facets";
 export interface FacetConfig {
-  iri: string;
+  facetKey?: string;
   label?: string;
   // datatype: string;
   facetType: FacetTypes;

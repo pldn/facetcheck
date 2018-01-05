@@ -242,7 +242,7 @@ export function facetsToQuery(state: GlobalState) {
   var queryPatterns: sparqljs.QueryPattern[] = [];
   for (const facetKey of facetsToCheck) {
     const facetConfig = FACETS[facetKey];
-    const facetIri = facetConfig.iri
+    const facetIri = facetKey;
     const facetsValues = state.facets.facets.get(facetKey);
     var bgp = "";
     if (facetsValues.selectedFacetValues.size) {
@@ -377,6 +377,7 @@ export function refreshFacets(state: GlobalState, forClass?: string): Action {
 export function getFacetProps(state: GlobalState, forProp: string): Action {
   try {
     const facetConf = FACETS[forProp];
+    facetConf.facetKey = forProp;
     if (!facetConf) {
       throw new Error("Could not find facet config for " + forProp);
     }
@@ -388,7 +389,7 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
           result: {
             optionList: facetConf.facetValues
           },
-          facetName: facetConf.iri,
+          facetName: facetConf.facetKey,
           sync:true
         };
       } else {
@@ -397,7 +398,7 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
           result: {
             optionObject: facetConf.facetValues
           },
-          facetName: facetConf.iri,
+          facetName: facetConf.facetKey,
           sync:true
         } as any;
       }

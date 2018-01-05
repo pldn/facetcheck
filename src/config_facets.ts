@@ -2,7 +2,7 @@ import {FacetConfig,toEntity} from 'facetConfUtils'
 import * as _ from 'lodash'
 const FACETS: { [property: string]: FacetConfig } = {
   "gebouwsoort": {
-    iri: 'gebouwsoort', // Dummy IRI is required.
+    // //iri: 'gebouwsoort', // Dummy IRI is required.
     label: "Soort gebouw",
     facetType: "multiselect",
     facetValues: [{
@@ -22,7 +22,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   "krimpgebied": {
-    iri: 'http://purl.org/dc/terms/partOf', // Dummy IRI is required.
+    // //iri: 'http://purl.org/dc/terms/partOf', // Dummy IRI is required.
     facetType: "multiselect",
     label: "Krimpgebied",
     getFacetValuesQuery: iri => { return `
@@ -54,7 +54,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // brt:status
   "http://brt.basisregistraties.overheid.nl/def/top10nl#status": {
-    iri: "http://brt.basisregistraties.overheid.nl/def/top10nl#status",
+    // //iri: "http://brt.basisregistraties.overheid.nl/def/top10nl#status",
     facetType: "multiselect",
     getFacetValuesQuery: iri => { return `
       select distinct ?_value ?_valueLabel {
@@ -70,7 +70,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:afstandCafé
   "https://triply.cc/cbs/def/afstandCafé": {
-    iri: "https://triply.cc/cbs/def/afstandCafé",
+    // //iri: "https://triply.cc/cbs/def/afstandCafé",
     facetType: "slider",
     label: "Afstand tot café (km)",
     getFacetValuesQuery: iri => { return `
@@ -92,7 +92,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:antillianen
   "https://triply.cc/cbs/def/antillianen": {
-    iri: "https://triply.cc/cbs/def/antillianen",
+    ////iri: "https://triply.cc/cbs/def/antillianen",
     facetType: "slider",
     label: "Aantal antillianen",
     getFacetValuesQuery: iri => { return `
@@ -114,7 +114,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:attractieAfstand
   "https://triply.cc/cbs/def/attractieAfstand": {
-    iri: "https://triply.cc/cbs/def/attractieAfstand",
+    ////iri: "https://triply.cc/cbs/def/attractieAfstand",
     facetType: "slider",
     label: "Afstand tot attractie (km)",
     getFacetValuesQuery: iri => { return `
@@ -136,7 +136,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:bedrijfsvestigingen
   "https://triply.cc/cbs/def/bedrijfsvestigingen": {
-    iri: "https://triply.cc/cbs/def/bedrijfsvestigingen",
+    ////iri: "https://triply.cc/cbs/def/bedrijfsvestigingen",
     facetType: "slider",
     label: "Bedrijven",
     getFacetValuesQuery: iri => { return `
@@ -158,7 +158,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:bedrijfsvestigingenA
   "https://triply.cc/cbs/def/bedrijfsvestigingenA": {
-    iri: "https://triply.cc/cbs/def/bedrijfsvestigingenA",
+    ////iri: "https://triply.cc/cbs/def/bedrijfsvestigingenA",
     facetType: "slider",
     label: "Bedrijven (landbouw/bosbouw/visserij)",
     getFacetValuesQuery: iri => { return `
@@ -180,7 +180,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:bedrijfsvestigingenBF
   "https://triply.cc/cbs/def/bedrijfsvestigingenBF": {
-    iri: "https://triply.cc/cbs/def/bedrijfsvestigingenBF",
+    ////iri: "https://triply.cc/cbs/def/bedrijfsvestigingenBF",
     facetType: "slider",
     label: "Bedrijven (nijverheid/energie)",
     getFacetValuesQuery: iri => { return `
@@ -202,7 +202,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:bedrijfsvestigingenGI
   "https://triply.cc/cbs/def/bedrijfsvestigingenGI": {
-    iri: "https://triply.cc/cbs/def/bedrijfsvestigingenGI",
+    ////iri: "https://triply.cc/cbs/def/bedrijfsvestigingenGI",
     facetType: "slider",
     label: "Bedrijven (handel/horeca)",
     getFacetValuesQuery: iri => { return `
@@ -224,7 +224,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:bedrijfsvestigingenHJ
   "https://triply.cc/cbs/def/bedrijfsvestigingenHJ": {
-    iri: "https://triply.cc/cbs/def/bedrijfsvestigingenHJ",
+    ////iri: "https://triply.cc/cbs/def/bedrijfsvestigingenHJ",
     facetType: "slider",
     label: "Bedrijven (vervoer/informatie/communicatie)",
     getFacetValuesQuery: iri => { return `
@@ -246,7 +246,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:bedrijfsvestigingenKL
   "https://triply.cc/cbs/def/bedrijfsvestigingenKL": {
-    iri: "https://triply.cc/cbs/def/bedrijfsvestigingenKL",
+    ////iri: "https://triply.cc/cbs/def/bedrijfsvestigingenKL",
     facetType: "slider",
     label: "Bedrijven (financiën/onroerend goed)",
     getFacetValuesQuery: iri => { return `
@@ -268,7 +268,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:bedrijfsvestigingenMN
   "https://triply.cc/cbs/def/bedrijfsvestigingenMN": {
-    iri: "https://triply.cc/cbs/def/bedrijfsvestigingenMN",
+    ////iri: "https://triply.cc/cbs/def/bedrijfsvestigingenMN",
     facetType: "slider",
     label: "Bedrijven (zakelijke dienstverlening)",
     getFacetValuesQuery: iri => { return `
@@ -290,7 +290,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:bedrijfsvestigingenRU
   "https://triply.cc/cbs/def/bedrijfsvestigingenRU": {
-    iri: "https://triply.cc/cbs/def/bedrijfsvestigingenRU",
+    ////iri: "https://triply.cc/cbs/def/bedrijfsvestigingenRU",
     facetType: "slider",
     label: "Bedrijven (cultuur/recreatie)",
     getFacetValuesQuery: iri => { return `
@@ -312,7 +312,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:bedrijfsmotorvoertuigen
   "https://triply.cc/cbs/def/bedrijfsmotorvoertuigen": {
-    iri: "https://triply.cc/cbs/def/bedrijfsmotorvoertuigen",
+    ////iri: "https://triply.cc/cbs/def/bedrijfsmotorvoertuigen",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -333,7 +333,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:bevolkingsdichtheid
   "https://triply.cc/cbs/def/bevolkingsdichtheid": {
-    iri: "https://triply.cc/cbs/def/bevolkingsdichtheid",
+    ////iri: "https://triply.cc/cbs/def/bevolkingsdichtheid",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -354,7 +354,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:bibliotheek
   "https://triply.cc/cbs/def/bibliotheek": {
-    iri: "https://triply.cc/cbs/def/bibliotheek",
+    ////iri: "https://triply.cc/cbs/def/bibliotheek",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
@@ -375,7 +375,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:bioscoopAfstand
   "https://triply.cc/cbs/def/bioscoopAfstand": {
-    iri: "https://triply.cc/cbs/def/bioscoopAfstand",
+    ////iri: "https://triply.cc/cbs/def/bioscoopAfstand",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
@@ -396,7 +396,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:bouwklasse-1999
   "https://triply.cc/cbs/def/bouwklasse-1999": {
-    iri: "https://triply.cc/cbs/def/bouwklasse-1999",
+    ////iri: "https://triply.cc/cbs/def/bouwklasse-1999",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -417,7 +417,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:bouwklasse2000+
   "https://triply.cc/cbs/def/bouwklasse2000+": {
-    iri: "https://triply.cc/cbs/def/bouwklasse2000+",
+    ////iri: "https://triply.cc/cbs/def/bouwklasse2000+",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -438,7 +438,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:brandweer
   "https://triply.cc/cbs/def/brandweer": {
-    iri: "https://triply.cc/cbs/def/brandweer",
+    ////iri: "https://triply.cc/cbs/def/brandweer",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
@@ -459,7 +459,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:buitenpolikliniekAfstand
   "https://triply.cc/cbs/def/buitenpolikliniekAfstand": {
-    iri: "https://triply.cc/cbs/def/buitenpolikliniekAfstand",
+    //iri: "https://triply.cc/cbs/def/buitenpolikliniekAfstand",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
@@ -480,7 +480,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:buitenschoolseopvangAfstand
   "https://triply.cc/cbs/def/buitenschoolseopvangAfstand": {
-    iri: "https://triply.cc/cbs/def/buitenschoolseopvangAfstand",
+    //iri: "https://triply.cc/cbs/def/buitenschoolseopvangAfstand",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
@@ -501,7 +501,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:cafetariumAfstand
   "https://triply.cc/cbs/def/cafetariumAfstand": {
-    iri: "https://triply.cc/cbs/def/cafetariumAfstand",
+    //iri: "https://triply.cc/cbs/def/cafetariumAfstand",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
@@ -522,7 +522,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:geboortePercentage
   "https://triply.cc/cbs/def/geboortePercentage": {
-    iri: "https://triply.cc/cbs/def/geboortePercentage",
+    //iri: "https://triply.cc/cbs/def/geboortePercentage",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -543,7 +543,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:gehuwd
   "https://triply.cc/cbs/def/gehuwd": {
-    iri: "https://triply.cc/cbs/def/gehuwd",
+    //iri: "https://triply.cc/cbs/def/gehuwd",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -564,7 +564,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:gescheiden
   "https://triply.cc/cbs/def/gescheiden": {
-    iri: "https://triply.cc/cbs/def/gescheiden",
+    //iri: "https://triply.cc/cbs/def/gescheiden",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -585,7 +585,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:hotelAfstand
   "https://triply.cc/cbs/def/hotelAfstand": {
-    iri: "https://triply.cc/cbs/def/hotelAfstand",
+    //iri: "https://triply.cc/cbs/def/hotelAfstand",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
@@ -606,7 +606,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:huishoudenGrootte
   "https://triply.cc/cbs/def/huishoudenGrootte": {
-    iri: "https://triply.cc/cbs/def/huishoudenGrootte",
+    //iri: "https://triply.cc/cbs/def/huishoudenGrootte",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
@@ -627,7 +627,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:huishoudens
   "https://triply.cc/cbs/def/huishoudens": {
-    iri: "https://triply.cc/cbs/def/huishoudens",
+    //iri: "https://triply.cc/cbs/def/huishoudens",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -648,7 +648,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:huishoudensMetKinderen
   "https://triply.cc/cbs/def/huishoudensMetKinderen": {
-    iri: "https://triply.cc/cbs/def/huishoudensMetKinderen",
+    //iri: "https://triply.cc/cbs/def/huishoudensMetKinderen",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
@@ -669,7 +669,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:huishoudensZonderKinderen
   "https://triply.cc/cbs/def/huishoudensZonderKinderen": {
-    iri: "https://triply.cc/cbs/def/huishoudensZonderKinderen",
+    //iri: "https://triply.cc/cbs/def/huishoudensZonderKinderen",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -690,7 +690,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:ijsbaan
   "https://triply.cc/cbs/def/ijsbaan": {
-    iri: "https://triply.cc/cbs/def/ijsbaan",
+    //iri: "https://triply.cc/cbs/def/ijsbaan",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
@@ -711,7 +711,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:inwoners
   "https://triply.cc/cbs/def/inwoners": {
-    iri: "https://triply.cc/cbs/def/inwoners",
+    //iri: "https://triply.cc/cbs/def/inwoners",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -732,7 +732,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:inwoners0-14
   "https://triply.cc/cbs/def/inwoners0-14": {
-    iri: "https://triply.cc/cbs/def/inwoners0-14",
+    //iri: "https://triply.cc/cbs/def/inwoners0-14",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -753,7 +753,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:inwoners15-24
   "https://triply.cc/cbs/def/inwoners15-24": {
-    iri: "https://triply.cc/cbs/def/inwoners15-24",
+    //iri: "https://triply.cc/cbs/def/inwoners15-24",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -774,7 +774,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:inwoners25-44
   "https://triply.cc/cbs/def/inwoners25-44": {
-    iri: "https://triply.cc/cbs/def/inwoners25-44",
+    //iri: "https://triply.cc/cbs/def/inwoners25-44",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -795,7 +795,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:inwoners45-64
   "https://triply.cc/cbs/def/inwoners45-64": {
-    iri: "https://triply.cc/cbs/def/inwoners45-64",
+    //iri: "https://triply.cc/cbs/def/inwoners45-64",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -816,7 +816,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:inwoners65+
   "https://triply.cc/cbs/def/inwoners65+": {
-    iri: "https://triply.cc/cbs/def/inwoners65+",
+    //iri: "https://triply.cc/cbs/def/inwoners65+",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -837,7 +837,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:kinderdagverblijfAfstand
   "https://triply.cc/cbs/def/kinderdagverblijfAfstand": {
-    iri: "https://triply.cc/cbs/def/kinderdagverblijfAfstand",
+    //iri: "https://triply.cc/cbs/def/kinderdagverblijfAfstand",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
@@ -858,7 +858,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:mannen
   "https://triply.cc/cbs/def/mannen": {
-    iri: "https://triply.cc/cbs/def/mannen",
+    //iri: "https://triply.cc/cbs/def/mannen",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -879,7 +879,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:mannen-procent
   "https://triply.cc/cbs/def/mannen-procent": {
-    iri: "https://triply.cc/cbs/def/mannen-procent",
+    //iri: "https://triply.cc/cbs/def/mannen-procent",
     facetType: "slider",
     label: "Percentage mannen (%)",
     getFacetValuesQuery: iri => { return `
@@ -906,7 +906,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:marokkanen
   "https://triply.cc/cbs/def/marokkanen": {
-    iri: "https://triply.cc/cbs/def/marokkanen",
+    //iri: "https://triply.cc/cbs/def/marokkanen",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -927,7 +927,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:meergezinswoningen
   "https://triply.cc/cbs/def/meergezinswoningen": {
-    iri: "https://triply.cc/cbs/def/meergezinswoningen",
+    //iri: "https://triply.cc/cbs/def/meergezinswoningen",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -948,7 +948,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:motortweewielers
   "https://triply.cc/cbs/def/motortweewielers": {
-    iri: "https://triply.cc/cbs/def/motortweewielers",
+    //iri: "https://triply.cc/cbs/def/motortweewielers",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -969,7 +969,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:nietwesterseAllochtonen
   "https://triply.cc/cbs/def/nietwesterseAllochtonen": {
-    iri: "https://triply.cc/cbs/def/nietwesterseAllochtonen",
+    //iri: "https://triply.cc/cbs/def/nietwesterseAllochtonen",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -990,7 +990,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:omgevingsadressendichtheid
   "https://triply.cc/cbs/def/omgevingsadressendichtheid": {
-    iri: "https://triply.cc/cbs/def/omgevingsadressendichtheid",
+    //iri: "https://triply.cc/cbs/def/omgevingsadressendichtheid",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -1011,7 +1011,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:ongehuwd
   "https://triply.cc/cbs/def/ongehuwd": {
-    iri: "https://triply.cc/cbs/def/ongehuwd",
+    //iri: "https://triply.cc/cbs/def/ongehuwd",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -1032,7 +1032,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:oppervlakte
   "https://triply.cc/cbs/def/oppervlakte": {
-    iri: "https://triply.cc/cbs/def/oppervlakte",
+    //iri: "https://triply.cc/cbs/def/oppervlakte",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -1053,7 +1053,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:oppervlakteLand
   "https://triply.cc/cbs/def/oppervlakteLand": {
-    iri: "https://triply.cc/cbs/def/oppervlakteLand",
+    //iri: "https://triply.cc/cbs/def/oppervlakteLand",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -1074,7 +1074,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:oppervlakteWater
   "https://triply.cc/cbs/def/oppervlakteWater": {
-    iri: "https://triply.cc/cbs/def/oppervlakteWater",
+    //iri: "https://triply.cc/cbs/def/oppervlakteWater",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -1095,7 +1095,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:personenautos
   "https://triply.cc/cbs/def/personenautos": {
-    iri: "https://triply.cc/cbs/def/personenautos",
+    //iri: "https://triply.cc/cbs/def/personenautos",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -1116,7 +1116,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:personenautos0-5
   "https://triply.cc/cbs/def/personenautos0-5": {
-    iri: "https://triply.cc/cbs/def/personenautos0-5",
+    //iri: "https://triply.cc/cbs/def/personenautos0-5",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -1137,7 +1137,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:personenautos6+
   "https://triply.cc/cbs/def/personenautos6+": {
-    iri: "https://triply.cc/cbs/def/personenautos6+",
+    //iri: "https://triply.cc/cbs/def/personenautos6+",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -1158,7 +1158,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:personenautosNaarOppervlakte
   "https://triply.cc/cbs/def/personenautosNaarOppervlakte": {
-    iri: "https://triply.cc/cbs/def/personenautosNaarOppervlakte",
+    //iri: "https://triply.cc/cbs/def/personenautosNaarOppervlakte",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -1179,7 +1179,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:personenautosPerHuishouden
   "https://triply.cc/cbs/def/personenautosPerHuishouden": {
-    iri: "https://triply.cc/cbs/def/personenautosPerHuishouden",
+    //iri: "https://triply.cc/cbs/def/personenautosPerHuishouden",
     facetType: "slider",
     label: "TODO",
     getFacetValuesQuery: iri => { return `
@@ -1201,7 +1201,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:stedelijkheid
   "https://triply.cc/cbs/def/stedelijkheid": {
-    iri: "https://triply.cc/cbs/def/stedelijkheid",
+    //iri: "https://triply.cc/cbs/def/stedelijkheid",
     facetType: "multiselect",
     getFacetValuesQuery: iri => { return `
       select distinct ?_value ?_valueLabel {
@@ -1217,7 +1217,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:treinstation
   "https://triply.cc/cbs/def/treinstation": {
-    iri: "https://triply.cc/cbs/def/treinstation",
+    //iri: "https://triply.cc/cbs/def/treinstation",
     facetType: "slider",
     label: "Afstand tot treinstation (km)",
     getFacetValuesQuery: iri => { return `
@@ -1239,7 +1239,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:vrouwen
   "https://triply.cc/cbs/def/vrouwen": {
-    iri: "https://triply.cc/cbs/def/vrouwen",
+    //iri: "https://triply.cc/cbs/def/vrouwen",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -1260,7 +1260,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:vrouwen-procent
   "https://triply.cc/cbs/def/vrouwen-procent": {
-    iri: "https://triply.cc/cbs/def/vrouwen-procent",
+    //iri: "https://triply.cc/cbs/def/vrouwen-procent",
     facetType: "slider",
     label: "Percentage vrouwen (%)",
     getFacetValuesQuery: iri => { return `
@@ -1287,7 +1287,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:water
   "https://triply.cc/cbs/def/water": {
-    iri: "https://triply.cc/cbs/def/water",
+    //iri: "https://triply.cc/cbs/def/water",
     facetType: "multiselect",
     getFacetValuesQuery: iri => { return `
       select ?_value ?_valueLabel {
@@ -1305,7 +1305,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // cbs:woz
   "https://triply.cc/cbs/def/woz": {
-    iri: "https://triply.cc/cbs/def/woz",
+    //iri: "https://triply.cc/cbs/def/woz",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -1326,7 +1326,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // iisg:area
   "https://iisg.amsterdam/def/area": {
-    iri: "https://iisg.amsterdam/def/area",
+    //iri: "https://iisg.amsterdam/def/area",
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -1345,7 +1345,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // iisg:cowEnd
   "https://iisg.amsterdam/def/cowEnd": {
-    iri: "https://iisg.amsterdam/def/cowEnd",
+    //iri: "https://iisg.amsterdam/def/cowEnd",
     facetType: "slider",
     label: "Eind datum",
     getFacetValuesQuery: iri => { return `
@@ -1367,7 +1367,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // iisg:cowStart
   "https://iisg.amsterdam/def/cowStart": {
-    iri: "https://iisg.amsterdam/def/cowStart",
+    //iri: "https://iisg.amsterdam/def/cowStart",
     facetType: "slider",
     label: "Begin datum",
     getFacetValuesQuery: iri => { return `
@@ -1389,7 +1389,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // rce:bouwjaar
   "https://cultureelerfgoed.nl/vocab/bouwjaar": {
-    iri: "https://cultureelerfgoed.nl/vocab/bouwjaar",
+    //iri: "https://cultureelerfgoed.nl/vocab/bouwjaar",
     facetType: "slider",
     getFacetValuesQuery: iri => {
       return `
@@ -1411,7 +1411,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // rce:monumentCode
   "https://cultureelerfgoed.nl/vocab/monumentCode": {
-    iri: "https://cultureelerfgoed.nl/vocab/monumentCode",
+    //iri: "https://cultureelerfgoed.nl/vocab/monumentCode",
     facetType: "multiselect",
     getFacetValuesQuery: iri => { return `
       select distinct ?_value ?_valueLabel {
@@ -1429,7 +1429,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   // rce:provincie
   "https://cultureelerfgoed.nl/vocab/provincie": {
-    iri: "https://cultureelerfgoed.nl/vocab/provincie",
+    //iri: "https://cultureelerfgoed.nl/vocab/provincie",
     label: "Provincie",
     facetType: "nlProvinces",
     facetValues: {
