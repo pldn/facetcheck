@@ -14,7 +14,7 @@ var prefixes = {
   //"country": "https://iisg.amsterdam/resource/country/",
   "dct": "http://purl.org/dc/terms/",
   //"departement": "http://www.gemeentegeschiedenis.nl/departement/",
-  //"foaf": "http://xmlns.com/foaf/0.1/",
+  "foaf": "http://xmlns.com/foaf/0.1/",
   //"functioneel-gebied": "http://brt.basisregistraties.overheid.nl/top10nl/id/functioneelgebied/",
   //"gemeente": "https://triply.cc/cbs/id/gemeente/",
   //"gemeente-naam": "http://www.gemeentegeschiedenis.nl/gemeentenaam/",
