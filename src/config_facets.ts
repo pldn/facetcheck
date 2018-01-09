@@ -104,18 +104,24 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetToQueryPatterns: (iri, values) => {
       if (values instanceof Array && values.length) {
         if (values.length === 2) {
-            //no need to apply pattern. should be either true or false
-            return;
+          //no need to apply pattern. should be either true or false
+          return;
         }
-        // console.log(values)
         const val = values[0]
         if (val.value === '1') {
-          return `?_r <${iri}> [] .`;
+          return `
+            graph cbs-graph:2016 {
+              ?_r ?p ?o .
+            }
+            ?_r geo:sfWithin/rdf:type cbs:Krimpgebied .`;
         } else if (val.value === '0') {
-          return [
-          `filter not exists { ?_r <${iri}> [] }`,
-          // `?_r <${iri}> ${toEntity(val)}`
-          ].join('} UNION {')
+          return `
+            graph cbs-graph:2016 {
+              ?_r ?p ?o .
+            }
+            filter not exists {
+              ?_r geo:sfWithin/rdf:type cbs:Krimpgebied .
+            }`;
         }
       }
     }
