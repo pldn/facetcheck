@@ -1,6 +1,6 @@
 import {ClassConfig} from 'facetConfUtils'
 const CLASSES: { [className: string]: ClassConfig } = {
-  // brt:Provincie
+  // brt:Gebouw
   "http://brt.basisregistraties.overheid.nl/def/top10nl#Gebouw": {
     default: true,
     iri: "http://brt.basisregistraties.overheid.nl/def/top10nl#Gebouw",
@@ -26,14 +26,13 @@ const CLASSES: { [className: string]: ClassConfig } = {
       return `construct { ${projectPattern} } { ${selectPattern} }`;
     }
   },
-  // cbs:Gemeente
-  "https://triply.cc/cbs/def/Gemeente": {
+  // cbs:Buurt
+  "https://triply.cc/cbs/def/Buurt": {
     default: false,
-    iri: "https://triply.cc/cbs/def/Gemeente",
-    label: "Gemeente",
+    iri: "https://triply.cc/cbs/def/Buurt",
+    label: "Buurt",
     facets: [
       "https://cultureelerfgoed.nl/vocab/provincie",
-      "krimpgebied",
       "https://triply.cc/cbs/def/stedelijkheid",
       "https://triply.cc/cbs/def/afstandCafé",
       //"https://triply.cc/cbs/def/antillianen",
@@ -67,7 +66,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
       //"https://triply.cc/cbs/def/huishoudens",
       "https://triply.cc/cbs/def/huishoudensMetKinderen",
       "https://triply.cc/cbs/def/huishoudensZonderKinderen",
-      "https://triply.cc/cbs/def/ijsbaan",
+      //"https://triply.cc/cbs/def/ijsbaan",
       "https://triply.cc/cbs/def/inwoners",
       "https://triply.cc/cbs/def/inwoners0-14",
       "https://triply.cc/cbs/def/inwoners15-24",
@@ -76,7 +75,6 @@ const CLASSES: { [className: string]: ClassConfig } = {
       "https://triply.cc/cbs/def/inwoners65+",
       "https://triply.cc/cbs/def/kinderdagverblijfAfstand",
       "https://triply.cc/cbs/def/mannen",
-      "https://triply.cc/cbs/def/mannen-procent",
       //"https://triply.cc/cbs/def/marokkanen",
       "https://triply.cc/cbs/def/meergezinswoningen",
       "https://triply.cc/cbs/def/motortweewielers",
@@ -106,7 +104,6 @@ const CLASSES: { [className: string]: ClassConfig } = {
       //"https://triply.cc/cbs/def/turken",
       //"https://triply.cc/cbs/def/verweduwd",
       "https://triply.cc/cbs/def/vrouwen",
-      "https://triply.cc/cbs/def/vrouwen-procent",
       //"https://triply.cc/cbs/def/warenhuisAfstand",
       //"https://triply.cc/cbs/def/water",
       //"https://triply.cc/cbs/def/westerseAllochtonen",
@@ -123,8 +120,8 @@ const CLASSES: { [className: string]: ClassConfig } = {
         ?p rdfs:label ?pLabel .
         ?o rdfs:label ?oLabel .`;
       var selectPattern = `
-        graph <https://triply.cc/cbs/graph/2016> {
-          <${iri}> ?p ?o .
+        graph cbs-graph:2016 {
+          <${iri}> ?p ?o
           optional { ?p rdfs:label ?pLabel . }
           optional { ?o rdfs:label ?oLabel . }
           optional {
@@ -229,7 +226,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
         ?p rdfs:label ?pLabel .
         ?o rdfs:label ?oLabel .`;
       var selectPattern = `
-        graph <https://triply.cc/cbs/graph/2016> {
+        graph cbs-graph:2016 {
           <${iri}> ?p ?o .
           optional { ?p rdfs:label ?pLabel . }
           optional { ?o rdfs:label ?oLabel . }
@@ -241,13 +238,14 @@ const CLASSES: { [className: string]: ClassConfig } = {
       return `construct { ${projectPattern} } { ${selectPattern} }`;
     }
   },
-  // cbs:Buurt
-  "https://triply.cc/cbs/def/Buurt": {
+  // cbs:Gemeente
+  "https://triply.cc/cbs/def/Gemeente": {
     default: false,
-    iri: "https://triply.cc/cbs/def/Buurt",
-    label: "Buurt",
+    iri: "https://triply.cc/cbs/def/Gemeente",
+    label: "Gemeente",
     facets: [
       "https://cultureelerfgoed.nl/vocab/provincie",
+      "krimpgebied",
       "https://triply.cc/cbs/def/stedelijkheid",
       "https://triply.cc/cbs/def/afstandCafé",
       //"https://triply.cc/cbs/def/antillianen",
@@ -281,7 +279,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
       //"https://triply.cc/cbs/def/huishoudens",
       "https://triply.cc/cbs/def/huishoudensMetKinderen",
       "https://triply.cc/cbs/def/huishoudensZonderKinderen",
-      //"https://triply.cc/cbs/def/ijsbaan",
+      "https://triply.cc/cbs/def/ijsbaan",
       "https://triply.cc/cbs/def/inwoners",
       "https://triply.cc/cbs/def/inwoners0-14",
       "https://triply.cc/cbs/def/inwoners15-24",
@@ -290,6 +288,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
       "https://triply.cc/cbs/def/inwoners65+",
       "https://triply.cc/cbs/def/kinderdagverblijfAfstand",
       "https://triply.cc/cbs/def/mannen",
+      "https://triply.cc/cbs/def/mannen-procent",
       //"https://triply.cc/cbs/def/marokkanen",
       "https://triply.cc/cbs/def/meergezinswoningen",
       "https://triply.cc/cbs/def/motortweewielers",
@@ -319,6 +318,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
       //"https://triply.cc/cbs/def/turken",
       //"https://triply.cc/cbs/def/verweduwd",
       "https://triply.cc/cbs/def/vrouwen",
+      "https://triply.cc/cbs/def/vrouwen-procent",
       //"https://triply.cc/cbs/def/warenhuisAfstand",
       //"https://triply.cc/cbs/def/water",
       //"https://triply.cc/cbs/def/westerseAllochtonen",
@@ -335,8 +335,8 @@ const CLASSES: { [className: string]: ClassConfig } = {
         ?p rdfs:label ?pLabel .
         ?o rdfs:label ?oLabel .`;
       var selectPattern = `
-        graph <https://triply.cc/cbs/graph/2016> {
-          <${iri}> ?p ?o
+        graph cbs-graph:2016 {
+          <${iri}> ?p ?o .
           optional { ?p rdfs:label ?pLabel . }
           optional { ?o rdfs:label ?oLabel . }
           optional {

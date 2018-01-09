@@ -83,13 +83,6 @@ object of facet configurations.  The key of a facet configuration is
 the facet ID that is referenced from the class configuration (see
 above).  A facet configuration contains the following properties:
 
-  - `iri: string`
-
-     The IRI denoting the facet.  In the common case of a
-     property-facet mapping, this is the IRI that denotes the
-     property.  For example `ex:age` for a slider widget where people
-     can be filtered based on their age.
-
   - `label: string`
 
     Optional label that is used to name the facet in the UI.  If no
