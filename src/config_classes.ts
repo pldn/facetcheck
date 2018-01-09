@@ -4,7 +4,6 @@ const CLASSES: { [className: string]: ClassConfig } = {
   "http://brt.basisregistraties.overheid.nl/def/top10nl#Gebouw": {
     default: true,
     iri: "http://brt.basisregistraties.overheid.nl/def/top10nl#Gebouw",
-    classToQueryPattern: (iri:string) => `GRAPH <http://somegraphthatdoesntexist> {?_r rdf:type <${iri}>}`,
     label: "Gebouw",
     facets: [
       "gebouwsoort",
@@ -114,6 +113,10 @@ const CLASSES: { [className: string]: ClassConfig } = {
       //"https://triply.cc/cbs/def/zonnebank",
       //"https://triply.cc/cbs/def/zwembad"
     ],
+    classToQueryPattern: (iri:string) => `
+      graph cbs-graph:2016 {
+        ?_r rdf:type <${iri}> .
+      }`,
     resourceDescriptionQuery: function(iri: string) {
       var projectPattern = `
         <${iri}> ?p ?o .
