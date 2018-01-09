@@ -228,7 +228,16 @@ export function facetsToQuery(state: GlobalState) {
    * Add classes
    */
   const selectedClass = getSelectedClass(state.facets);
-  sparqlBuilder.hasClasses(selectedClass);
+  const classConf = CLASSES[selectedClass];
+  if (!classConf) {
+    throw new Error("Could not find class config for " + selectedClass);
+  }
+  if (classConf.classToQueryPattern) {
+    sparqlBuilder.addQueryPatterns([SparqlBuilder.getQueryPattern('{ ' + classConf.classToQueryPattern(selectedClass) + '}')])
+  } else {
+    sparqlBuilder.hasClasses(selectedClass);
+  }
+
 
   /**
    * Get facets we might need to integrate in this query

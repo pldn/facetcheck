@@ -4,6 +4,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
   "http://brt.basisregistraties.overheid.nl/def/top10nl#Gebouw": {
     default: true,
     iri: "http://brt.basisregistraties.overheid.nl/def/top10nl#Gebouw",
+    classToQueryPattern: (iri:string) => `GRAPH <http://somegraphthatdoesntexist> {?_r rdf:type <${iri}>}`,
     label: "Gebouw",
     facets: [
       "gebouwsoort",
