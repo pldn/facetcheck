@@ -4,35 +4,92 @@ const FACETS: { [property: string]: FacetConfig } = {
   "gebouwsoort": {
     label: "Soort gebouw",
     facetType: "multiselect",
-    getFacetValuesQuery: iri => { return `
-      select distinct ?_value ?_valueLabel {
-        ?_r a ?_value .
-        ?_value rdfs:subClassOf brt:Gebouw ;
-                rdfs:label ?_valueLabel .
+    facetToQueryPatterns: (iri, values) => {
+      if (values instanceof Array && values.length) {
+        return values.map(v => `?_r a <${v.value}> .`).join('} union {')
       }
-      order by asc(?_valueLabel)`;
     },
-    facetToQueryPatterns: (iri, values) => {
-      if (values instanceof Array && values.length) {
-        return values.map(v => `?_r a <${v.value}> .`).join('} union {')
-      }
-    }
-  },
-  /* Example of explicit value list:
-  "gebouwsoort": {
-    label: "Soort gebouw",
-    facetType: "multiselect",
     facetValues: [
-      {label: "Water", value: "bag:Water"},
-      {label: "Weg", value: "bag:Weg"}
-   ],
-    facetToQueryPatterns: (iri, values) => {
-      if (values instanceof Array && values.length) {
-        return values.map(v => `?_r a <${v.value}> .`).join('} union {')
-      }
-    }
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Bezoekerscentrum", "label": "Bezoekerscentrum"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Boortoren", "label": "Boortoren"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Brandtoren", "label": "Brandtoren"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Brandweerkazerne", "label": "Brandweerkazerne"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Bunker", "label": "Bunker"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Crematorium", "label": "Crematorium"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Dok", "label": "Dok"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Elektriciteitscentrale", "label": "Elektriciteitscentrale"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Fabriek", "label": "Fabriek"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Fort", "label": "Fort"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Gemaal", "label": "Gemaal"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Gemeentehuis", "label": "Gemeentehuis"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Gevangenis", "label": "Gevangenis"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Hotel", "label": "Hotel"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Huizenblok", "label": "Huizenblok"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Kapel", "label": "Kapel"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#KasWarenhuis", "label": "KasWarenhuis"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Kasteel", "label": "Kasteel"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Kerk", "label": "Kerk"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#KerncentraleKernreactor", "label": "KerncentraleKernreactor"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#KliniekInrichtingSanatorium", "label": "KliniekInrichtingSanatorium"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Klokkentoren", "label": "Klokkentoren"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#KloosterAbdij", "label": "KloosterAbdij"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Koeltoren", "label": "Koeltoren"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Koepel", "label": "Koepel"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Kunstijsbaan", "label": "Kunstijsbaan"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Lichttoren", "label": "Lichttoren"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Luchtwachttoren", "label": "Luchtwachttoren"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Manege", "label": "Manege"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#MarkantGebouw", "label": "MarkantGebouw"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#MilitairGebouw", "label": "MilitairGebouw"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Moskee", "label": "Moskee"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Museum", "label": "Museum"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#OverigReligieusGebouw", "label": "OverigReligieusGebouw"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Overig_gebouw", "label": "Overig_gebouw"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#ParkeerdakParkeerdekParkeergarage", "label": "ParkeerdakParkeerdekParkeergarage"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Peilmeetstation", "label": "Peilmeetstation"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Politiebureau", "label": "Politiebureau"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Pompstation", "label": "Pompstation"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Postkantoor", "label": "Postkantoor"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#PsychiatrischZiekenhuisPsychiatrischCentrum", "label": "PsychiatrischZiekenhuisPsychiatrischCentrum"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Radarpost", "label": "Radarpost"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Radartoren", "label": "Radartoren"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#RadiotorenTelevisietoren", "label": "RadiotorenTelevisietoren"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Recreatiecentrum", "label": "Recreatiecentrum"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Reddingboothuisje", "label": "Reddingboothuisje"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Remise", "label": "Remise"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Rune", "label": "Rune"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Schaapskooi", "label": "Schaapskooi"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#School", "label": "School"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Schoorsteen", "label": "Schoorsteen"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Silo", "label": "Silo"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Sporthal", "label": "Sporthal"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Stadion", "label": "Stadion"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#StadskantoorHulpsecretarie", "label": "StadskantoorHulpsecretarie"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Stationsgebouw", "label": "Stationsgebouw"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Synagoge", "label": "Synagoge"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Tank", "label": "Tank"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Tankstation", "label": "Tankstation"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Telecommunicatietoren", "label": "Telecommunicatietoren"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Tol_gebouw", "label": "Tol_gebouw"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Toren", "label": "Toren"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Transformatorstation_gebouw", "label": "Transformatorstation_gebouw"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Uitzichttoren", "label": "Uitzichttoren"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Universiteit", "label": "Universiteit"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Veiling", "label": "Veiling"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Verkeerstoren", "label": "Verkeerstoren"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Vuurtoren", "label": "Vuurtoren"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Waterradmolen", "label": "Waterradmolen"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Watertoren", "label": "Watertoren"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Werf_gebouw", "label": "Werf_gebouw"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Windmolen", "label": "Windmolen"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#WindmolenKorenmolen", "label": "WindmolenKorenmolen"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#WindmolenWatermolen", "label": "WindmolenWatermolen"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Windturbine", "label": "Windturbine"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Zendtoren", "label": "Zendtoren"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Ziekenhuis", "label": "Ziekenhuis"},
+      {"value": "http://brt.basisregistraties.overheid.nl/def/top10nl#Zwembad_gebouw", "label": "Zwembad_gebouw"}
+    ],
   },
-  */
   "krimpgebied": {
     facetType: "multiselect",
     label: "Krimpgebied",
