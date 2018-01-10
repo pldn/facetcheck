@@ -917,8 +917,8 @@ const FACETS: { [property: string]: FacetConfig } = {
       select distinct ?_value ?_valueLabel {
         graph cbs-graph:2016 {
           ?_r <${iri}> ?_value .
-         ?_value rdfs:label ?_valueLabel .
         }
+        ?_value rdfs:label ?_valueLabel .
       }`;
     },
     facetToQueryPatterns: (iri, values) => {
