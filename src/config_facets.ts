@@ -3,7 +3,7 @@ import * as _ from 'lodash'
 const FACETS: { [property: string]: FacetConfig } = {
   "https://triply.cc/energie/def/aardgasverbruikKoopwoning": {
     facetType: "slider",
-    label: "Aardgasverbruik koopwoning",
+    label: "Aardgasverbruik koopw.",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
         graph <https://triply.cc/energie/graph/2015> {
@@ -31,7 +31,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   "https://triply.cc/energie/def/elektriciteitsverbruikKoopwoning": {
     facetType: "slider",
-    label: "Elektriciteitsverbruik koopwoning",
+    label: "Elektriciteitsverbruik koopw.",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
         graph <https://triply.cc/energie/graph/2015> {
@@ -59,7 +59,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   "https://triply.cc/energie/def/huurwoningen": {
     facetType: "slider",
-    label: "Aantal huurwoningen",
+    label: "Huurwoningen (%)",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
         graph <https://triply.cc/energie/graph/2015> {
@@ -87,7 +87,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   "https://triply.cc/energie/def/koopwoningen": {
     facetType: "slider",
-    label: "Aantal koopwoningen",
+    label: "Koopwoningen (%)",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
         graph <https://triply.cc/energie/graph/2015> {
@@ -115,7 +115,7 @@ const FACETS: { [property: string]: FacetConfig } = {
   },
   "https://triply.cc/energie/def/reëleBesparingspotentieAlleMaatregelen": {
     facetType: "slider",
-    label: "Reële besparingspotentie (€/jaar)",
+    label: "Reële energiebesp. (€/jaar)",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
         graph <https://triply.cc/energie/graph/2015> {
