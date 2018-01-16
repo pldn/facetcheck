@@ -2,7 +2,7 @@ import {ClassConfig} from 'facetConfUtils'
 const CLASSES: { [className: string]: ClassConfig } = {
   // brt:Gebouw
   "http://brt.basisregistraties.overheid.nl/def/top10nl#Gebouw": {
-    default: true,
+    default: false,
     iri: "http://brt.basisregistraties.overheid.nl/def/top10nl#Gebouw",
     label: "Gebouw",
     facets: [
@@ -28,10 +28,15 @@ const CLASSES: { [className: string]: ClassConfig } = {
   },
   // cbs:Buurt
   "https://triply.cc/cbs/def/Buurt": {
-    default: false,
+    default: true,
     iri: "https://triply.cc/cbs/def/Buurt",
     label: "Buurt",
     facets: [
+      "https://triply.cc/energie/def/aardgasverbruikKoopwoning",
+      "https://triply.cc/energie/def/elektriciteitsverbruikKoopwoning",
+      "https://triply.cc/energie/def/huurwoningen",
+      "https://triply.cc/energie/def/koopwoningen",
+      "https://triply.cc/energie/def/reëleBesparingspotentieAlleMaatregelen",
       "https://cultureelerfgoed.nl/vocab/provincie",
       "https://triply.cc/cbs/def/stedelijkheid",
       "https://triply.cc/cbs/def/afstandCafé",
@@ -68,7 +73,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
       "https://triply.cc/cbs/def/woz"
     ],
     classToQueryPattern: (iri:string) => `
-      graph cbs-graph:2016 {
+      graph cbs-graph:2015 {
         ?_r rdf:type <${iri}> .
       }`,
     resourceDescriptionQuery: function(iri: string) {
@@ -78,13 +83,21 @@ const CLASSES: { [className: string]: ClassConfig } = {
         ?p rdfs:label ?pLabel .
         ?o rdfs:label ?oLabel .`;
       var selectPattern = `
-        graph cbs-graph:2016 {
-          <${iri}> ?p ?o
-          optional { ?p rdfs:label ?pLabel . }
-          optional { ?o rdfs:label ?oLabel . }
-          optional {
-            <${iri}> geo:hasGeometry ?geo .
-            ?geo geo:asWKT ?wkt .
+        {
+          graph cbs-graph:2015 {
+            <${iri}> ?p ?o
+            optional { ?p rdfs:label ?pLabel . }
+            optional { ?o rdfs:label ?oLabel . }
+            optional {
+              <${iri}> geo:hasGeometry ?geo .
+              ?geo geo:asWKT ?wkt .
+            }
+          }
+        } union {
+          graph <https://triply.cc/energie/graph/2015> {
+            <${iri}> ?p ?o
+            optional { ?p rdfs:label ?pLabel . }
+            optional { ?o rdfs:label ?oLabel . }
           }
         }`;
       return `construct { ${projectPattern} } { ${selectPattern} }`;
@@ -140,7 +153,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
         ?p rdfs:label ?pLabel .
         ?o rdfs:label ?oLabel .`;
       var selectPattern = `
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           <${iri}> ?p ?o .
           optional { ?p rdfs:label ?pLabel . }
           optional { ?o rdfs:label ?oLabel . }
@@ -204,7 +217,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
         ?p rdfs:label ?pLabel .
         ?o rdfs:label ?oLabel .`;
       var selectPattern = `
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           <${iri}> ?p ?o .
           optional { ?p rdfs:label ?pLabel . }
           optional { ?o rdfs:label ?oLabel . }

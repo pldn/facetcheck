@@ -1,6 +1,146 @@
 import {FacetConfig,toEntity} from 'facetConfUtils'
 import * as _ from 'lodash'
 const FACETS: { [property: string]: FacetConfig } = {
+  "https://triply.cc/energie/def/aardgasverbruikKoopwoning": {
+    facetType: "slider",
+    label: "Aardgasverbruik koopwoning",
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        graph <https://triply.cc/energie/graph/2015> {
+          ?_r <${iri}> ?value .
+        }
+      }`;
+    },
+    facetToQueryPatterns: (iri,values) => {
+      if (Array.isArray(values)) {
+        return null;
+      }
+      if (_.isFinite(values.min) || _.isFinite(values.max)) {
+        var pattern = `graph <https://triply.cc/energie/graph/2015> {
+          ?_r <${iri}> ?count1 .`;
+        if (_.isFinite(values.min)) {
+          pattern += `filter(?count1 >= ${values.min}) `;
+        }
+        if (_.isFinite(values.max)) {
+          pattern += `filter(?count1 <= ${values.max}) `;
+        }
+        pattern += `}`;
+        return pattern;
+      }
+    }
+  },
+  "https://triply.cc/energie/def/elektriciteitsverbruikKoopwoning": {
+    facetType: "slider",
+    label: "Elektriciteitsverbruik koopwoning",
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        graph <https://triply.cc/energie/graph/2015> {
+          ?_r <${iri}> ?value .
+        }
+      }`;
+    },
+    facetToQueryPatterns: (iri,values) => {
+      if (Array.isArray(values)) {
+        return null;
+      }
+      if (_.isFinite(values.min) || _.isFinite(values.max)) {
+        var pattern = `graph <https://triply.cc/energie/graph/2015> {
+          ?_r <${iri}> ?count2 .`;
+        if (_.isFinite(values.min)) {
+          pattern += `filter(?count2 >= ${values.min}) `;
+        }
+        if (_.isFinite(values.max)) {
+          pattern += `filter(?count2 <= ${values.max}) `;
+        }
+        pattern += `}`;
+        return pattern;
+      }
+    }
+  },
+  "https://triply.cc/energie/def/huurwoningen": {
+    facetType: "slider",
+    label: "Aantal huurwoningen",
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        graph <https://triply.cc/energie/graph/2015> {
+          ?_r <${iri}> ?value .
+        }
+      }`;
+    },
+    facetToQueryPatterns: (iri,values) => {
+      if (Array.isArray(values)) {
+        return null;
+      }
+      if (_.isFinite(values.min) || _.isFinite(values.max)) {
+        var pattern = `graph <https://triply.cc/energie/graph/2015> {
+          ?_r <${iri}> ?count3 .`;
+        if (_.isFinite(values.min)) {
+          pattern += `filter(?count3 >= ${values.min}) `;
+        }
+        if (_.isFinite(values.max)) {
+          pattern += `filter(?count3 <= ${values.max}) `;
+        }
+        pattern += `}`;
+        return pattern;
+      }
+    }
+  },
+  "https://triply.cc/energie/def/koopwoningen": {
+    facetType: "slider",
+    label: "Aantal koopwoningen",
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        graph <https://triply.cc/energie/graph/2015> {
+          ?_r <${iri}> ?value .
+        }
+      }`;
+    },
+    facetToQueryPatterns: (iri,values) => {
+      if (Array.isArray(values)) {
+        return null;
+      }
+      if (_.isFinite(values.min) || _.isFinite(values.max)) {
+        var pattern = `graph <https://triply.cc/energie/graph/2015> {
+          ?_r <${iri}> ?count4 .`;
+        if (_.isFinite(values.min)) {
+          pattern += `filter(?count4 >= ${values.min}) `;
+        }
+        if (_.isFinite(values.max)) {
+          pattern += `filter(?count4 <= ${values.max}) `;
+        }
+        pattern += `}`;
+        return pattern;
+      }
+    }
+  },
+  "https://triply.cc/energie/def/reëleBesparingspotentieAlleMaatregelen": {
+    facetType: "slider",
+    label: "Reële besparingspotentie (€/jaar)",
+    getFacetValuesQuery: iri => { return `
+      select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
+        graph <https://triply.cc/energie/graph/2015> {
+          ?_r <${iri}> ?value .
+        }
+      }`;
+    },
+    facetToQueryPatterns: (iri,values) => {
+      if (Array.isArray(values)) {
+        return null;
+      }
+      if (_.isFinite(values.min) || _.isFinite(values.max)) {
+        var pattern = `graph <https://triply.cc/energie/graph/2015> {
+          ?_r <${iri}> ?count5 .`;
+        if (_.isFinite(values.min)) {
+          pattern += `filter(?count5 >= ${values.min}) `;
+        }
+        if (_.isFinite(values.max)) {
+          pattern += `filter(?count5 <= ${values.max}) `;
+        }
+        pattern += `}`;
+        return pattern;
+      }
+    }
+  },
   "gebouwsoort": {
     label: "Soort gebouw",
     facetType: "multiselect",
@@ -110,13 +250,13 @@ const FACETS: { [property: string]: FacetConfig } = {
         const val = values[0]
         if (val.value === '1') {
           return `
-            graph cbs-graph:2016 {
+            graph cbs-graph:2015 {
               ?_r ?p ?o .
             }
             ?_r geo:sfWithin/rdf:type cbs:Krimpgebied .`;
         } else if (val.value === '0') {
           return `
-            graph cbs-graph:2016 {
+            graph cbs-graph:2015 {
               ?_r ?p ?o .
             }
             filter not exists {
@@ -129,17 +269,16 @@ const FACETS: { [property: string]: FacetConfig } = {
   // brt:status
   "http://brt.basisregistraties.overheid.nl/def/top10nl#status": {
     facetType: "multiselect",
-    getFacetValuesQuery: iri => { return `
-      select distinct ?_value ?_valueLabel {
-        ?_r <${iri}> ?_value .
-        ?_value rdfs:label ?_valueLabel .
-      }`;
-    },
     facetToQueryPatterns: (iri, values) => {
       if (values instanceof Array && values.length) {
-        return values.map(v => `?_r <${iri}> ${toEntity(v)} .`).join('} union {')
+        return values.map(v => `?_r a <${v.value}> .`).join('} union {')
       }
-    }
+    },
+    facetValues: [
+      {"value": "http://brt.basisregistraties.overheid.nl/id/begrip/BuitenGebruik", "label": "Buiten gebruik"},
+      {"value": "http://brt.basisregistraties.overheid.nl/id/begrip/InGebruik", "label": "In gebruik"},
+      {"value": "http://brt.basisregistraties.overheid.nl/id/begrip/InUitvoering", "label": "In uitvoering"}
+    ]
   },
   // cbs:afstandCafé
   "https://triply.cc/cbs/def/afstandCafé": {
@@ -147,7 +286,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     label: "Afstand tot café (km)",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?afstand .
           bind(xsd:float(?afstand) as ?value)
         }
@@ -158,7 +297,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count10 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count10 .`;
         if (_.isFinite(values.min)) {
           pattern += `filter(xsd:float(?count10) >= ${values.min}) `;
         }
@@ -176,7 +315,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     label: "Afstand tot attractie (km)",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?afstand .
            bind(xsd:float(?afstand) as ?value)
         }
@@ -187,7 +326,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count20 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count20 .`;
         if (_.isFinite(values.min)) {
           pattern += `filter(xsd:float(?count20) >= ${values.min}) `;
         }
@@ -205,7 +344,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     label: "Bedrijven",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -215,7 +354,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count30 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count30 .`;
         if (_.isFinite(values.min)) {
           pattern += `filter(?count30 >= ${values.min}) `;
         }
@@ -232,7 +371,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -242,7 +381,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count40 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count40 .`;
         if (_.isFinite(values.min)) {
           pattern += `filter(?count40 >= ${values.min}) `;
         }
@@ -259,7 +398,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -269,7 +408,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count50 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count50 .`;
         if (_.isFinite(values.min)) {
           pattern += `filter(?count50 >= ${values.min}) `;
         }
@@ -286,7 +425,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -296,7 +435,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count60 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count60 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count60 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count60 <= ${values.max}) `;
         pattern += `}`;
@@ -309,7 +448,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -319,7 +458,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count70 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count70 .`;
         if (_.isFinite(values.min)) pattern += `filter(xsd:float(?count70) >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(xsd:float(?count70) <= ${values.max}) `;
         pattern += `}`;
@@ -332,7 +471,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -342,7 +481,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count80 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count80 .`;
         if (_.isFinite(values.min)) pattern += `filter(xsd:float(?count80) >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(xsd:float(?count80) <= ${values.max}) `;
         pattern += `}`;
@@ -355,7 +494,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -365,7 +504,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count90 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count90 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count90 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count90 <= ${values.max}) `;
         pattern += `}`;
@@ -378,7 +517,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -388,7 +527,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count100 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count100 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count100 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count100 <= ${values.max}) `;
         pattern += `}`;
@@ -401,7 +540,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -411,7 +550,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count110 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count110 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count110 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count110 <= ${values.max}) `;
         pattern += `}`;
@@ -424,7 +563,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -434,7 +573,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count120 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count120 .`;
         if (_.isFinite(values.min)) pattern += `filter(xsd:float(?count120) >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(xsd:float(?count120) <= ${values.max}) `;
         pattern += `}`;
@@ -447,7 +586,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -457,7 +596,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count130 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count130 .`;
         if (_.isFinite(values.min)) pattern += `filter(xsd:float(?count130) >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(xsd:float(?count130) <= ${values.max}) `;
         pattern += `}`;
@@ -470,7 +609,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -480,7 +619,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count140 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count140 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count140 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count140 <= ${values.max}) `;
         pattern += `}`;
@@ -493,7 +632,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -503,7 +642,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-grahp:2016 { ?_r <${iri}> ?count150 .`;
+        var pattern = `graph cbs-grahp:2015 { ?_r <${iri}> ?count150 .`;
         if (_.isFinite(values.min)) pattern += `filter(xsd:float(?count150) >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(xsd:float(?count150) <= ${values.max}) `;
         pattern += `}`;
@@ -516,7 +655,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -526,7 +665,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count160 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count160 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count160 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count160 <= ${values.max}) `;
         pattern += `}`;
@@ -539,7 +678,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -549,7 +688,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count170 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count170 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count170 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count170 <= ${values.max}) `;
         pattern += `}`;
@@ -562,7 +701,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -572,7 +711,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count180 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count180 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count180 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count180 <= ${values.max}) `;
         pattern += `}`;
@@ -585,7 +724,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -595,7 +734,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count190 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count190 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count190 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count190 <= ${values.max}) `;
         pattern += `}`;
@@ -608,7 +747,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -618,7 +757,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count200 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count200 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count200 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count200 <= ${values.max}) `;
         pattern += `}`;
@@ -639,7 +778,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count210 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count210 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count210 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count210 <= ${values.max}) `;
         pattern += `}`;
@@ -652,7 +791,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -662,7 +801,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count220 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count220 .`;
         if (_.isFinite(values.min)) pattern += `filter(xsd:float(?count220) >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(xsd:float(?count220) <= ${values.max}) `;
         pattern += `}`;
@@ -675,7 +814,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -685,7 +824,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (values.min || values.max) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count230 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count230 .`;
         if (values.min) pattern += `filter(?count230 >= ${values.min}) `;
         if (values.max) pattern += `filter(?count230 <= ${values.max}) `;
         pattern += `}`;
@@ -699,7 +838,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     label: "Percentage mannen (%)",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r cbs:mannen ?mannen ;
               cbs:inwoners ?inwoners .
           filter(?mannen > 5.0e1)
@@ -713,7 +852,7 @@ const FACETS: { [property: string]: FacetConfig } = {
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
         var pattern = `
-          graph cbs-graph:2016 {
+          graph cbs-graph:2015 {
             ?_r cbs:mannen ?mannen240 ;
                 cbs:inwoners ?inwoners240 .
             filter(xsd:double(?mannen240) > 5.0e1)
@@ -731,7 +870,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -741,7 +880,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count250 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count250 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count250 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count250 <= ${values.max}) `;
         pattern += `}`;
@@ -754,7 +893,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -764,7 +903,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count260 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count260 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count260 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count260 <= ${values.max}) `;
         pattern += `}`;
@@ -777,7 +916,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -787,7 +926,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count270 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count270 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count270 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count270 <= ${values.max}) `;
         pattern += `}`;
@@ -800,7 +939,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -810,7 +949,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count280 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count280 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count280 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count280 <= ${values.max}) `;
         pattern += `}`;
@@ -823,7 +962,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -833,7 +972,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count290 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count290 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count290 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count290 <= ${values.max}) `;
         pattern += `}`;
@@ -846,7 +985,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -856,7 +995,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count300 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count300 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count300 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count300 <= ${values.max}) `;
         pattern += `}`;
@@ -869,7 +1008,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -879,7 +1018,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count310 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count310 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count310 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count310 <= ${values.max}) `;
         pattern += `}`;
@@ -892,7 +1031,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -902,7 +1041,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count320 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count320 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count320 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count320 <= ${values.max}) `;
         pattern += `}`;
@@ -915,7 +1054,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "multiselect",
     getFacetValuesQuery: iri => { return `
       select distinct ?_value ?_valueLabel {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?_value .
         }
         ?_value rdfs:label ?_valueLabel .
@@ -923,7 +1062,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     },
     facetToQueryPatterns: (iri, values) => {
       if (values instanceof Array && values.length) {
-        return values.map(v => `graph cbs-graph:2016 { ?_r <${iri}> ${toEntity(v)} . }`).join('} union {')
+        return values.map(v => `graph cbs-graph:2015 { ?_r <${iri}> ${toEntity(v)} . }`).join('} union {')
       }
     }
   },
@@ -941,7 +1080,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count330 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count330 .`;
         if (_.isFinite(values.min)) pattern += `filter(xsd:float(?count330) >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(xsd:float(?count330) <= ${values.max}) `;
         pattern += `}`;
@@ -962,7 +1101,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count340 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count340 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count340 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count340 <= ${values.max}) `;
         pattern += `}`;
@@ -976,7 +1115,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     label: "Percentage vrouwen (%)",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r cbs:vrouwen ?vrouwen ;
             cbs:inwoners ?inwoners .
           filter(?vrouwen > 5.0e1)
@@ -990,7 +1129,7 @@ const FACETS: { [property: string]: FacetConfig } = {
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
         var pattern = `
-          graph cbs-graph:2016 {
+          graph cbs-graph:2015 {
             ?_r cbs:vrouwen ?vrouwen350 ;
                 cbs:inwoners ?inwoners350 .
             filter(xsd:double(?vrouwen350) > 5.0e1)
@@ -1007,7 +1146,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph cbs-graph:2016 {
+        graph cbs-graph:2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -1017,7 +1156,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph cbs-graph:2016 { ?_r <${iri}> ?count360 .`;
+        var pattern = `graph cbs-graph:2015 { ?_r <${iri}> ?count360 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count360 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count360 <= ${values.max}) `;
         pattern += `}`;
