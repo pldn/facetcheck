@@ -271,7 +271,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     facetType: "multiselect",
     facetToQueryPatterns: (iri, values) => {
       if (values instanceof Array && values.length) {
-        return values.map(v => `?_r a <${v.value}> .`).join('} union {')
+        return values.map(v => `?_r brt:status <${v.value}> .`).join('} union {')
       }
     },
     facetValues: [
