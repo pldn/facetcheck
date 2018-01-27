@@ -73,7 +73,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
       "https://triply.cc/cbs/def/woz"
     ],
     classToQueryPattern: (iri:string) => `
-      graph cbs-graph:2015 {
+      graph graph:CBS-2015 {
         ?_r rdf:type <${iri}> .
       }`,
     resourceDescriptionQuery: function(iri: string) {
@@ -84,7 +84,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
         ?o rdfs:label ?oLabel .`;
       var selectPattern = `
         {
-          graph cbs-graph:2015 {
+          graph graph:CBS-2015 {
             <${iri}> ?p ?o
             optional { ?p rdfs:label ?pLabel . }
             optional { ?o rdfs:label ?oLabel . }
@@ -94,7 +94,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
             }
           }
         } union {
-          graph <https://triply.cc/energie/graph/2015> {
+          graph graph:CBS-energie-2015 {
             <${iri}> ?p ?o
             optional { ?p rdfs:label ?pLabel . }
             optional { ?o rdfs:label ?oLabel . }
@@ -153,7 +153,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
         ?p rdfs:label ?pLabel .
         ?o rdfs:label ?oLabel .`;
       var selectPattern = `
-        graph cbs-graph:2015 {
+        graph graph:CBS-2015 {
           <${iri}> ?p ?o .
           optional { ?p rdfs:label ?pLabel . }
           optional { ?o rdfs:label ?oLabel . }
@@ -217,7 +217,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
         ?p rdfs:label ?pLabel .
         ?o rdfs:label ?oLabel .`;
       var selectPattern = `
-        graph cbs-graph:2015 {
+        graph graph:CBS-2015 {
           <${iri}> ?p ?o .
           optional { ?p rdfs:label ?pLabel . }
           optional { ?o rdfs:label ?oLabel . }
