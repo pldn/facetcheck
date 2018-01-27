@@ -1,8 +1,8 @@
 import * as _ from 'lodash'
 var prefixes = {
   "brt": "http://brt.basisregistraties.overheid.nl/def/top10nl#",
-  "buurt": "https://triply.cc/cbs/id/buurt/",
-  "cbs": "https://triply.cc/cbs/def/",
+  "buurt": "https://krr.triply.cc/Kadaster/cbs/id/buurt/",
+  "cbs": "https://krr.triply.cc/Kadaster/cbs/def/",
   "dct": "http://purl.org/dc/terms/",
   "foaf": "http://xmlns.com/foaf/0.1/",
   "geo": "http://www.opengis.net/ont/geosparql#",
@@ -10,8 +10,7 @@ var prefixes = {
   "rce": "https://cultureelerfgoed.nl/vocab/",
   "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
   "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-  "registratief-gebied": "http://brt.basisregistraties.overheid.nl/top10nl/id/registratiefgebied/",
-  "wijk": "https://triply.cc/cbs/id/wijk/",
+  "wijk": "https://krr.triply.cc/Kadaster/cbs/id/wijk/",
   "xsd": "http://www.w3.org/2001/XMLSchema#"
 }
 

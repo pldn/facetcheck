@@ -1,12 +1,12 @@
 import {FacetConfig,toEntity} from 'facetConfUtils'
 import * as _ from 'lodash'
 const FACETS: { [property: string]: FacetConfig } = {
-  "https://triply.cc/energie/def/aardgasverbruikKoopwoning": {
+  "https://krr.triply.cc/Kadaster/cbs/def/aardgasverbruikKoopwoning": {
     facetType: "slider",
     label: "Aardgasverbruik koopw.",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-energie-2015 {
+        graph graph:cbs-energie-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -16,7 +16,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-energie-2015 {
+        var pattern = `graph graph:cbs-energie-2015 {
           ?_r <${iri}> ?count1 .`;
         if (_.isFinite(values.min)) {
           pattern += `filter(?count1 >= ${values.min}) `;
@@ -29,12 +29,12 @@ const FACETS: { [property: string]: FacetConfig } = {
       }
     }
   },
-  "https://triply.cc/energie/def/elektriciteitsverbruikKoopwoning": {
+  "https://krr.triply.cc/Kadaster/cbs/def/elektriciteitsverbruikKoopwoning": {
     facetType: "slider",
     label: "Elektriciteitsverbruik koopw.",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-energie-2015 {
+        graph graph:cbs-energie-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -44,7 +44,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-energie-2015 {
+        var pattern = `graph graph:cbs-energie-2015 {
           ?_r <${iri}> ?count2 .`;
         if (_.isFinite(values.min)) {
           pattern += `filter(?count2 >= ${values.min}) `;
@@ -57,12 +57,12 @@ const FACETS: { [property: string]: FacetConfig } = {
       }
     }
   },
-  "https://triply.cc/energie/def/huurwoningen": {
+  "https://krr.triply.cc/Kadaster/cbs/def/huurwoningen": {
     facetType: "slider",
     label: "Huurwoningen (%)",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-energie-2015 {
+        graph graph:cbs-energie-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -72,7 +72,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-energie-2015 {
+        var pattern = `graph graph:cbs-energie-2015 {
           ?_r <${iri}> ?count3 .`;
         if (_.isFinite(values.min)) {
           pattern += `filter(?count3 >= ${values.min}) `;
@@ -85,12 +85,12 @@ const FACETS: { [property: string]: FacetConfig } = {
       }
     }
   },
-  "https://triply.cc/energie/def/koopwoningen": {
+  "https://krr.triply.cc/Kadaster/cbs/def/koopwoningen": {
     facetType: "slider",
     label: "Koopwoningen (%)",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-energie-2015 {
+        graph graph:cbs-energie-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -100,7 +100,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-energie-2015 {
+        var pattern = `graph graph:cbs-energie-2015 {
           ?_r <${iri}> ?count4 .`;
         if (_.isFinite(values.min)) {
           pattern += `filter(?count4 >= ${values.min}) `;
@@ -113,12 +113,12 @@ const FACETS: { [property: string]: FacetConfig } = {
       }
     }
   },
-  "https://triply.cc/energie/def/reëleBesparingspotentieAlleMaatregelen": {
+  "https://krr.triply.cc/Kadaster/cbs/def/reëleBesparingspotentieAlleMaatregelen": {
     facetType: "slider",
     label: "Reële energiebesp. (€/jaar)",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-energie-2015 {
+        graph graph:cbs-energie-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -128,7 +128,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-energie-2015 {
+        var pattern = `graph graph:cbs-energie-2015 {
           ?_r <${iri}> ?count5 .`;
         if (_.isFinite(values.min)) {
           pattern += `filter(?count5 >= ${values.min}) `;
@@ -250,13 +250,13 @@ const FACETS: { [property: string]: FacetConfig } = {
         const val = values[0]
         if (val.value === '1') {
           return `
-            graph graph:CBS-2015 {
+            graph graph:cbs-2015 {
               ?_r ?p ?o .
             }
             ?_r geo:sfWithin/rdf:type cbs:Krimpgebied .`;
         } else if (val.value === '0') {
           return `
-            graph graph:CBS-2015 {
+            graph graph:cbs-2015 {
               ?_r ?p ?o .
             }
             filter not exists {
@@ -281,12 +281,12 @@ const FACETS: { [property: string]: FacetConfig } = {
     ]
   },
   // cbs:afstandCafé
-  "https://triply.cc/cbs/def/afstandCafé": {
+  "https://krr.triply.cc/Kadaster/cbs/def/afstandCafé": {
     facetType: "slider",
     label: "Afstand tot café (km)",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?afstand .
           bind(xsd:float(?afstand) as ?value)
         }
@@ -297,7 +297,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count10 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count10 .`;
         if (_.isFinite(values.min)) {
           pattern += `filter(xsd:float(?count10) >= ${values.min}) `;
         }
@@ -310,12 +310,12 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:attractieAfstand
-  "https://triply.cc/cbs/def/attractieAfstand": {
+  "https://krr.triply.cc/Kadaster/cbs/def/attractieAfstand": {
     facetType: "slider",
     label: "Afstand tot attractie (km)",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?afstand .
            bind(xsd:float(?afstand) as ?value)
         }
@@ -326,7 +326,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count20 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count20 .`;
         if (_.isFinite(values.min)) {
           pattern += `filter(xsd:float(?count20) >= ${values.min}) `;
         }
@@ -339,12 +339,12 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:bedrijfsvestigingen
-  "https://triply.cc/cbs/def/bedrijfsvestigingen": {
+  "https://krr.triply.cc/Kadaster/cbs/def/bedrijfsvestigingen": {
     facetType: "slider",
     label: "Bedrijven",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -354,7 +354,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count30 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count30 .`;
         if (_.isFinite(values.min)) {
           pattern += `filter(?count30 >= ${values.min}) `;
         }
@@ -367,11 +367,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:bevolkingsdichtheid
-  "https://triply.cc/cbs/def/bevolkingsdichtheid": {
+  "https://krr.triply.cc/Kadaster/cbs/def/bevolkingsdichtheid": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -381,7 +381,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count40 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count40 .`;
         if (_.isFinite(values.min)) {
           pattern += `filter(?count40 >= ${values.min}) `;
         }
@@ -394,11 +394,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:bouwklasse-1999
-  "https://triply.cc/cbs/def/bouwklasse-1999": {
+  "https://krr.triply.cc/Kadaster/cbs/def/bouwklasse-1999": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -408,7 +408,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count50 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count50 .`;
         if (_.isFinite(values.min)) {
           pattern += `filter(?count50 >= ${values.min}) `;
         }
@@ -421,11 +421,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:bouwklasse2000+
-  "https://triply.cc/cbs/def/bouwklasse2000+": {
+  "https://krr.triply.cc/Kadaster/cbs/def/bouwklasse2000+": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -435,7 +435,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count60 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count60 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count60 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count60 <= ${values.max}) `;
         pattern += `}`;
@@ -444,11 +444,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:brandweer
-  "https://triply.cc/cbs/def/brandweer": {
+  "https://krr.triply.cc/Kadaster/cbs/def/brandweer": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -458,7 +458,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count70 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count70 .`;
         if (_.isFinite(values.min)) pattern += `filter(xsd:float(?count70) >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(xsd:float(?count70) <= ${values.max}) `;
         pattern += `}`;
@@ -467,11 +467,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:buitenschoolseopvangAfstand
-  "https://triply.cc/cbs/def/buitenschoolseopvangAfstand": {
+  "https://krr.triply.cc/Kadaster/cbs/def/buitenschoolseopvangAfstand": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -481,7 +481,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count80 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count80 .`;
         if (_.isFinite(values.min)) pattern += `filter(xsd:float(?count80) >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(xsd:float(?count80) <= ${values.max}) `;
         pattern += `}`;
@@ -490,11 +490,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:geboortePercentage
-  "https://triply.cc/cbs/def/geboortePercentage": {
+  "https://krr.triply.cc/Kadaster/cbs/def/geboortePercentage": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -504,7 +504,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count90 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count90 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count90 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count90 <= ${values.max}) `;
         pattern += `}`;
@@ -513,11 +513,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:gehuwd
-  "https://triply.cc/cbs/def/gehuwd": {
+  "https://krr.triply.cc/Kadaster/cbs/def/gehuwd": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -527,7 +527,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count100 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count100 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count100 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count100 <= ${values.max}) `;
         pattern += `}`;
@@ -536,11 +536,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:gescheiden
-  "https://triply.cc/cbs/def/gescheiden": {
+  "https://krr.triply.cc/Kadaster/cbs/def/gescheiden": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -550,7 +550,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count110 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count110 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count110 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count110 <= ${values.max}) `;
         pattern += `}`;
@@ -559,11 +559,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:huishoudenGrootte
-  "https://triply.cc/cbs/def/huishoudenGrootte": {
+  "https://krr.triply.cc/Kadaster/cbs/def/huishoudenGrootte": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -573,7 +573,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count120 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count120 .`;
         if (_.isFinite(values.min)) pattern += `filter(xsd:float(?count120) >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(xsd:float(?count120) <= ${values.max}) `;
         pattern += `}`;
@@ -582,11 +582,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:huishoudensMetKinderen
-  "https://triply.cc/cbs/def/huishoudensMetKinderen": {
+  "https://krr.triply.cc/Kadaster/cbs/def/huishoudensMetKinderen": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -596,7 +596,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count130 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count130 .`;
         if (_.isFinite(values.min)) pattern += `filter(xsd:float(?count130) >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(xsd:float(?count130) <= ${values.max}) `;
         pattern += `}`;
@@ -605,11 +605,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:huishoudensZonderKinderen
-  "https://triply.cc/cbs/def/huishoudensZonderKinderen": {
+  "https://krr.triply.cc/Kadaster/cbs/def/huishoudensZonderKinderen": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -619,7 +619,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count140 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count140 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count140 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count140 <= ${values.max}) `;
         pattern += `}`;
@@ -628,11 +628,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:ijsbaan
-  "https://triply.cc/cbs/def/ijsbaan": {
+  "https://krr.triply.cc/Kadaster/cbs/def/ijsbaan": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -651,11 +651,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:inwoners
-  "https://triply.cc/cbs/def/inwoners": {
+  "https://krr.triply.cc/Kadaster/cbs/def/inwoners": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -665,7 +665,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count160 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count160 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count160 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count160 <= ${values.max}) `;
         pattern += `}`;
@@ -674,11 +674,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:inwoners0-14
-  "https://triply.cc/cbs/def/inwoners0-14": {
+  "https://krr.triply.cc/Kadaster/cbs/def/inwoners0-14": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -688,7 +688,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count170 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count170 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count170 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count170 <= ${values.max}) `;
         pattern += `}`;
@@ -697,11 +697,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:inwoners15-24
-  "https://triply.cc/cbs/def/inwoners15-24": {
+  "https://krr.triply.cc/Kadaster/cbs/def/inwoners15-24": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -711,7 +711,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count180 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count180 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count180 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count180 <= ${values.max}) `;
         pattern += `}`;
@@ -720,11 +720,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:inwoners25-44
-  "https://triply.cc/cbs/def/inwoners25-44": {
+  "https://krr.triply.cc/Kadaster/cbs/def/inwoners25-44": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -734,7 +734,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count190 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count190 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count190 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count190 <= ${values.max}) `;
         pattern += `}`;
@@ -743,11 +743,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:inwoners45-64
-  "https://triply.cc/cbs/def/inwoners45-64": {
+  "https://krr.triply.cc/Kadaster/cbs/def/inwoners45-64": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -757,7 +757,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count200 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count200 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count200 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count200 <= ${values.max}) `;
         pattern += `}`;
@@ -766,7 +766,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:inwoners65+
-  "https://triply.cc/cbs/def/inwoners65+": {
+  "https://krr.triply.cc/Kadaster/cbs/def/inwoners65+": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -778,7 +778,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count210 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count210 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count210 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count210 <= ${values.max}) `;
         pattern += `}`;
@@ -787,11 +787,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:kinderdagverblijfAfstand
-  "https://triply.cc/cbs/def/kinderdagverblijfAfstand": {
+  "https://krr.triply.cc/Kadaster/cbs/def/kinderdagverblijfAfstand": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(xsd:float(?value)) as ?_min) (max(xsd:float(?value)) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -801,7 +801,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count220 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count220 .`;
         if (_.isFinite(values.min)) pattern += `filter(xsd:float(?count220) >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(xsd:float(?count220) <= ${values.max}) `;
         pattern += `}`;
@@ -810,11 +810,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:mannen
-  "https://triply.cc/cbs/def/mannen": {
+  "https://krr.triply.cc/Kadaster/cbs/def/mannen": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -824,7 +824,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (values.min || values.max) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count230 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count230 .`;
         if (values.min) pattern += `filter(?count230 >= ${values.min}) `;
         if (values.max) pattern += `filter(?count230 <= ${values.max}) `;
         pattern += `}`;
@@ -833,12 +833,12 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:mannen-procent
-  "https://triply.cc/cbs/def/mannen-procent": {
+  "https://krr.triply.cc/Kadaster/cbs/def/mannen-procent": {
     facetType: "slider",
     label: "Percentage mannen (%)",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r cbs:mannen ?mannen ;
               cbs:inwoners ?inwoners .
           filter(?mannen > 5.0e1)
@@ -852,7 +852,7 @@ const FACETS: { [property: string]: FacetConfig } = {
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
         var pattern = `
-          graph graph:CBS-2015 {
+          graph graph:cbs-2015 {
             ?_r cbs:mannen ?mannen240 ;
                 cbs:inwoners ?inwoners240 .
             filter(xsd:double(?mannen240) > 5.0e1)
@@ -866,11 +866,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:meergezinswoningen
-  "https://triply.cc/cbs/def/meergezinswoningen": {
+  "https://krr.triply.cc/Kadaster/cbs/def/meergezinswoningen": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -880,7 +880,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count250 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count250 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count250 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count250 <= ${values.max}) `;
         pattern += `}`;
@@ -889,11 +889,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:motortweewielers
-  "https://triply.cc/cbs/def/motortweewielers": {
+  "https://krr.triply.cc/Kadaster/cbs/def/motortweewielers": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -903,7 +903,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count260 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count260 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count260 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count260 <= ${values.max}) `;
         pattern += `}`;
@@ -912,11 +912,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:ongehuwd
-  "https://triply.cc/cbs/def/ongehuwd": {
+  "https://krr.triply.cc/Kadaster/cbs/def/ongehuwd": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -926,7 +926,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count270 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count270 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count270 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count270 <= ${values.max}) `;
         pattern += `}`;
@@ -935,11 +935,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:oppervlakte
-  "https://triply.cc/cbs/def/oppervlakte": {
+  "https://krr.triply.cc/Kadaster/cbs/def/oppervlakte": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -949,7 +949,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count280 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count280 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count280 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count280 <= ${values.max}) `;
         pattern += `}`;
@@ -958,11 +958,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:oppervlakteLand
-  "https://triply.cc/cbs/def/oppervlakteLand": {
+  "https://krr.triply.cc/Kadaster/cbs/def/oppervlakteLand": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -972,7 +972,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count290 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count290 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count290 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count290 <= ${values.max}) `;
         pattern += `}`;
@@ -981,11 +981,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:oppervlakteWater
-  "https://triply.cc/cbs/def/oppervlakteWater": {
+  "https://krr.triply.cc/Kadaster/cbs/def/oppervlakteWater": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -995,7 +995,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count300 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count300 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count300 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count300 <= ${values.max}) `;
         pattern += `}`;
@@ -1004,11 +1004,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:personenautos0-5
-  "https://triply.cc/cbs/def/personenautos0-5": {
+  "https://krr.triply.cc/Kadaster/cbs/def/personenautos0-5": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -1018,7 +1018,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count310 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count310 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count310 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count310 <= ${values.max}) `;
         pattern += `}`;
@@ -1027,11 +1027,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:personenautos6+
-  "https://triply.cc/cbs/def/personenautos6+": {
+  "https://krr.triply.cc/Kadaster/cbs/def/personenautos6+": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -1041,7 +1041,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count320 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count320 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count320 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count320 <= ${values.max}) `;
         pattern += `}`;
@@ -1050,11 +1050,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:stedelijkheid
-  "https://triply.cc/cbs/def/stedelijkheid": {
+  "https://krr.triply.cc/Kadaster/cbs/def/stedelijkheid": {
     facetType: "multiselect",
     getFacetValuesQuery: iri => { return `
       select distinct ?_value ?_valueLabel {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?_value .
         }
         ?_value rdfs:label ?_valueLabel .
@@ -1062,12 +1062,12 @@ const FACETS: { [property: string]: FacetConfig } = {
     },
     facetToQueryPatterns: (iri, values) => {
       if (values instanceof Array && values.length) {
-        return values.map(v => `graph graph:CBS-2015 { ?_r <${iri}> ${toEntity(v)} . }`).join('} union {')
+        return values.map(v => `graph graph:cbs-2015 { ?_r <${iri}> ${toEntity(v)} . }`).join('} union {')
       }
     }
   },
   // cbs:treinstation
-  "https://triply.cc/cbs/def/treinstation": {
+  "https://krr.triply.cc/Kadaster/cbs/def/treinstation": {
     facetType: "slider",
     label: "Afstand tot treinstation (km)",
     getFacetValuesQuery: iri => { return `
@@ -1080,7 +1080,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count330 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count330 .`;
         if (_.isFinite(values.min)) pattern += `filter(xsd:float(?count330) >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(xsd:float(?count330) <= ${values.max}) `;
         pattern += `}`;
@@ -1089,7 +1089,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:vrouwen
-  "https://triply.cc/cbs/def/vrouwen": {
+  "https://krr.triply.cc/Kadaster/cbs/def/vrouwen": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
@@ -1101,7 +1101,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count340 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count340 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count340 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count340 <= ${values.max}) `;
         pattern += `}`;
@@ -1110,12 +1110,12 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:vrouwen-procent
-  "https://triply.cc/cbs/def/vrouwen-procent": {
+  "https://krr.triply.cc/Kadaster/cbs/def/vrouwen-procent": {
     facetType: "slider",
     label: "Percentage vrouwen (%)",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r cbs:vrouwen ?vrouwen ;
             cbs:inwoners ?inwoners .
           filter(?vrouwen > 5.0e1)
@@ -1129,7 +1129,7 @@ const FACETS: { [property: string]: FacetConfig } = {
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
         var pattern = `
-          graph graph:CBS-2015 {
+          graph graph:cbs-2015 {
             ?_r cbs:vrouwen ?vrouwen350 ;
                 cbs:inwoners ?inwoners350 .
             filter(xsd:double(?vrouwen350) > 5.0e1)
@@ -1142,11 +1142,11 @@ const FACETS: { [property: string]: FacetConfig } = {
     }
   },
   // cbs:woz
-  "https://triply.cc/cbs/def/woz": {
+  "https://krr.triply.cc/Kadaster/cbs/def/woz": {
     facetType: "slider",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:CBS-2015 {
+        graph graph:cbs-2015 {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -1156,7 +1156,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:CBS-2015 { ?_r <${iri}> ?count360 .`;
+        var pattern = `graph graph:cbs-2015 { ?_r <${iri}> ?count360 .`;
         if (_.isFinite(values.min)) pattern += `filter(?count360 >= ${values.min}) `;
         if (_.isFinite(values.max)) pattern += `filter(?count360 <= ${values.max}) `;
         pattern += `}`;
