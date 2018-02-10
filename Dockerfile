@@ -1,4 +1,4 @@
-FROM node
+FROM node:8
 ARG BASENAME
 ENV BASE_DIR="/facetcheck"
 EXPOSE 5000
