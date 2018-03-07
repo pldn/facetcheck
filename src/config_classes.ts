@@ -1,10 +1,11 @@
 import {ClassConfig} from 'facetConfUtils'
 const CLASSES: { [className: string]: ClassConfig } = {
+/*
   // brt:Gebouw
   "http://brt.basisregistraties.overheid.nl/def/top10nl#Gebouw": {
     default: false,
     iri: "http://brt.basisregistraties.overheid.nl/def/top10nl#Gebouw",
-    label: "Gebouw",
+    label: "BRT Gebouw",
     facets: [
       "gebouwsoort",
       "http://brt.basisregistraties.overheid.nl/def/top10nl#status"
@@ -26,11 +27,138 @@ const CLASSES: { [className: string]: ClassConfig } = {
       return `construct { ${projectPattern} } { ${selectPattern} }`;
     }
   },
+*/
+  // cbs:Gemeente
+  "https://krr.triply.cc/Kadaster/cbs/def/Gemeente": {
+    default: false,
+    iri: "https://krr.triply.cc/Kadaster/cbs/def/Gemeente",
+    label: "CBS Gemeente",
+    facets: [
+      "https://cultureelerfgoed.nl/vocab/provincie",
+      "krimpgebied",
+      "https://krr.triply.cc/Kadaster/cbs/def/stedelijkheid",
+      "https://krr.triply.cc/Kadaster/cbs/def/afstandCafé",
+      "https://krr.triply.cc/Kadaster/cbs/def/attractieAfstand",
+      "https://krr.triply.cc/Kadaster/cbs/def/bedrijfsvestigingen",
+      "https://krr.triply.cc/Kadaster/cbs/def/bevolkingsdichtheid",
+      "https://krr.triply.cc/Kadaster/cbs/def/bouwklasse-1999",
+      "https://krr.triply.cc/Kadaster/cbs/def/bouwklasse2000+",
+      "https://krr.triply.cc/Kadaster/cbs/def/brandweer",
+      "https://krr.triply.cc/Kadaster/cbs/def/buitenschoolseopvangAfstand",
+      "https://krr.triply.cc/Kadaster/cbs/def/geboortePercentage",
+      "https://krr.triply.cc/Kadaster/cbs/def/gehuwd",
+      "https://krr.triply.cc/Kadaster/cbs/def/gescheiden",
+      "https://krr.triply.cc/Kadaster/cbs/def/huishoudensMetKinderen",
+      "https://krr.triply.cc/Kadaster/cbs/def/huishoudensZonderKinderen",
+      "https://krr.triply.cc/Kadaster/cbs/def/ijsbaan",
+      "https://krr.triply.cc/Kadaster/cbs/def/inwoners",
+      "https://krr.triply.cc/Kadaster/cbs/def/inwoners0-14",
+      "https://krr.triply.cc/Kadaster/cbs/def/inwoners15-24",
+      "https://krr.triply.cc/Kadaster/cbs/def/inwoners25-44",
+      "https://krr.triply.cc/Kadaster/cbs/def/inwoners45-64",
+      "https://krr.triply.cc/Kadaster/cbs/def/inwoners65+",
+      "https://krr.triply.cc/Kadaster/cbs/def/kinderdagverblijfAfstand",
+      "https://krr.triply.cc/Kadaster/cbs/def/mannen",
+      "https://krr.triply.cc/Kadaster/cbs/def/mannen-procent",
+      "https://krr.triply.cc/Kadaster/cbs/def/meergezinswoningen",
+      "https://krr.triply.cc/Kadaster/cbs/def/motortweewielers",
+      "https://krr.triply.cc/Kadaster/cbs/def/ongehuwd",
+      "https://krr.triply.cc/Kadaster/cbs/def/oppervlakte",
+      "https://krr.triply.cc/Kadaster/cbs/def/oppervlakteLand",
+      "https://krr.triply.cc/Kadaster/cbs/def/oppervlakteWater",
+      "https://krr.triply.cc/Kadaster/cbs/def/personenautos0-5",
+      "https://krr.triply.cc/Kadaster/cbs/def/personenautos6+",
+      "https://krr.triply.cc/Kadaster/cbs/def/treinstation",
+      "https://krr.triply.cc/Kadaster/cbs/def/vrouwen",
+      "https://krr.triply.cc/Kadaster/cbs/def/vrouwen-procent",
+      "https://krr.triply.cc/Kadaster/cbs/def/woz"
+    ],
+    resourceDescriptionQuery: function(iri: string) {
+      var projectPattern = `
+        <${iri}> ?p ?o .
+        ?geo geo:asWKT ?wkt .
+        ?p rdfs:label ?pLabel .
+        ?o rdfs:label ?oLabel .`;
+      var selectPattern = `
+        graph graph:cbs-2015 {
+          <${iri}> ?p ?o .
+          optional { ?p rdfs:label ?pLabel . }
+          optional { ?o rdfs:label ?oLabel . }
+          optional {
+            <${iri}> geo:hasGeometry ?geo .
+            ?geo geo:asWKT ?wkt .
+          }
+        }`;
+      return `construct { ${projectPattern} } { ${selectPattern} }`;
+    }
+  },
+  // cbs:Wijk
+  "https://krr.triply.cc/Kadaster/cbs/def/Wijk": {
+    default: false,
+    iri: "https://krr.triply.cc/Kadaster/cbs/def/Wijk",
+    label: "CBS Wijk",
+    facets: [
+      "https://cultureelerfgoed.nl/vocab/provincie",
+      "https://krr.triply.cc/Kadaster/cbs/def/stedelijkheid",
+      "https://krr.triply.cc/Kadaster/cbs/def/afstandCafé",
+      "https://krr.triply.cc/Kadaster/cbs/def/attractieAfstand",
+      "https://krr.triply.cc/Kadaster/cbs/def/bedrijfsvestigingen",
+      "https://krr.triply.cc/Kadaster/cbs/def/bevolkingsdichtheid",
+      "https://krr.triply.cc/Kadaster/cbs/def/bouwklasse-1999",
+      "https://krr.triply.cc/Kadaster/cbs/def/bouwklasse2000+",
+      "https://krr.triply.cc/Kadaster/cbs/def/brandweer",
+      "https://krr.triply.cc/Kadaster/cbs/def/buitenschoolseopvangAfstand",
+      "https://krr.triply.cc/Kadaster/cbs/def/geboortePercentage",
+      "https://krr.triply.cc/Kadaster/cbs/def/gehuwd",
+      "https://krr.triply.cc/Kadaster/cbs/def/gescheiden",
+      "https://krr.triply.cc/Kadaster/cbs/def/huishoudenGrootte",
+      "https://krr.triply.cc/Kadaster/cbs/def/huishoudensMetKinderen",
+      "https://krr.triply.cc/Kadaster/cbs/def/huishoudensZonderKinderen",
+      "https://krr.triply.cc/Kadaster/cbs/def/ijsbaan",
+      "https://krr.triply.cc/Kadaster/cbs/def/inwoners",
+      "https://krr.triply.cc/Kadaster/cbs/def/inwoners0-14",
+      "https://krr.triply.cc/Kadaster/cbs/def/inwoners15-24",
+      "https://krr.triply.cc/Kadaster/cbs/def/inwoners25-44",
+      "https://krr.triply.cc/Kadaster/cbs/def/inwoners45-64",
+      "https://krr.triply.cc/Kadaster/cbs/def/inwoners65+",
+      "https://krr.triply.cc/Kadaster/cbs/def/kinderdagverblijfAfstand",
+      "https://krr.triply.cc/Kadaster/cbs/def/mannen",
+      "https://krr.triply.cc/Kadaster/cbs/def/meergezinswoningen",
+      "https://krr.triply.cc/Kadaster/cbs/def/motortweewielers",
+      "https://krr.triply.cc/Kadaster/cbs/def/ongehuwd",
+      "https://krr.triply.cc/Kadaster/cbs/def/oppervlakte",
+      "https://krr.triply.cc/Kadaster/cbs/def/oppervlakteLand",
+      "https://krr.triply.cc/Kadaster/cbs/def/oppervlakteWater",
+      "https://krr.triply.cc/Kadaster/cbs/def/personenautos0-5",
+      "https://krr.triply.cc/Kadaster/cbs/def/personenautos6+",
+      "https://krr.triply.cc/Kadaster/cbs/def/treinstation",
+      "https://krr.triply.cc/Kadaster/cbs/def/vrouwen",
+      "https://krr.triply.cc/Kadaster/cbs/def/woz"
+    ],
+    resourceDescriptionQuery: function(iri: string) {
+      var projectPattern = `
+        <${iri}> ?p ?o .
+        ?geo geo:asWKT ?wkt .
+        ?p rdfs:label ?pLabel .
+        ?o rdfs:label ?oLabel .`;
+      var selectPattern = `
+        graph graph:cbs-2015 {
+          <${iri}> ?p ?o .
+          optional { ?p rdfs:label ?pLabel . }
+          optional { ?o rdfs:label ?oLabel . }
+          optional {
+            <${iri}> geo:hasGeometry ?geo .
+            ?geo geo:asWKT ?wkt .
+          }
+        }`;
+      return `construct { ${projectPattern} } { ${selectPattern} }`;
+    }
+  },
   // cbs:Buurt
   "https://krr.triply.cc/Kadaster/cbs/def/Buurt": {
     default: true,
     iri: "https://krr.triply.cc/Kadaster/cbs/def/Buurt",
-    label: "Buurt",
+    label: "CBS Buurt",
     facets: [
       "https://krr.triply.cc/Kadaster/cbs/def/aardgasverbruikKoopwoning",
       "https://krr.triply.cc/Kadaster/cbs/def/elektriciteitsverbruikKoopwoning",
@@ -103,137 +231,11 @@ const CLASSES: { [className: string]: ClassConfig } = {
       return `construct { ${projectPattern} } { ${selectPattern} }`;
     }
   },
-  // cbs:Wijk
-  "https://krr.triply.cc/Kadaster/cbs/def/Wijk": {
-    default: false,
-    iri: "https://krr.triply.cc/Kadaster/cbs/def/Wijk",
-    label: "Wijk",
-    facets: [
-      "https://cultureelerfgoed.nl/vocab/provincie",
-      "https://krr.triply.cc/Kadaster/cbs/def/stedelijkheid",
-      "https://krr.triply.cc/Kadaster/cbs/def/afstandCafé",
-      "https://krr.triply.cc/Kadaster/cbs/def/attractieAfstand",
-      "https://krr.triply.cc/Kadaster/cbs/def/bedrijfsvestigingen",
-      "https://krr.triply.cc/Kadaster/cbs/def/bevolkingsdichtheid",
-      "https://krr.triply.cc/Kadaster/cbs/def/bouwklasse-1999",
-      "https://krr.triply.cc/Kadaster/cbs/def/bouwklasse2000+",
-      "https://krr.triply.cc/Kadaster/cbs/def/brandweer",
-      "https://krr.triply.cc/Kadaster/cbs/def/buitenschoolseopvangAfstand",
-      "https://krr.triply.cc/Kadaster/cbs/def/geboortePercentage",
-      "https://krr.triply.cc/Kadaster/cbs/def/gehuwd",
-      "https://krr.triply.cc/Kadaster/cbs/def/gescheiden",
-      "https://krr.triply.cc/Kadaster/cbs/def/huishoudenGrootte",
-      "https://krr.triply.cc/Kadaster/cbs/def/huishoudensMetKinderen",
-      "https://krr.triply.cc/Kadaster/cbs/def/huishoudensZonderKinderen",
-      "https://krr.triply.cc/Kadaster/cbs/def/ijsbaan",
-      "https://krr.triply.cc/Kadaster/cbs/def/inwoners",
-      "https://krr.triply.cc/Kadaster/cbs/def/inwoners0-14",
-      "https://krr.triply.cc/Kadaster/cbs/def/inwoners15-24",
-      "https://krr.triply.cc/Kadaster/cbs/def/inwoners25-44",
-      "https://krr.triply.cc/Kadaster/cbs/def/inwoners45-64",
-      "https://krr.triply.cc/Kadaster/cbs/def/inwoners65+",
-      "https://krr.triply.cc/Kadaster/cbs/def/kinderdagverblijfAfstand",
-      "https://krr.triply.cc/Kadaster/cbs/def/mannen",
-      "https://krr.triply.cc/Kadaster/cbs/def/meergezinswoningen",
-      "https://krr.triply.cc/Kadaster/cbs/def/motortweewielers",
-      "https://krr.triply.cc/Kadaster/cbs/def/ongehuwd",
-      "https://krr.triply.cc/Kadaster/cbs/def/oppervlakte",
-      "https://krr.triply.cc/Kadaster/cbs/def/oppervlakteLand",
-      "https://krr.triply.cc/Kadaster/cbs/def/oppervlakteWater",
-      "https://krr.triply.cc/Kadaster/cbs/def/personenautos0-5",
-      "https://krr.triply.cc/Kadaster/cbs/def/personenautos6+",
-      "https://krr.triply.cc/Kadaster/cbs/def/treinstation",
-      "https://krr.triply.cc/Kadaster/cbs/def/vrouwen",
-      "https://krr.triply.cc/Kadaster/cbs/def/woz"
-    ],
-    resourceDescriptionQuery: function(iri: string) {
-      var projectPattern = `
-        <${iri}> ?p ?o .
-        ?geo geo:asWKT ?wkt .
-        ?p rdfs:label ?pLabel .
-        ?o rdfs:label ?oLabel .`;
-      var selectPattern = `
-        graph graph:cbs-2015 {
-          <${iri}> ?p ?o .
-          optional { ?p rdfs:label ?pLabel . }
-          optional { ?o rdfs:label ?oLabel . }
-          optional {
-            <${iri}> geo:hasGeometry ?geo .
-            ?geo geo:asWKT ?wkt .
-          }
-        }`;
-      return `construct { ${projectPattern} } { ${selectPattern} }`;
-    }
-  },
-  // cbs:Gemeente
-  "https://krr.triply.cc/Kadaster/cbs/def/Gemeente": {
-    default: false,
-    iri: "https://krr.triply.cc/Kadaster/cbs/def/Gemeente",
-    label: "Gemeente",
-    facets: [
-      "https://cultureelerfgoed.nl/vocab/provincie",
-      "krimpgebied",
-      "https://krr.triply.cc/Kadaster/cbs/def/stedelijkheid",
-      "https://krr.triply.cc/Kadaster/cbs/def/afstandCafé",
-      "https://krr.triply.cc/Kadaster/cbs/def/attractieAfstand",
-      "https://krr.triply.cc/Kadaster/cbs/def/bedrijfsvestigingen",
-      "https://krr.triply.cc/Kadaster/cbs/def/bevolkingsdichtheid",
-      "https://krr.triply.cc/Kadaster/cbs/def/bouwklasse-1999",
-      "https://krr.triply.cc/Kadaster/cbs/def/bouwklasse2000+",
-      "https://krr.triply.cc/Kadaster/cbs/def/brandweer",
-      "https://krr.triply.cc/Kadaster/cbs/def/buitenschoolseopvangAfstand",
-      "https://krr.triply.cc/Kadaster/cbs/def/geboortePercentage",
-      "https://krr.triply.cc/Kadaster/cbs/def/gehuwd",
-      "https://krr.triply.cc/Kadaster/cbs/def/gescheiden",
-      "https://krr.triply.cc/Kadaster/cbs/def/huishoudensMetKinderen",
-      "https://krr.triply.cc/Kadaster/cbs/def/huishoudensZonderKinderen",
-      "https://krr.triply.cc/Kadaster/cbs/def/ijsbaan",
-      "https://krr.triply.cc/Kadaster/cbs/def/inwoners",
-      "https://krr.triply.cc/Kadaster/cbs/def/inwoners0-14",
-      "https://krr.triply.cc/Kadaster/cbs/def/inwoners15-24",
-      "https://krr.triply.cc/Kadaster/cbs/def/inwoners25-44",
-      "https://krr.triply.cc/Kadaster/cbs/def/inwoners45-64",
-      "https://krr.triply.cc/Kadaster/cbs/def/inwoners65+",
-      "https://krr.triply.cc/Kadaster/cbs/def/kinderdagverblijfAfstand",
-      "https://krr.triply.cc/Kadaster/cbs/def/mannen",
-      "https://krr.triply.cc/Kadaster/cbs/def/mannen-procent",
-      "https://krr.triply.cc/Kadaster/cbs/def/meergezinswoningen",
-      "https://krr.triply.cc/Kadaster/cbs/def/motortweewielers",
-      "https://krr.triply.cc/Kadaster/cbs/def/ongehuwd",
-      "https://krr.triply.cc/Kadaster/cbs/def/oppervlakte",
-      "https://krr.triply.cc/Kadaster/cbs/def/oppervlakteLand",
-      "https://krr.triply.cc/Kadaster/cbs/def/oppervlakteWater",
-      "https://krr.triply.cc/Kadaster/cbs/def/personenautos0-5",
-      "https://krr.triply.cc/Kadaster/cbs/def/personenautos6+",
-      "https://krr.triply.cc/Kadaster/cbs/def/treinstation",
-      "https://krr.triply.cc/Kadaster/cbs/def/vrouwen",
-      "https://krr.triply.cc/Kadaster/cbs/def/vrouwen-procent",
-      "https://krr.triply.cc/Kadaster/cbs/def/woz"
-    ],
-    resourceDescriptionQuery: function(iri: string) {
-      var projectPattern = `
-        <${iri}> ?p ?o .
-        ?geo geo:asWKT ?wkt .
-        ?p rdfs:label ?pLabel .
-        ?o rdfs:label ?oLabel .`;
-      var selectPattern = `
-        graph graph:cbs-2015 {
-          <${iri}> ?p ?o .
-          optional { ?p rdfs:label ?pLabel . }
-          optional { ?o rdfs:label ?oLabel . }
-          optional {
-            <${iri}> geo:hasGeometry ?geo .
-            ?geo geo:asWKT ?wkt .
-          }
-        }`;
-      return `construct { ${projectPattern} } { ${selectPattern} }`;
-    }
-  },
   // rce:Monument
   "https://cultureelerfgoed.nl/vocab/Monument": {
     default: false,
     iri: "https://cultureelerfgoed.nl/vocab/Monument",
-    label: "Monument",
+    label: "RCE Monument",
     facets: [
       //"https://cultureelerfgoed.nl/vocab/provincie",
       "https://cultureelerfgoed.nl/vocab/bouwjaar",
