@@ -10,7 +10,7 @@ class Config extends ConfigTemplate_1.default {
             domain: "localhost"
         };
         this.sparqlEndpoint = {
-            url: "https://api.krr.triply.cc/datasets/Kadaster/geosoup/services/geosoup/sparql",
+            url: "https://api.krr.triply.cc/datasets/Kadaster/geosoup2/services/geosoup/sparql",
             token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJ1bmtub3duIiwiaXNzIjoidHJpcGx5LmNjIiwianRpIjoiNzNjYzkzMjktNmFlYy00ZGM0LWJmMGUtNmIyMWQ5MDM4MGQyIiwic2MiOnsiYWNjIjpbImEiXSwiZHMiOlsiYSJdLCJ1cyI6WyJhIl0sInRvayI6WyJhIl19LCJ1aWQiOiI1OTUwZTNmZmVjZDEwZDAxN2Y2YmNjMjEiLCJpYXQiOjE1MDk0MDM0MTd9.5SxqdKTJMV-VZZBDkiZX-OW5ddkctwLHg9SHiLDNCH8"
         };
     }
