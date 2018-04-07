@@ -1,4 +1,3 @@
-import {FacetConfig,ClassConfig} from './facetConfUtils'
 import _FACETS from './config/facets'
 import _CLASSES from './config/classes'
 import _CONFIG from './config/config'

@@ -14,6 +14,12 @@ export interface FacetValue extends Partial<SparqlTerm> {
   value:string,
   label?: string;
 }
+export interface GlobalConfig {
+  endpoint: {
+    url:string,
+    token?:string
+  }
+}
 export interface ClassConfig {
   default: boolean;
   iri: string;
