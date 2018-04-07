@@ -9,6 +9,7 @@ import { FacetMultiSelect, FacetSlider, FacetProvinces } from "../";
 import { setSelectedFacetValue, setSelectedObject } from "../../reducers/facets";
 import {  FACETS } from "../../facetConf";
 import { FacetTypes } from "../../facetConfUtils";
+
 namespace Facet {
   //Hacky interface so we can define a static function in an interface
   export interface FacetComponent {
@@ -47,7 +48,7 @@ class Facet extends React.PureComponent<Facet.Props, any> {
   }
   constructor(props: Facet.Props) {
     super(props);
-    this.FacetComponents = [FacetMultiSelect, FacetSlider, FacetProvinces];
+    this.FacetComponents = [FacetMultiSelect, FacetSlider as any, FacetProvinces];
   }
 
   componentDidCatch(e:Error) {

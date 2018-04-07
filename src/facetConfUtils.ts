@@ -29,7 +29,8 @@ const escapeReplacer = function (c:string) { return escapeReplacements[c]; };
 const escapeReplacements:{[key:string]:string} = { '\\': '\\\\', '"': '\\"', '\t': '\\t',
                            '\n': '\\n', '\r': '\\r', '\b': '\\b', '\f': '\\f' };
 var XSD_INTEGER = 'http://www.w3.org/2001/XMLSchema#integer';
-export function toEntity(value:FacetValue):string {
+export function toEntity(value:any):string {
+  if (!value || !value.value) return value;//probably just a plain string or number
   // regular entity
   if (value.type === 'bnode') {
     return value.value;
