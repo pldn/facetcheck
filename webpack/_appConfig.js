@@ -9,9 +9,6 @@ class Config extends ConfigTemplate_1.default {
             publicPort: 5000,
             domain: "localhost"
         };
-        this.sparqlEndpoint = {
-            url: "https://data.labs.pdok.nl/sparql",
-        };
     }
     getDevServerPort() {
         return this.clientConnection.publicPort + 5;

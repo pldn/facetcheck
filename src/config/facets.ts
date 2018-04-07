@@ -1,4 +1,4 @@
-import {FacetConfig,toEntity} from './facetConfUtils'
+import {FacetConfig,toEntity} from '../facetConfUtils'
 import * as _ from 'lodash'
 const FACETS: { [property: string]: FacetConfig } = {
   "http://data.labs.pdok.nl/dataset/windstats/def#Ashoogte": {

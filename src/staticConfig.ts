@@ -15,10 +15,6 @@ information before we can make that request though.  So, we're putting
 that part in this config
 **/
 export class Config extends ConfigTemplate {
-  public sparqlEndpoint: {
-    url: string;
-    token?: string;
-  };
   public internalPort: number;
   public clientConnection: ConnectionConfig;
   public serverConnectionFromBrowser: ConnectionConfig;
@@ -29,9 +25,6 @@ export class Config extends ConfigTemplate {
       publicPort: 5000,
       domain: "localhost"
     };
-    this.sparqlEndpoint = {
-      url: "https://triply.eculture.labs.vu.nl/sparql"
-    }
   }
 
   getDevServerPort() {

@@ -1,4 +1,4 @@
-import {ClassConfig} from './facetConfUtils'
+import {ClassConfig} from '../facetConfUtils'
 const CLASSES: { [className: string]: ClassConfig } = {
   "http://dbpedia.org/ontology/WindMotor": {
     default: false,

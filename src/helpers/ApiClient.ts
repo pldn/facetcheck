@@ -7,6 +7,7 @@ import * as NTriply from '@triply/triply-node-utils/build/src/nTriply'
 //import own dependencies
 import { GlobalState } from "../reducers";
 import { getConfig, Config, ConnectionConfig } from "../staticConfig";
+import {CONFIG} from '../facetConf'
 import SparqlJson from './SparqlJson'
 import * as parseLinkHeader from "parse-link-header";
 const urlParse = require("url-parse");
@@ -133,10 +134,10 @@ export default class ApiClient {
         }
         if (args.endpoint) {
           requestTo = args.endpoint;
-        } else if (this.config.sparqlEndpoint) {
-          requestTo = this.config.sparqlEndpoint.url;
-          if (this.config.sparqlEndpoint.token) {
-            args.headers["Authorization"] = "Bearer " + this.config.sparqlEndpoint.token
+        } else {
+          requestTo = CONFIG.endpoint.url
+          if (CONFIG.endpoint.token) {
+            args.headers["Authorization"] = "Bearer " + CONFIG.endpoint.token
           }
         }
       }
