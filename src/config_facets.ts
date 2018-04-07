@@ -6,7 +6,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     label: "Aardgasverbruik koopw.",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:cbs-energie-2015 {
+        graph graph:energiepotentie {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -16,7 +16,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:cbs-energie-2015 {
+        var pattern = `graph graph:energiepotentie {
           ?_r <${iri}> ?count1 .`;
         if (_.isFinite(values.min)) {
           pattern += `filter(?count1 >= ${values.min}) `;
@@ -34,7 +34,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     label: "Elektriciteitsverbruik koopw.",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:cbs-energie-2015 {
+        graph graph:energiepotentie {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -44,7 +44,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:cbs-energie-2015 {
+        var pattern = `graph graph:energiepotentie {
           ?_r <${iri}> ?count2 .`;
         if (_.isFinite(values.min)) {
           pattern += `filter(?count2 >= ${values.min}) `;
@@ -62,7 +62,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     label: "Huurwoningen (%)",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:cbs-energie-2015 {
+        graph graph:energiepotentie {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -72,7 +72,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:cbs-energie-2015 {
+        var pattern = `graph graph:energiepotentie {
           ?_r <${iri}> ?count3 .`;
         if (_.isFinite(values.min)) {
           pattern += `filter(?count3 >= ${values.min}) `;
@@ -90,7 +90,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     label: "Koopwoningen (%)",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:cbs-energie-2015 {
+        graph graph:energiepotentie {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -100,7 +100,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:cbs-energie-2015 {
+        var pattern = `graph graph:energiepotentie {
           ?_r <${iri}> ?count4 .`;
         if (_.isFinite(values.min)) {
           pattern += `filter(?count4 >= ${values.min}) `;
@@ -118,7 +118,7 @@ const FACETS: { [property: string]: FacetConfig } = {
     label: "Reële energiebesp. (€/jaar)",
     getFacetValuesQuery: iri => { return `
       select distinct (min(?value) as ?_min) (max(?value) as ?_max) {
-        graph graph:cbs-energie-2015 {
+        graph graph:energiepotentie {
           ?_r <${iri}> ?value .
         }
       }`;
@@ -128,7 +128,7 @@ const FACETS: { [property: string]: FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `graph graph:cbs-energie-2015 {
+        var pattern = `graph graph:energiepotentie {
           ?_r <${iri}> ?count5 .`;
         if (_.isFinite(values.min)) {
           pattern += `filter(?count5 >= ${values.min}) `;
