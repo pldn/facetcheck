@@ -1,9 +1,8 @@
 {
-  "name": "@triply/facetCheck",
+  "name": "@triply/facetcheck",
   "version": "1.0.0",
   "main": "build/src/index.js",
   "author": "Laurens Rietveld <laurens.rietveld@triply.cc>",
-  "private": true,
   "typings": "build/src/index.d.ts",
   "scripts": {
     "build": "npm run clean && npm run setup-build-context && concurrently --prefix-colors \"bgBlue,bgMagenta\" --names \"client,server\" --prefix name \"better-npm-run build-client\" \"better-npm-run build-server\"",
