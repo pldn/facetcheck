@@ -30,7 +30,7 @@ export class Config extends ConfigTemplate {
       domain: "localhost"
     };
     this.sparqlEndpoint = {
-      url: "https://data.labs.pdok.nl/sparql",
+      url: "https://triply.eculture.labs.vu.nl/sparql"
     }
   }
 
