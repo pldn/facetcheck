@@ -1,5 +1,5 @@
 import * as sparqlJs from 'sparqljs'
-import {default as prefixes, getAsString, prefix} from 'prefixes'
+import {default as prefixes, getAsString, prefix} from '../prefixes'
 
 export default class SparqlBuilder {
   private query:sparqlJs.Query = {

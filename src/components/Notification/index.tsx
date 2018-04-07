@@ -3,10 +3,8 @@ import * as React from "react";
 import * as getClassName from "classnames";
 // import {Row,Col} from 'react-bootstrap';
 // import {LinkContainer} from 'react-router-bootstrap'
-import { NotificationRecordProps, NotificationType, removeNotification } from "reducers/notifications";
+import { NotificationRecordProps, NotificationType, removeNotification } from "../../reducers/notifications";
 // import {Models} from '../../../typings-tmp/swagger'
-import // Avatar
-"components";
 
 export interface INotificationsProps extends NotificationRecordProps {
   className?: string;

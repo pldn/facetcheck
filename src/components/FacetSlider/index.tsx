@@ -2,16 +2,16 @@ import * as React from "react";
 
 import * as _ from "lodash";
 // import * as getClassName from "classnames";
-import {Facet} from 'components'
-import {Facet as GenericFacetProps} from 'reducers/facets'
-import {FACETS} from 'facetConf'
-import {FacetValue} from 'facetConfUtils'
+import {Facet} from '../'
+import {Facet as GenericFacetProps} from '../../reducers/facets'
+import {FACETS} from '../../facetConf'
+import {FacetValue} from '../../facetConfUtils'
 import * as numeral from 'numeral'
 const Slider = require('rc-slider');
 const createSliderWithTooltip = Slider.createSliderWithTooltip;
 const Range = createSliderWithTooltip(Slider.Range);
-import SparqlJson from 'helpers/SparqlJson'
-import SparqlBuilder from 'helpers/SparqlBuilder'
+import SparqlJson from '../../helpers/SparqlJson'
+import SparqlBuilder from '../../helpers/SparqlBuilder'
 require("numeral/locales/nl-nl");
 numeral.locale("nl-nl");
 namespace FacetSlider {

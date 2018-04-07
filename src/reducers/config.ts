@@ -1,10 +1,10 @@
 //external dependencies
 import * as _ from "lodash";
 //import own dependencies
-import { Config, getConfig } from "staticConfig";
+import { Config, getConfig } from "../staticConfig";
 // import {Routes, Models} from 'Contract'
-import ApiClient from "helpers/ApiClient";
-import { GlobalState } from "reducers";
+import ApiClient from "../helpers/ApiClient";
+import { GlobalState } from "./";
 import { Helmet as ReactHelmet } from "react-helmet";
 import * as Immutable from "immutable";
 // import {Actions as PrefixActions} from 'reducers/prefixes'

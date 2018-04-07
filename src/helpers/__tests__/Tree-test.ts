@@ -5,7 +5,7 @@ import * as N3 from 'n3'
 import * as fs from 'fs-extra'
 import * as path from 'path'
 import Tree from '../Tree'
-import prefixes from 'prefixes'
+import prefixes from '../../prefixes'
 import {Term, n3ToNtriply} from '@triply/triply-node-utils/build/src/nTriply'
 
 async function getTree(fromFile:string, forStatement:Term) {

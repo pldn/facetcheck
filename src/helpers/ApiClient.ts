@@ -5,8 +5,8 @@ import * as _ from "lodash";
 import * as N3 from 'n3'
 import * as NTriply from '@triply/triply-node-utils/build/src/nTriply'
 //import own dependencies
-import { GlobalState } from "reducers";
-import { getConfig, Config, ConnectionConfig } from "staticConfig";
+import { GlobalState } from "../reducers";
+import { getConfig, Config, ConnectionConfig } from "../staticConfig";
 import SparqlJson from './SparqlJson'
 import * as parseLinkHeader from "parse-link-header";
 const urlParse = require("url-parse");

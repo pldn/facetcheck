@@ -1,4 +1,4 @@
-import {ClassConfig} from 'facetConfUtils'
+import {ClassConfig} from './facetConfUtils'
 const CLASSES: { [className: string]: ClassConfig } = {
 /*
   // brt:Gebouw

@@ -9,13 +9,13 @@ import { asyncConnect, IAsyncConnect } from "redux-connect";
 import { RadioGroup, RadioButton } from 'react-toolbox/lib/radio';
 
 import Checkbox from 'react-toolbox/lib/checkbox';
-import { GlobalState } from "reducers";
-import {setSelectedClass,FacetsProps,setSelectedFacetValue,setSelectedObject,StateRecordInterface} from 'reducers/facets'
-import {CLASSES,FACETS} from 'facetConf'
+import { GlobalState } from "../../reducers";
+import {setSelectedClass,FacetsProps,setSelectedFacetValue,setSelectedObject,StateRecordInterface} from '../../reducers/facets'
+import {CLASSES,FACETS} from '../../facetConf'
 import {
   Facet,
-} from "components";
-import {} from "containers";
+} from "../../components";
+import {} from "../";
 
 namespace Panel {
   // export interface OwnProps extends IComponentProps {

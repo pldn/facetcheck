@@ -1,7 +1,7 @@
 //external dependencies
 import * as React from "react";
 import * as getClassName from "classnames";
-import Tree from 'helpers/Tree'
+import Tree from '../../helpers/Tree'
 import * as nTriply from '@triply/triply-node-utils/build/src/nTriply'
 import {
   TermLiteralBoolean,
@@ -13,10 +13,10 @@ import {
   TermLiteralImage,
   TermLiteralLink,
   TermLiteralTextarea
-} from "components";
+} from "../";
 import * as styles from "./style.scss";
-import {RenderConfiguration} from 'reducers/statements'
-// import * as rowStyles from "components/TriplesTable/style.scss";
+import {RenderConfiguration} from '../../reducers/statements'
+// import * as rowStyles from "../"/TriplesTable/style.scss";
 
 export namespace TermLiteral {
   export interface Props {

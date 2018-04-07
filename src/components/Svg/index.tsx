@@ -1,5 +1,5 @@
 import * as React from "react";
-// import BaseComponent from 'helpers/BaseComponent'
+// import BaseComponent from '../../helpers/BaseComponent'
 import * as getClassName from "classnames";
 
 /**

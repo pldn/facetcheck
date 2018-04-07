@@ -5,7 +5,7 @@ const parse = require("wellknown");
 import * as getClassName from "classnames";
 // import {Table,Button} from 'react-bootstrap';
 //import own dependencies
-// import { ITerm} from 'reducers/data'
+// import { ITerm} from '../../reducers/data'
 export namespace Leaflet {
   export interface Props {
     className?: string;

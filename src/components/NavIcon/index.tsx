@@ -5,7 +5,7 @@ import * as getClassName from "classnames";
 // import {LinkContainer} from 'react-router-bootstrap'
 
 // import {Models} from '../../../typings-tmp/swagger'
-import { Svg } from "components";
+import { Svg } from "../";
 
 namespace NavIcon {
   export interface Props {

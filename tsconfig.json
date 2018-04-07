@@ -14,8 +14,7 @@
         "listFiles": false,
         "outDir": "./build",
         "jsx": "react",
-        "experimentalDecorators": true,
-        "baseUrl": "./src"
+        "experimentalDecorators": true
     },
     "compileOnSave": false,
     "filesGlob": [

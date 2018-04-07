@@ -6,10 +6,10 @@ import * as N3 from "n3";
 import * as Immutable from 'immutable'
 import * as nTriply from '@triply/triply-node-utils/build/src/nTriply'
 //import own dependencies
-// import {getLabel,State as LabelsState,fetchLabel} from 'reducers/labels'
-import { ResourceDescriptionSection } from "components";
-import Tree from 'helpers/Tree'
-import {getLabel, getWidgets,WidgetConfig,getStatementsAsTree} from 'reducers/statements'
+// import {getLabel,State as LabelsState,fetchLabel} from '../../reducers/labels'
+import { ResourceDescriptionSection } from "../";
+import Tree from '../../helpers/Tree'
+import {getLabel, getWidgets,WidgetConfig,getStatementsAsTree} from '../../reducers/statements'
 
 
 const styles = require("./style.scss");

@@ -6,7 +6,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom/server";
 let httpProxy = require("http-proxy");
 import * as path from "path";
-import createStore from "store/create";
+import createStore from "./store/create";
 let PrettyError = require("pretty-error");
 import * as http from "http";
 import { match } from "react-router";
@@ -16,18 +16,18 @@ let createHistory = require("react-router/lib/createMemoryHistory");
 import { Provider } from "react-redux";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
-import { createSelectLocationState } from "reducers/routing";
+import { createSelectLocationState } from "./reducers/routing";
 //see https://github.com/zilverline/react-tap-event-plugin. Can probably
 //remove this dep for a future version of react. Need this for the material-ui
 //dependency
 const injectTapEventPlugin = require("react-tap-event-plugin");
 injectTapEventPlugin();
 //import own dependencies
-import { getConfig } from "staticConfig";
-import ApiClient from "helpers/ApiClient";
-import Html from "helpers/Html";
-import getRoutes from "routes";
-import customTheme from "muiTheme";
+import { getConfig } from "./staticConfig";
+import ApiClient from "./helpers/ApiClient";
+import Html from "./helpers/Html";
+import getRoutes from "./routes";
+import customTheme from "./muiTheme";
 var favicon = require('serve-favicon');
 declare var __DEVELOPMENT__: boolean;
 declare var __DISABLE_SSR__: boolean;

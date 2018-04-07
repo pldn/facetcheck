@@ -5,10 +5,10 @@ import * as getClassNames from "classnames";
 import * as N3 from "n3";
 import * as Immutable from "immutable";
 //import own dependencies
-// import {getLabel,State as LabelsState,fetchLabel} from 'reducers/labels'
-import { Term,Leaflet } from "components";
-import { getLabel, getWidgets, WidgetConfig } from "reducers/statements";
-import Tree from "helpers/Tree";
+// import {getLabel,State as LabelsState,fetchLabel} from '../../reducers/labels'
+import { Term,Leaflet } from "../";
+import { getLabel, getWidgets, WidgetConfig } from "../../reducers/statements";
+import Tree from "../../helpers/Tree";
 
 const styles = require("./style.scss");
 namespace ResourceDescriptionSection {

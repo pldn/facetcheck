@@ -2,13 +2,13 @@ import * as React from "react";
 
 import * as getClassName from "classnames";
 import {Label } from 'react-bootstrap'
-import SparqlJson from "helpers/SparqlJson";
-import SparqlBuilder from "helpers/SparqlBuilder";
-import { Facet as FacetProps } from "reducers/facets";
-import { FacetMultiSelect, FacetSlider, FacetProvinces } from "components";
-import { setSelectedFacetValue, setSelectedObject } from "reducers/facets";
-import {  FACETS } from "facetConf";
-import { FacetTypes } from "facetConfUtils";
+import SparqlJson from "../../helpers/SparqlJson";
+import SparqlBuilder from "../../helpers/SparqlBuilder";
+import { Facet as FacetProps } from "../../reducers/facets";
+import { FacetMultiSelect, FacetSlider, FacetProvinces } from "../";
+import { setSelectedFacetValue, setSelectedObject } from "../../reducers/facets";
+import {  FACETS } from "../../facetConf";
+import { FacetTypes } from "../../facetConfUtils";
 namespace Facet {
   //Hacky interface so we can define a static function in an interface
   export interface FacetComponent {

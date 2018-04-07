@@ -5,9 +5,9 @@ import * as N3 from "n3";
 import * as getClassName from "classnames";
 import * as Immutable from 'immutable'
 //import own dependencies
-import { TermLink, TermLiteral} from "components";
-import Tree from 'helpers/Tree'
-import {RenderConfiguration,getLabel} from  'reducers/statements'
+import { TermLink, TermLiteral} from "../";
+import Tree from '../../helpers/Tree'
+import {RenderConfiguration,getLabel} from  '../../reducers/statements'
 import * as nTriply from '@triply/triply-node-utils/build/src/nTriply'
 export namespace Term {
   export interface Props {

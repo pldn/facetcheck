@@ -3,7 +3,7 @@ import * as React from "react";
 import * as _ from "lodash";
 const parse = require("wellknown");
 
-import { TermLiteral, TermLiteralDefault } from "components";
+import { TermLiteral, TermLiteralDefault } from "../";
 import * as styles from "./style.scss";
 
 export type Coords = [number, number];

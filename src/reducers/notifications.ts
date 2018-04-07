@@ -12,7 +12,7 @@ import { Actions as StatementActions } from "./statements";
 // import {Actions as prefixActions} from './prefixes';
 // import {Actions as TriplesActions} from './triples';
 // import {Actions as UploadingActions} from './uploading';
-import { ResponseMetaData } from "helpers/ApiClient";
+import { ResponseMetaData } from "../helpers/ApiClient";
 
 export enum Actions {
   REMOVE_ALL = "triply/notifications/REMOVE_ALL" as any,

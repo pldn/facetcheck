@@ -1,7 +1,7 @@
 import * as Immutable from "immutable";
 
 import { LOCATION_CHANGE } from "react-router-redux";
-import { GlobalState } from "reducers";
+import { GlobalState } from "../reducers";
 export interface JsState {
   locationBeforeTransitions: {
     pathname?: string;

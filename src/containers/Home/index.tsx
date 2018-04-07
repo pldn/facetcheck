@@ -1,12 +1,12 @@
 //external dependencies
 import * as React from "react";
 //import own dependencies
-import { ResourceDescription } from "components";
+import { ResourceDescription } from "../../components";
 import * as getClassName from 'classnames'
 import { connect } from "react-redux";
-import { GlobalState } from "reducers";
+import { GlobalState } from "../../reducers";
 import {Alert} from 'react-bootstrap'
-import { ResourceDescriptions,Errors, getStatementsAsTree } from "reducers/statements";
+import { ResourceDescriptions,Errors, getStatementsAsTree } from "../../reducers/statements";
 
 
 namespace Home {

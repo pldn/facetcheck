@@ -8,8 +8,6 @@ export { default as FacetProvinces } from "./FacetProvinces";
 export { default as FacetSlider } from "./FacetSlider";
 export { default as HamburgerBtn } from "./HamburgerBtn";
 export { default as Leaflet } from "./Leaflet";
-export { default as MaterialRadioButtonGroup } from "./MaterialRadioButtonGroup";
-export { default as MaterialTextField } from "./MaterialTextField";
 export { default as NavIcon } from "./NavIcon";
 export { default as Notification } from "./Notification";
 export { default as Notifications } from "./Notifications";

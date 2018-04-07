@@ -13,16 +13,16 @@ import { ReduxAsyncConnect } from "redux-connect";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 const { AppContainer } = require("react-hot-loader");
-import createStore from "store/create";
-import customTheme from "muiTheme";
+import createStore from "./store/create";
+import customTheme from "./muiTheme";
 const { useScroll } = require("react-router-scroll");
-import { fromJs } from "reducers";
-import { createSelectLocationState } from "reducers/routing";
+import { fromJs } from "./reducers";
+import { createSelectLocationState } from "./reducers/routing";
 import { Router, browserHistory, match, applyRouterMiddleware } from "react-router";
 
 //import own dependencies
-import ApiClient from "helpers/ApiClient";
-import getRoutes from "routes";
+import ApiClient from "./helpers/ApiClient";
+import getRoutes from "./routes";
 
 const client = new ApiClient(fromJs(window.__data));
 // const history = useScroll(() => browserHistory)();

@@ -11,10 +11,10 @@ import * as getClassName from "classnames";
 //import own dependencies
 // import { shouldLoadAuth, load as loadAuth, logout} from 'reducers/auth';
 // import {Account} from 'reducers/accounts'
-import { getPageMetadata } from "reducers/config";
+import { getPageMetadata } from "../../reducers/config";
 // import {getSubclassRelations,fetchShapes} from 'reducers/schema'
-import { getMatchingIris, refreshFacets } from "reducers/facets";
-import { GlobalState } from "reducers";
+import { getMatchingIris, refreshFacets } from "../../reducers/facets";
+import { GlobalState } from "../../reducers";
 
 namespace App {
   export interface DispatchProps {

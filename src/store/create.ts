@@ -2,15 +2,15 @@
 import { createStore as _createStore, applyMiddleware, compose, Middleware, Store } from "redux";
 import { routerMiddleware } from "react-router-redux";
 import { createEpicMiddleware } from "redux-observable";
-import { rootEpic } from "reducers";
-import createPromiseMw from "store/promiseMw";
+import { rootEpic } from "../reducers";
+import createPromiseMw from "./promiseMw";
 // import {persistState} from 'redux-devtools';
 // import * as ReactRouter from 'react-router';
-import { Config } from "staticConfig";
+import { Config } from "../staticConfig";
 //import own dependencies
-import { GlobalState, default as reducer, fromJs } from "reducers";
+import { GlobalState, default as reducer, fromJs } from "../reducers";
 // import * as History from 'history'
-import ApiClient from "helpers/ApiClient";
+import ApiClient from "../helpers/ApiClient";
 import thunk from "redux-thunk";
 declare var module: any;
 declare var window: __App.ReactWindow;

@@ -1,7 +1,7 @@
 import * as N3 from 'n3';
 import * as _ from 'lodash'
 import {Statements,Term,ntriplyToNquads} from '@triply/triply-node-utils/build/src/nTriply'
-import { default as prefixes, prefix } from "prefixes";
+import { default as prefixes, prefix } from "../prefixes";
 export default class TreeNode {
   private term:Term;
   private childrenCount = 0

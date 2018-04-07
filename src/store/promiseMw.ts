@@ -1,11 +1,11 @@
 //external dependencies
 import * as _ from "lodash";
 import { Middleware, Store } from "redux";
-import { GlobalState } from "reducers";
+import { GlobalState } from "../reducers";
 // import {Models} from 'Contract'
 
 //import own dependencies
-import ApiClient from "helpers/ApiClient";
+import ApiClient from "../helpers/ApiClient";
 
 var createClientMiddleware = function(client: ApiClient): Middleware {
   return (store: Store<GlobalState>) => {

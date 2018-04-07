@@ -1,8 +1,8 @@
 import * as React from "react";
 
 import { spring, TransitionMotion, presets } from "react-motion";
-import { StateInterface as NotificationState, removeNotification } from "reducers/notifications";
-import { Notification } from "components";
+import { StateInterface as NotificationState, removeNotification } from "../../reducers/notifications";
+import { Notification } from "../";
 
 export namespace Notifications {
   export interface Props {

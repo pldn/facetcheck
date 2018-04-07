@@ -4,7 +4,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom/server";
 let serialize = require("serialize-javascript");
 import { Helmet } from "react-helmet";
-import { toJs } from "reducers";
+import { toJs } from "../reducers";
 //import own dependencies
 
 /**

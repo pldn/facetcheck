@@ -2,7 +2,7 @@
 import * as React from "react";
 import * as _ from "lodash";
 import * as N3 from 'n3'
-import { TermLiteral } from "components";
+import { TermLiteral } from "../";
 import * as styles from './style.scss'
 @TermLiteral.staticImplements<TermLiteral.TermLiteralRenderer>()
 export class TermLiteralTextarea extends React.PureComponent<TermLiteral.Props, any> {

@@ -1,17 +1,17 @@
 import * as React from "react";
-import { Facet as GenericFacetProps } from "reducers/facets";
-import { FACETS } from "facetConf";
-import { FacetValue } from "facetConfUtils";
+import { Facet as GenericFacetProps } from "../../reducers/facets";
+import { FACETS } from "../../facetConf";
+import { FacetValue } from "../../facetConfUtils";
 var provincesSvg = "";
 if (__CLIENT__) {
   provincesSvg = require("./provinces.raw.svg");
 }
-import SparqlJson from "helpers/SparqlJson";
-import { Facet } from "components";
+import SparqlJson from "../../helpers/SparqlJson";
+import { Facet } from "../";
 const SVGInline = require("react-svg-inline").default;
 import * as _ from "lodash";
 import * as getClassName from "classnames";
-import SparqlBuilder from "helpers/SparqlBuilder";
+import SparqlBuilder from "../../helpers/SparqlBuilder";
 
 const provinces:FacetProvinces.Provinces[] = ["limburg"
 , "zeeland"

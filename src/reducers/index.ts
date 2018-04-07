@@ -5,13 +5,13 @@ import * as ReduxObservable from "redux-observable";
 //import own dependencies
 
 // import {State as NotificationState} from './notifications';
-import { ResponseMetaData } from "helpers/ApiClient";
+import { ResponseMetaData } from "../helpers/ApiClient";
 import * as Redux from "redux";
 const { reducer } = require("redux-connect");
 import * as _ from "lodash";
 import { reducer as form } from "redux-form";
 
-import ApiClient from "helpers/ApiClient";
+import ApiClient from "../helpers/ApiClient";
 
 /**
  * Reducers (keep in alphabetic order)

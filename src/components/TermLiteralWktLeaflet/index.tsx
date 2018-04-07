@@ -1,7 +1,7 @@
 //external dependencies
 import * as React from "react";
 const parse = require("wellknown");
-import { TermLiteral, Leaflet } from "components";
+import { TermLiteral, Leaflet } from "../";
 
 const wkt = [
   "https://triply.cc/wkt/multiPolygon",

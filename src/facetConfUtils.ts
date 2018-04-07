@@ -1,6 +1,6 @@
-import { Term as SparqlTerm } from "helpers/SparqlJson";
+import { Term as SparqlTerm } from "./helpers/SparqlJson";
 export type FacetTypes = "multiselect" | "slider" | "nlProvinces" | "multiselectText";
-import { FacetProps } from "reducers/facets";
+import { FacetProps } from "./reducers/facets";
 export interface FacetConfig {
   facetKey?: string;
   label?: string;

@@ -1,7 +1,7 @@
 //external dependencies
 import * as React from "react";
 
-import { TermLiteral, Ellipsis } from "components";
+import { TermLiteral, Ellipsis } from "../";
 
 @TermLiteral.staticImplements<TermLiteral.TermLiteralRenderer>()
 class TermLiteralDefault extends React.PureComponent<TermLiteral.Props, any> {

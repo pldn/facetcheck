@@ -1,7 +1,7 @@
 //external dependencies
 import * as React from "react";
 
-import { TermLiteral } from "components";
+import { TermLiteral } from "../";
 
 const numeric = [
   "http://www.w3.org/2001/XMLSchema#decimal",

@@ -5,7 +5,7 @@ import { Helmet } from "react-helmet";
 import { Grid, Row, Col } from "react-bootstrap";
 
 //import own dependencies
-import { Svg } from "components";
+import { Svg } from "../../components";
 
 import * as styles from "./style.scss";
 const icon = require("./sad.svg");

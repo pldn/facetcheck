@@ -2,18 +2,18 @@
 import * as _ from "lodash";
 import * as N3 from "n3";
 import * as Immutable from "immutable";
-import ApiClient from "helpers/ApiClient";
-import { GlobalActions, GlobalState } from "reducers";
-import { FACETS, CLASSES } from "facetConf";
-import { FacetValue,ClassConfig } from "facetConfUtils";
+import ApiClient from "../helpers/ApiClient";
+import { GlobalActions, GlobalState } from "../reducers";
+import { FACETS, CLASSES } from "../facetConf";
+import { FacetValue,ClassConfig } from "../facetConfUtils";
 import * as ReduxObservable from "redux-observable";
 import * as Redux from "redux";
 import * as RX from "rxjs";
-import { Facet as FacetComponent } from "components";
-import { default as prefixes, getAsString, prefix } from "prefixes";
-import SparqlBuilder from "helpers/SparqlBuilder";
+import { Facet as FacetComponent } from "../components";
+import { default as prefixes, getAsString, prefix } from "../prefixes";
+import SparqlBuilder from "../helpers/SparqlBuilder";
 import * as sparqljs from "sparqljs";
-import { default as SparqlJson, Term as SparqlTerm } from "helpers/SparqlJson";
+import { default as SparqlJson, Term as SparqlTerm } from "../helpers/SparqlJson";
 // import {Actions as FacetActions} from './facets'
 //import own dependencies
 export enum Actions {

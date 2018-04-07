@@ -10,15 +10,15 @@ import { Navbar, Button } from "react-bootstrap";
 
 //import own dependencies
 // import {IConfig} from 'reducers/config'
-import { HamburgerBtn, NavIcon, Notifications, Svg } from "components";
-import { Panel } from "containers";
+import { HamburgerBtn, NavIcon, Notifications, Svg } from "../../components";
+import { Panel } from "../../containers";
 // import {getCurrentUrl} from 'staticConfig'
-import { toggleDsPanelCollapseLg } from "reducers/app";
-import { StateInterface, removeNotification } from "reducers/notifications";
-import { RouteComponentProps } from "containers";
+import { toggleDsPanelCollapseLg } from "../../reducers/app";
+import { StateInterface, removeNotification } from "../../reducers/notifications";
+import { RouteComponentProps } from "../../containers";
 import * as reactRouterRedux from "react-router-redux";
-import { GlobalState } from "reducers";
-import { setRootClassname } from "reducers/app";
+import { GlobalState } from "../../reducers";
+import { setRootClassname } from "../../reducers/app";
 
 export interface IAppProps extends RouteComponentProps {
   logout?: Function;

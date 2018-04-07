@@ -3,7 +3,7 @@ import * as React from "react";
 import * as _ from "lodash";
 const languageTags = require("language-tags");
 
-import { TermLiteral, TermLiteralDefault } from "components";
+import { TermLiteral, TermLiteralDefault } from "../";
 
 @TermLiteral.staticImplements<TermLiteral.TermLiteralRenderer>()
 export /* this statement implements both normal interface & static interface */

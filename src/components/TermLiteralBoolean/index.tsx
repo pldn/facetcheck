@@ -2,7 +2,7 @@
 import * as React from "react";
 import * as getClassName from "classnames";
 
-import { TermLiteral, TermLiteralDefault } from "components";
+import { TermLiteral, TermLiteralDefault } from "../";
 import * as styles from "./style.scss";
 
 @TermLiteral.staticImplements<TermLiteral.TermLiteralRenderer>()

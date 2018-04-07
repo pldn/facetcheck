@@ -2,7 +2,7 @@
 import * as React from "react";
 import * as url from "url";
 
-import { TermLiteral, TermLiteralDefault } from "components";
+import { TermLiteral, TermLiteralDefault } from "../";
 
 @TermLiteral.staticImplements<TermLiteral.TermLiteralRenderer>()
 class TermLiteralLink extends React.PureComponent<TermLiteral.Props, any> {

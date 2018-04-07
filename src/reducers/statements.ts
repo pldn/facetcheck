@@ -3,11 +3,11 @@ import * as _ from "lodash";
 import * as N3 from "n3";
 import { extname } from "path";
 import * as Immutable from "immutable";
-import ApiClient from "helpers/ApiClient";
-import { GlobalActions } from "reducers";
-import { default as prefixes, getAsString } from "prefixes";
+import ApiClient from "../helpers/ApiClient";
+import { GlobalActions } from "../reducers";
+import { default as prefixes, getAsString } from "../prefixes";
 const urlParse = require("url-parse");
-import { default as Tree, QueryPattern, QueryObject } from "helpers/Tree";
+import { default as Tree, QueryPattern, QueryObject } from "../helpers/Tree";
 import { Term, Statement, Statements } from "@triply/triply-node-utils/build/src/nTriply";
 import { Actions as FacetsActions, Action as FacetAction } from "./facets";
 import * as ReduxObservable from "redux-observable";
@@ -15,7 +15,7 @@ import * as Redux from "redux";
 import { GlobalState } from "./";
 import * as RX from "rxjs";
 import "rxjs";
-import { CLASSES, FACETS } from "facetConf";
+import { CLASSES, FACETS } from "../facetConf";
 
 // import {Actions as FacetActions} from './facets'
 //import own dependencies

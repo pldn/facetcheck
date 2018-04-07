@@ -10,8 +10,8 @@ import { Store } from "redux";
 //   load as loadAuth
 // } from 'reducers/auth';
 // import {Account} from 'reducers/accounts'
-import { GlobalState } from "reducers";
-import * as Containers from "containers";
+import { GlobalState } from "./reducers";
+import * as Containers from "./containers";
 
 export default (store: Store<GlobalState> = null) => {
   type checkFunction = (nextState: RouterState) => string | undefined;

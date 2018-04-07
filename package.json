@@ -24,7 +24,6 @@
     "test": {
       "command": "mocha $(find ./build/src -name '*-test.js') --require source-map-support/register",
       "env": {
-        "NODE_PATH": "./build/src"
       }
     },
     "compile-config": {
@@ -34,14 +33,12 @@
       "command": "ENV=console && node ./bin/server.js",
       "env": {
         "NODE_ENV": "production",
-        "NODE_PATH": "./build/src",
         "PORT": 3000
       }
     },
     "start-server-dev": {
       "command": "ENV=console && node ./bin/server.js",
       "env": {
-        "NODE_PATH": "./build/src",
         "NODE_ENV": "development",
         "PORT": 3000,
         "NODE_TLS_REJECT_UNAUTHORIZED": "0"
@@ -66,26 +63,16 @@
     "build-client": {
       "command": "ENV=console && webpack --hide-modules --colors --display-error-details --config webpack/config.js",
       "env": {
-        "NODE_ENV": "production"
       }
     },
     "build-client-dev": {
-      "command": "ENV=console && webpack --colors --display-error-details --config webpack/config.js",
-      "env": {
-        "NODE_ENV": "development"
-      }
+      "command": "ENV=console && webpack --colors --display-error-details --config webpack/config.js"
     },
     "build-server": {
-      "command": "ENV=console && node ./bin/server-build.js",
-      "env": {
-        "NODE_ENV": "production"
-      }
+      "command": "ENV=console && node ./bin/server-build.js"
     },
     "testLocal": {
-      "command": "mocha $(find ./build/src -name '*-test.js') --require source-map-support/register",
-      "env": {
-        "NODE_PATH": "./build/src"
-      }
+      "command": "mocha $(find ./build/src -name '*-test.js') --require source-map-support/register"
     }
   },
   "repository": {
