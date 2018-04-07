@@ -1,5 +1,5 @@
 {
-  "name": "facetCheck",
+  "name": "@triply/facetCheck",
   "version": "1.0.0",
   "main": "build/src/index.js",
   "author": "Laurens Rietveld <laurens.rietveld@triply.cc>",
