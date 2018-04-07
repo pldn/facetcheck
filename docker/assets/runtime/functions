@@ -1,0 +1,37 @@
+#!/bin/bash
+set -e
+#print statements as they are executed
+[[ -n $DEBUG_ENTRYPOINT ]] && set -x
+
+
+source ${FACETCHECK_RUNTIME_DIR}/env-defaults
+
+## Execute a command as GITLAB_USER
+exec_as_facetcheck() {
+  sudo -HEu ${FACETCHECK_USER} "$@"
+}
+
+
+
+map_uidgid() {
+  echo "Mapping UID/GID"
+  USERMAP_ORIG_UID=$(id -u ${FACETCHECK_USER})
+  USERMAP_ORIG_GID=$(id -g ${FACETCHECK_USER})
+  USERMAP_GID=${USERMAP_GID:-${USERMAP_UID:-$USERMAP_ORIG_GID}}
+  USERMAP_UID=${USERMAP_UID:-$USERMAP_ORIG_UID}
+  #
+  # # Do a shallow chown, as some paths may have been mounted by docker, and have root as owner
+  # [ -n "${FACETCHECK_LOG_DIR}" ] && chown ${FACETCHECK_USER}:${FACETCHECK_USER} ${FACETCHECK_LOG_DIR};
+  # [ -n "${FACETCHECK__NODE_DIR}" ] && chown ${FACETCHECK_USER}:${FACETCHECK_USER} ${FACETCHECK__NODE_DIR};
+  # [ -n "${FACETCHECK_RUNTIME_DIR}" ] && chown ${FACETCHECK_USER}:${FACETCHECK_USER} ${FACETCHECK_RUNTIME_DIR};
+  # [ -n "${FACETCHECK_HOME}" ] && chown ${FACETCHECK_USER}:${FACETCHECK_USER} ${FACETCHECK_HOME};
+
+
+  if [[ ${USERMAP_UID} != ${USERMAP_ORIG_UID} ]] || [[ ${USERMAP_GID} != ${USERMAP_ORIG_GID} ]]; then
+    echo "Adapting uid and gid for ${FACETCHECK_USER}:${FACETCHECK_USER} to $USERMAP_UID:$USERMAP_GID"
+    groupmod -g ${USERMAP_GID} ${FACETCHECK_USER}
+    sed -i -e "s/:${USERMAP_ORIG_UID}:${USERMAP_GID}:/:${USERMAP_UID}:${USERMAP_GID}:/" /etc/passwd
+  fi
+
+
+}
