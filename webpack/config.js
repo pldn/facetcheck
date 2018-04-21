@@ -103,7 +103,7 @@ module.exports = {
             loader: "ts-loader",
             options: {
               configFileName: "tsconfig-build.json",
-              transpileOnly: isDev
+              transpileOnly: true
             }
           }
         ])

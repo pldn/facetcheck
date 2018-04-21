@@ -5,15 +5,10 @@
   "author": "Laurens Rietveld <laurens.rietveld@triply.cc>",
   "typings": "build/src/index.d.ts",
   "scripts": {
-    "build": "npm run clean && npm run setup-build-context && better-npm-run build-client",
+    "build": "npm run clean && npm run setup-build-context && better-npm-run build-client && tsc  -p tsconfig-build.json",
     "clean": "rm -rf build",
-    "build-client": "better-npm-run build-client",
-    "build-client-dev": "better-npm-run build-client-dev",
-    "build-server": "better-npm-run build-server",
     "setup-build-context": "mkdir -p build && better-npm-run compile-config",
     "start": "better-npm-run start-server-prod",
-    "start-server-dev": "better-npm-run start-server-dev",
-    "watch-server": "better-npm-run watch-server",
     "watch-client": "better-npm-run watch-client",
     "dev": "npm run clean && npm run setup-build-context && npm run watch-client",
     "test": "better-npm-run test",
@@ -32,15 +27,7 @@
       "command": "ENV=console && node ./bin/server.js",
       "env": {
         "NODE_ENV": "production",
-        "PORT": 3000
-      }
-    },
-    "start-server-dev": {
-      "command": "ENV=console && node ./bin/server.js",
-      "env": {
-        "NODE_ENV": "development",
-        "PORT": 3000,
-        "NODE_TLS_REJECT_UNAUTHORIZED": "0"
+        "PORT": 5000
       }
     },
     "watch-client": {
@@ -51,22 +38,12 @@
         "NODE_TLS_REJECT_UNAUTHORIZED": "0"
       }
     },
-    "watch-server": {
-      "command": "ENV=console && node ./bin/server-build.js",
-      "env": {
-        "NODE_ENV": "development",
-        "NODE_TLS_REJECT_UNAUTHORIZED": "0"
-      }
-    },
     "build-client": {
       "command": "webpack --config ./webpack/config.js --progress --profile --colors",
       "env": {}
     },
     "build-client-dev": {
       "command": "webpack --colors --display-error-details --config webpack/config.js"
-    },
-    "build-server": {
-      "command": "node ./bin/server-build.js"
     },
     "testLocal": {
       "command": "mocha $(find ./build/src -name '*-test.js') --require source-map-support/register"

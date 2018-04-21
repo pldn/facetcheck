@@ -11,7 +11,7 @@
         "removeComments": true,
         "sourceMap": true,
         "listFiles": false,
-        "outDir": "./build",
+        "outDir": "./build/src",
         "jsx": "react",
         "experimentalDecorators": true,
         "baseUrl": ".",
