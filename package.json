@@ -44,7 +44,7 @@
       }
     },
     "watch-client": {
-      "command": "webpack-dev-server --public 0.0.0.0 --host 0.0.0.0 --port 4002 --config ./webpack/config.js",
+      "command": "webpack-dev-server --public 0.0.0.0 --host 0.0.0.0 --port 5000 --config ./webpack/config.js",
       "env": {
         "UV_THREADPOOL_SIZE": 100,
         "NODE_ENV": "development",
