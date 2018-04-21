@@ -15,11 +15,11 @@ case ${1} in
 
     case ${1} in
       app:start)
-        npm run build;
-        npm run start;
+        exec_as_facetcheck npm run build;
+        exec_as_facetcheck npm run start;
         ;;
       app:dev)
-        npm run dev
+        exec_as_facetcheck npm run dev
         ;;
     esac
     ;;

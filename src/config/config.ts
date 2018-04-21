@@ -1,4 +1,4 @@
-import { GlobalConfig } from "../facetConfUtils";
+import { GlobalConfig } from "@triply/facetcheck/build/src/facetConfUtils";
 
 const conf: GlobalConfig = {
   endpoint: {

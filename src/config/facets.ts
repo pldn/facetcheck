@@ -1,4 +1,4 @@
-import { FacetConfig as _FacetConfig, toEntity } from "../facetConfUtils";
+import { FacetConfig as _FacetConfig, toEntity } from "@triply/facetcheck/build/src/facetConfUtils";
 import * as _ from "lodash";
 const FACETS: { [property: string]: _FacetConfig } = {
   "http://data.labs.pdok.nl/dataset/windstats/def#Ashoogte": {

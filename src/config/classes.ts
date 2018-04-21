@@ -1,4 +1,6 @@
-import { ClassConfig } from "../facetConfUtils";
+import { ClassConfig } from "@triply/facetcheck/build/src/facetConfUtils";
+
+
 const CLASSES: { [className: string]: ClassConfig } = {
   "http://dbpedia.org/ontology/WindMotor": {
     default: false,

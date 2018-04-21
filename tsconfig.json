@@ -13,7 +13,11 @@
         "listFiles": false,
         "outDir": "./build",
         "jsx": "react",
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "baseUrl": ".",
+        "paths": {
+          "@triply/facetcheck/build/src/*": ["src/*"]
+        }
     },
     "compileOnSave": false,
     "filesGlob": [
