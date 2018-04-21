@@ -1,6 +1,6 @@
 {
   "name": "@triply/facetcheck",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "build/src/index.js",
   "author": "Laurens Rietveld <laurens.rietveld@triply.cc>",
   "typings": "build/src/index.d.ts",
