@@ -29,5 +29,5 @@ COPY ./docker/entrypoint.sh  /sbin/entrypoint.sh
 RUN chmod 755 /sbin/entrypoint.sh
 
 RUN bash ${FACETCHECK_BUILD_DIR}/install.sh
-COPY . ${TRIPLY__NODE_DIR}
+COPY . ${FACETCHECK__NODE_DIR}
 WORKDIR ${FACETCHECK__NODE_DIR}
