@@ -12,6 +12,8 @@
     "watch-client": "better-npm-run watch-client",
     "dev": "npm run clean && npm run setup-build-context && npm run watch-client",
     "test": "better-npm-run test",
+    "prepublishOnly": "npm run build",
+    "postpublish": "versionToBranch",
     "copyAssets": "mkdir -p build/src && rsync -zar  --prune-empty-dirs --include '*/' --exclude '*.ts*' ./src/ ./build/src/",
     "upgrade-interactive": "npm-check --skip-unused -u"
   },
@@ -57,7 +59,7 @@
     "node": ">=5.6.0"
   },
   "dependencies": {
-    "@triply/triply-node-utils": "^1.1.1",
+    "@triply/triply-node-utils": "^1.1.16",
     "@types/chai": "^4.0.4",
     "@types/fs-extra": "^4.0.2",
     "@types/mocha": "^2.2.43",
