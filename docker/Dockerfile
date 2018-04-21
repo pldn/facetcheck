@@ -28,7 +28,6 @@ COPY ./docker/entrypoint.sh  /sbin/entrypoint.sh
 
 RUN chmod 755 /sbin/entrypoint.sh
 
-RUN bash ${FACETCHECK_BUILD_DIR}/install.sh
 COPY . ${FACETCHECK__NODE_DIR}
-RUN chown -R ${FACETCHECK_USER}:${FACETCHECK_USER} ${FACETCHECK__NODE_DIR}
+RUN bash ${FACETCHECK_BUILD_DIR}/install.sh
 WORKDIR ${FACETCHECK__NODE_DIR}
