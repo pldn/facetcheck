@@ -2,7 +2,7 @@ import { GlobalConfig } from "../facetConfUtils";
 
 const conf: GlobalConfig = {
   endpoint: {
-    url: "SPARQL-ENDPOINT"
+    url: "https://triply.eculture.labs.vu.nl/sparql",
     token: null
   }
 };

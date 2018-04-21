@@ -61,13 +61,14 @@ export var Facet = Immutable.Record<FacetProps>(
 );
 export type Facet = Immutable.Record.Inst<FacetProps>;
 
+const defaultClass = _.values<ClassConfig>(CLASSES).find((val) => val.default)
 export var StateRecord = Immutable.Record(
   {
     matchingIris: Immutable.List<string>(),
     facetLabels: Immutable.Map<string,string>(),
     fetchResources: 0,
     updateFacetInfoQueue: Immutable.List<string>(),
-    selectedClass: <string>_.values<ClassConfig>(CLASSES).find((val) => val.default).iri,
+    selectedClass: defaultClass ? defaultClass.iri: null,
     facets: Immutable.OrderedMap<string, Facet>()
   },
   "facets"
@@ -228,6 +229,7 @@ export function facetsToQuery(state: GlobalState) {
    * Add classes
    */
   const selectedClass = getSelectedClass(state.facets);
+
   const classConf = CLASSES[selectedClass];
   if (!classConf) {
     throw new Error("Could not find class config for " + selectedClass);
@@ -341,18 +343,21 @@ export function getSelectedClass(facetState:StateRecordInterface ):string {
 }
 
 export function refreshFacets(state: GlobalState, forClass?: string): Action {
-  if (!forClass || forClass.length === 0) forClass = getSelectedClass(state.facets);
-  var facets: string[] = [];
+  try {
 
-  const classConf = CLASSES[forClass];
-  if (!classConf) {
-    throw new Error("Could not find class config for " + forClass);
-  }
-  var facets: string[] = classConf.facets
-  const fetchLabelsFor:string[] = facets.filter(f => (FACETS[f] && !( 'label' in FACETS[f]) && !state.facets.facetLabels.has(f)));
-  const getLabelQuery = () => {
-    if (fetchLabelsFor.length === 0) return 'SELECT * WHERE {[] [] []} LIMIT 0'
-    return `
+    if (!forClass || forClass.length === 0) forClass = getSelectedClass(state.facets);
+    if (!forClass) throw new Error('No class is selected. Either no default class is selected in the class config, or something else is wrong')
+    var facets: string[] = [];
+
+    const classConf = CLASSES[forClass];
+    if (!classConf) {
+      throw new Error("Could not find class config for " + forClass);
+    }
+    var facets: string[] = classConf.facets
+    const fetchLabelsFor:string[] = facets.filter(f => (FACETS[f] && !( 'label' in FACETS[f]) && !state.facets.facetLabels.has(f)));
+    const getLabelQuery = () => {
+      if (fetchLabelsFor.length === 0) return 'SELECT * WHERE {[] [] []} LIMIT 0'
+      return `
       SELECT ${_.keys(fetchLabelsFor).map((k) => '?'+k).join(' ')} WHERE {
         ${fetchLabelsFor.map((val,key) => {
           return `OPTIONAL {
@@ -360,27 +365,34 @@ export function refreshFacets(state: GlobalState, forClass?: string): Action {
           }`
         }).join(' ')}
       } LIMIT 1`
-  }
-  return {
-    types: [Actions.REFRESH_FACETS, Actions.REFRESH_FACETS_SUCCESS, Actions.REFRESH_FACETS_FAIL],
-    facetQueue: _.uniq(facets),
-    promise: (client: ApiClient) =>
+    }
+    return {
+      types: [Actions.REFRESH_FACETS, Actions.REFRESH_FACETS_SUCCESS, Actions.REFRESH_FACETS_FAIL],
+      facetQueue: _.uniq(facets),
+      promise: (client: ApiClient) =>
       client
-        .req<any, SparqlJson>({
+      .req<any, SparqlJson>({
 
-          sparqlSelect: getLabelQuery()
+        sparqlSelect: getLabelQuery()
+      })
+      .then(sparql => {
+        const vals = sparql.getValues()[0]
+        var labels:{[key:string]:string} = {}
+        fetchLabelsFor.forEach((label, key) => {
+          labels[label] = vals[key] ? vals[key].value : null
         })
-        .then(sparql => {
-          const vals = sparql.getValues()[0]
-          var labels:{[key:string]:string} = {}
-          fetchLabelsFor.forEach((label, key) => {
-            labels[label] = vals[key] ? vals[key].value : null
-          })
-          return {
-            labelKeys: labels
-          }
-        })
-  };
+        return {
+          labelKeys: labels
+        }
+      })
+    };
+  } catch(e) {
+    console.error(e)
+    return {
+      type: Actions.REFRESH_FACETS_FAIL,
+      message: e.message
+    }
+  }
 }
 
 export function getFacetProps(state: GlobalState, forProp: string): Action {

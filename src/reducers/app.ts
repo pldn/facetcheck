@@ -3,7 +3,7 @@ import * as Immutable from "immutable";
 
 //import own dependencies
 import { GlobalState } from "./";
-
+import {Actions as FacetsActions} from './facets'
 export enum Actions {
   SET_ROOT_CLASS = "triply/app/TOGGLE_CLASS" as any,
   //Toggling of the panel on small screens is stored in react-router part of the state,
@@ -14,7 +14,8 @@ export enum Actions {
 export var StateRecord = Immutable.Record(
   {
     className: <string>null,
-    dsPanelCollapsedLg: false
+    dsPanelCollapsedLg: false,
+    globalErr:<string>null
   },
   "app"
 );
@@ -27,6 +28,8 @@ export function reducer(state = initialState, action: any): StateRecordInterface
       return state.set("className", action.className);
     case Actions.TOGGLE_DS_PANEL_COLLAPSE_LG:
       return state.set("dsPanelCollapsedLg", !state.dsPanelCollapsedLg);
+    case FacetsActions.REFRESH_FACETS_FAIL:
+      return state.set("globalErr", action.message);
     default:
       return state;
   }
