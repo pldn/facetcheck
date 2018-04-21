@@ -1,5 +1,8 @@
 FROM node:8
 ARG BASENAME
+ARG SSH_PRIVATE_KEY=''
+ARG BUILD_DATE
+
 MAINTAINER laurens.rietveld@triply.cc
 ENV FACETCHECK_CACHE_DIR="/etc/docker-facetcheck" \
     FACETCHECK_USER="facetcheck" \
