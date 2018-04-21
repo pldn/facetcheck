@@ -1,17 +1,22 @@
-var path = require('path');
-var rootDir = path.resolve(__dirname, '..', 'build');
-/**
- * Define isomorphic constants.
- */
-global.__CLIENT__ = false;
-global.__SERVER__ = true;
-global.__DISABLE_SSR__ = false;  // <----- DISABLES SERVER SIDE RENDERING FOR ERROR DEBUGGING
-global.__DEVELOPMENT__ = process.env.NODE_ENV !== 'production';
-global.__BASENAME__ = process.env.BASENAME || '';
 
-var WebpackIsomorphicTools = require('webpack-isomorphic-tools');
-global.webpackIsomorphicTools = new WebpackIsomorphicTools(require('../webpack/webpack-isomorphic-tools'))
-  // .development(__DEVELOPMENT__)
-  .server(rootDir, function() {
-      require('../build/src/server');
-  });
+/**
+ * This server is to run your build locally
+ */
+
+const express = require('express');
+const path = require('path');
+
+const port = process.env.PORT || 8080;
+const app = express();
+
+// serve static assets normally
+app.use(express.static(`${__dirname}/../build/assets/dist`));
+
+// handle every other route with index.html, which will contain
+// a script tag to your application's JavaScript file(s).
+app.get('*', (request, response) => {
+  response.sendFile(`${__dirname}/../build/assets/dist/index.html`);
+});
+
+app.listen(port);
+console.log(`server started on port ${port}`);

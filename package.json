@@ -5,7 +5,7 @@
   "author": "Laurens Rietveld <laurens.rietveld@triply.cc>",
   "typings": "build/src/index.d.ts",
   "scripts": {
-    "build": "npm run clean && npm run setup-build-context && concurrently --prefix-colors \"bgBlue,bgMagenta\" --names \"client,server\" --prefix name \"better-npm-run build-client\" \"better-npm-run build-server\"",
+    "build": "npm run clean && npm run setup-build-context && better-npm-run build-client",
     "clean": "rm -rf build",
     "build-client": "better-npm-run build-client",
     "build-client-dev": "better-npm-run build-client-dev",
@@ -15,7 +15,7 @@
     "start-server-dev": "better-npm-run start-server-dev",
     "watch-server": "better-npm-run watch-server",
     "watch-client": "better-npm-run watch-client",
-    "dev": "npm run clean && npm run setup-build-context && concurrently --names \"client,server\" --prefix name \"npm run watch-client\" --prefix-colors \"bgBlue,bgMagenta,bgGreen\" \"npm run watch-server\"",
+    "dev": "npm run clean && npm run setup-build-context && npm run watch-client",
     "test": "better-npm-run test",
     "copyAssets": "mkdir -p build/src && rsync -zar  --prune-empty-dirs --include '*/' --exclude '*.ts*' ./src/ ./build/src/",
     "upgrade-interactive": "npm-check --skip-unused -u"
@@ -44,8 +44,7 @@
       }
     },
     "watch-client": {
-      "//": "remove webpack-assets. This way, we won't have the server using a stale version, as it now waits for assets file to be generated",
-      "command": "ENV=console && rm -f webpack-assets.json && node webpack/webpack-dev-server.js --no-info",
+      "command": "webpack-dev-server --public 0.0.0.0 --host 0.0.0.0 --port 4002 --config ./webpack/config.js",
       "env": {
         "UV_THREADPOOL_SIZE": 100,
         "NODE_ENV": "development",
@@ -60,14 +59,14 @@
       }
     },
     "build-client": {
-      "command": "ENV=console && webpack --hide-modules --colors --display-error-details --config webpack/config.js",
+      "command": "webpack --config ./webpack/config.js --progress --profile --colors",
       "env": {}
     },
     "build-client-dev": {
-      "command": "ENV=console && webpack --colors --display-error-details --config webpack/config.js"
+      "command": "webpack --colors --display-error-details --config webpack/config.js"
     },
     "build-server": {
-      "command": "ENV=console && node ./bin/server-build.js"
+      "command": "node ./bin/server-build.js"
     },
     "testLocal": {
       "command": "mocha $(find ./build/src -name '*-test.js') --require source-map-support/register"
@@ -211,6 +210,7 @@
     "wicket": "git+https://github.com/arthur-e/Wicket.git"
   },
   "devDependencies": {
+    "html-webpack-plugin": "^3.2.0",
     "husky": "^0.14.3",
     "lint-staged": "^4.2.3",
     "prettier": "^1.7.4"

@@ -12,7 +12,7 @@ var WebpackBuildNotifierPlugin = require("webpack-build-notifier");
 var LodashModuleReplacementPlugin = require("lodash-webpack-plugin");
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 const { removeEmpty, ifElse, merge, removeEmptyKeys } = require("./helpers");
-
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 const isDev = process.env.NODE_ENV !== "production";
 const isProd = process.env.NODE_ENV === "production";
 const ifDev = ifElse(isDev);
@@ -21,10 +21,6 @@ const ifProd = ifElse(isProd);
 var host = appConfig.clientConnection.domain || "localhost";
 var autoprefixer = require("autoprefixer");
 // https://github.com/halt-hammerzeit/webpack-isomorphic-tools
-var WebpackIsomorphicToolsPlugin = require("webpack-isomorphic-tools/plugin");
-var webpackIsomorphicToolsPlugin = new WebpackIsomorphicToolsPlugin(require("./webpack-isomorphic-tools")).development(
-  isDev
-);
 
 //If you change this value, make sure to also update the postcss.config.js file
 const SUPPORTED_BROWSERS = [
@@ -46,8 +42,8 @@ module.exports = {
     main: removeEmpty([
       ifDev("react-hot-loader/patch"),
       require.resolve("./polyfills"),
-      ifDev("webpack/hot/dev-server"),
-      ifDev("webpack-dev-server/client?http://0.0.0.0:" + appConfig.getDevServerPort() + "/"),
+      // ifDev("webpack/hot/dev-server"),
+      // ifDev("webpack-dev-server/client?http://0.0.0.0:" + appConfig.getDevServerPort() + "/"),
       ifDev("bootstrap-loader", "bootstrap-loader/extractStyles"),
       //using a fork of the package font-awesome-webpack
       //the original one is not properly compatible with webpack2
@@ -63,11 +59,13 @@ module.exports = {
     //using dev server url. setting this to actual path will let webpack write files to disk
     //NOTE: using a _relative_ dist dir in production, so we can proxy to this webservice via a location directive
     //This relative path will create issues if we implement a multi-page facetcheck
-    publicPath: isDev ? "http://" + host + ":" + appConfig.getDevServerPort() + "/dist/" : (process.env['BASENAME'] || '') + '/dist/'
+    // publicPath: isDev
+    //   ? "http://" + host + ":" + appConfig.getDevServerPort() + "/dist/"
+    //   : (process.env["BASENAME"] || "") + "/dist/"
   },
   resolve: {
     alias: {
-      "@triply/facetcheck/build/src": path.resolve(__dirname, '..', 'src'),
+      "@triply/facetcheck/build/src": path.resolve(__dirname, "..", "src")
       // leaflet_css: __dirname + "/../node_modules/leaflet/dist/leaflet.css",
       // leaflet_marker: __dirname + "/../node_modules/leaflet/dist/images/marker-icon.png",
       // leaflet_marker_2x: __dirname + "/../node_modules/leaflet/dist/images/marker-icon-2x.png",
@@ -332,13 +330,6 @@ module.exports = {
           limit: 1000,
           mimetype: "application/octet-stream"
         }
-      },
-      {
-        test: webpackIsomorphicToolsPlugin.regular_expression("images"),
-        loader: "url-loader",
-        options: {
-          limit: 10240
-        }
       }
     ])
   },
@@ -393,7 +384,7 @@ module.exports = {
       __CLIENT__: true,
       __SERVER__: false,
       __DEVELOPMENT__: isDev,
-      __BASENAME__: process.env['BASENAME'] || '',
+      __BASENAME__: process.env["BASENAME"] || "",
       __DEVTOOLS__: isDev // <-------- DISABLE redux-devtools HERE
     }),
     ifProd(new LodashModuleReplacementPlugin()),
@@ -405,8 +396,9 @@ module.exports = {
         }
       })
     ),
-
-    webpackIsomorphicToolsPlugin
+    new HtmlWebpackPlugin({
+      template: "./src/template.html"
+    })
   ]),
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.

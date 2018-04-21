@@ -30,9 +30,7 @@ import getRoutes from "./routes";
 import customTheme from "./muiTheme";
 var favicon = require('serve-favicon');
 declare var __DEVELOPMENT__: boolean;
-declare var __DISABLE_SSR__: boolean;
 declare var __BASENAME__:string;
-__DISABLE_SSR__ = true;
 const config = getConfig();
 // const targetUrl = "http://" + config.clientConnection.domain + ":" + config.clientConnection.publicPort;
 const pretty = new PrettyError();
@@ -67,12 +65,8 @@ app.use(favicon('./public/images/favicon.ico'));
 //   json = { error: "proxy_error", reason: error.message };
 //   res.end(JSON.stringify(json));
 // });
-declare var webpackIsomorphicTools: any;
 declare var global: any;
 
-if (__DISABLE_SSR__) {
-  console.warn("Server side rendering disabled!");
-}
 
 app.use((req: Express.Request, res: Express.Response) => {
   //we need the useragent for MUI-theme to work on the server...
@@ -80,86 +74,20 @@ app.use((req: Express.Request, res: Express.Response) => {
   global.navigator = global.navigator || {};
   global.navigator.userAgent = req.headers["user-agent"] || "all";
 
-  if (__DEVELOPMENT__) {
-    // Do not cache webpack stats: the script file would change since
-    // hot module replacement is enabled in the development env
-    webpackIsomorphicTools.refresh();
-  }
 
   const client = new ApiClient({} as any, req);
   const history = createHistory(req.originalUrl);
 
   const store = createStore(history, client);
 
-  const syncedHistory = syncHistoryWithStore(history, store as any, {
-    selectLocationState: createSelectLocationState()
-  });
   function hydrateOnClient() {
     res.send(
-      "<!doctype html>\n" + ReactDOM.renderToString(<Html assets={webpackIsomorphicTools.assets()} store={store} />)
+      "<!doctype html>\n" + ReactDOM.renderToString(<Html store={store} />)
     );
   }
 
-  if (__DISABLE_SSR__) {
     hydrateOnClient();
     return;
-  }
-  // match({ history, routes: getRoutes(store), location: req.originalUrl }, (error, redirectLocation, renderProps) => {
-  var bla: any = { syncedHistory, routes: getRoutes(store), basename: __BASENAME__,location: req.originalUrl };
-  match(bla, (error: any, redirectLocation: any, renderProps: any) => {
-    if (redirectLocation) {
-      res.redirect(redirectLocation.pathname + redirectLocation.search);
-    } else if (error) {
-      console.error("ROUTER ERROR:", pretty.render(error));
-      res.status(500);
-      hydrateOnClient();
-    } else if (renderProps) {
-      // loadOnServer({...renderProps, store, helpers: {client}}).then(() => {
-      loadOnServer(_.merge({}, renderProps, { store, helpers: { client } })).then(() => {
-        const component = (
-          <Provider store={store} key="provider">
-            <MuiThemeProvider
-              muiTheme={getMuiTheme(_.assign({}, customTheme, { userAgent: req.headers["user-agent"] }))}
-            >
-              <ReduxAsyncConnect {...renderProps} />
-            </MuiThemeProvider>
-          </Provider>
-        );
-
-        res.status(200);
-
-        //used for muitheme
-        global.navigator = { userAgent: req.headers["user-agent"] };
-        try {
-          res.send(
-            "<!doctype html>\n" +
-              ReactDOM.renderToString(
-                <Html assets={webpackIsomorphicTools.assets()} component={component} store={store} />
-              )
-          );
-        } catch (e) {
-          console.error(e);
-          if (__DEVELOPMENT__) {
-            try {
-              const RedBox = require("redbox-react").default;
-              res.send(
-                ReactDOM.renderToString(
-                  <Html assets={webpackIsomorphicTools.assets()} component={<RedBox error={e} />} store={store} />
-                )
-              );
-            } catch (e) {
-              console.error("Tried sending redbox error but failed. Something is REALLY wrong now", e);
-              res.send("Something is REALLY wrong. Could not draw error page.  " + e.toString());
-            }
-          } else {
-            res.send("Something went really wrong here.. Please try again.");
-          }
-        }
-      });
-    } else {
-      res.status(404).send("Not found");
-    }
-  });
 });
 
 if (config.internalPort) {

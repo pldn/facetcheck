@@ -27,7 +27,7 @@ import getRoutes from "./routes";
 const client = new ApiClient(fromJs(window.__data));
 // const history = useScroll(() => browserHistory)();
 
-const dest = document.getElementById("content");
+const dest = document.getElementById("app");
 
 declare var window: __App.ReactWindow;
 declare var module: any;
