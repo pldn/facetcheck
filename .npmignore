@@ -5,3 +5,5 @@ node_modules
 data
 tmp
 documentation
+/build/**/*.js
+/build/**/*.js.map
