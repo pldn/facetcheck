@@ -1,8 +1,16 @@
 version: '3'
 services:
   facetcheck:
-    restart: always
+    restart: unless-stopped
     image: triply/facetcheck
-    build: .
+    build:
+      context: ../
+      dockerfile: ./docker/Dockerfile
+    command: ["app:dev"]
+    environment:
+      - FACETCHECK_DEV=true
+    volumes:
+      - ../:/home/facetcheck/node
     ports:
      - "5000:5000"
+     - "5005:5005"

@@ -7,15 +7,9 @@ fi
 source ${FACETCHECK_RUNTIME_DIR}/functions
 
 map_uidgid
-configure_nginx
-if $FACETCHECK_DEV; then
-  configure_dev_notifications
-  build_node_modules
-
-fi
 
 case ${1} in
-  app:start|app:test|app:lint)
+  app:start|app:dev)
 
 
 
