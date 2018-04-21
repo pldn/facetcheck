@@ -1,6 +1,6 @@
 {
   "name": "@triply/facetcheck",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "build/src/index.js",
   "author": "Laurens Rietveld <laurens.rietveld@triply.cc>",
   "typings": "build/src/index.d.ts",
@@ -23,8 +23,7 @@
   "betterScripts": {
     "test": {
       "command": "mocha $(find ./build/src -name '*-test.js') --require source-map-support/register",
-      "env": {
-      }
+      "env": {}
     },
     "compile-config": {
       "command": "ENV=console && node ./bin/config-build"
@@ -62,8 +61,7 @@
     },
     "build-client": {
       "command": "ENV=console && webpack --hide-modules --colors --display-error-details --config webpack/config.js",
-      "env": {
-      }
+      "env": {}
     },
     "build-client-dev": {
       "command": "ENV=console && webpack --colors --display-error-details --config webpack/config.js"
