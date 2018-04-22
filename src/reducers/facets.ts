@@ -8,12 +8,12 @@ import { FACETS, CLASSES } from "../facetConf";
 import { FacetValue,ClassConfig } from "../facetConfUtils";
 import * as ReduxObservable from "redux-observable";
 import * as Redux from "redux";
-import * as RX from "rxjs";
 import { Facet as FacetComponent } from "../components";
-import { default as prefixes, getAsString, prefix } from "../prefixes";
+import {getPrefixes, getAsString, prefix} from '../prefixes'
+import {default as Config} from '../config/config'
 import SparqlBuilder from "../helpers/SparqlBuilder";
 import * as sparqljs from "sparqljs";
-import { default as SparqlJson, Term as SparqlTerm } from "../helpers/SparqlJson";
+import { default as SparqlJson } from "../helpers/SparqlJson";
 // import {Actions as FacetActions} from './facets'
 //import own dependencies
 export enum Actions {
@@ -219,7 +219,7 @@ export function getFacetsForClass(selectedClass:string):string[] {
   return CLASSES[selectedClass].facets;
 }
 export function facetsToQuery(state: GlobalState) {
-  const sparqlBuilder = SparqlBuilder.get(prefixes);
+  const sparqlBuilder = SparqlBuilder.get(getPrefixes(Config));
   sparqlBuilder
     .vars("?_r")
     .limit(5)

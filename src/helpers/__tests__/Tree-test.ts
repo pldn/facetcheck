@@ -5,7 +5,8 @@ import * as N3 from 'n3'
 import * as fs from 'fs-extra'
 import * as path from 'path'
 import Tree from '../Tree'
-import prefixes from '../../prefixes'
+import {getPrefixes, getAsString, prefix} from '../../prefixes'
+import {default as Config} from '../../config/config'
 import {Term, n3ToNtriply} from '@triply/triply-node-utils/build/src/nTriply'
 
 async function getTree(fromFile:string, forStatement:Term) {
@@ -51,11 +52,11 @@ describe.only("Tree", function() {
       expect(match.getChildrenCount()).to.equal(2)
     })
     it("Find WKT", function() {
-      var matches = pdokTree.find([prefixes.geo + 'hasGeometry', null, prefixes.geo + 'asWKT']).exec();
+      var matches = pdokTree.find([prefix(getPrefixes(Config), 'geo', 'hasGeometry'), null, prefix(getPrefixes(Config), 'geo', 'asWKT')]).exec();
       expect(matches).to.have.lengthOf(1);
     })
     it("Find WKT with limit", function() {
-      var matches = geosoupTree.find([prefixes.geo + 'hasGeometry', null, prefixes.geo + 'asWKT']).limit(1).exec();//actually has 2 matches
+      var matches = geosoupTree.find([prefix(getPrefixes(Config), 'geo', 'hasGeometry'), null, prefix(getPrefixes(Config), 'geo', 'asWKT')]).limit(1).exec();//actually has 2 matches
       expect(matches).to.have.lengthOf(1);
     })
     // it.only("Should not have duplicate results", function() {

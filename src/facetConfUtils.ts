@@ -18,7 +18,8 @@ export interface GlobalConfig {
   endpoint: {
     url:string,
     token?:string
-  }
+  },
+  prefixes: {[label:string]:string}
 }
 export interface ClassConfig {
   default: boolean;

@@ -5,7 +5,8 @@ import { extname } from "path";
 import * as Immutable from "immutable";
 import ApiClient from "../helpers/ApiClient";
 import { GlobalActions } from "../reducers";
-import { default as prefixes, getAsString } from "../prefixes";
+import {getPrefixes, getAsString, prefix} from '../prefixes'
+import {default as Config} from '../config/config'
 const urlParse = require("url-parse");
 import { default as Tree, QueryPattern, QueryObject } from "../helpers/Tree";
 import { Term, Statement, Statements } from "@triply/triply-node-utils/build/src/nTriply";
@@ -141,7 +142,7 @@ export function markForFetchingOrDeletion(toRemove: string[], toFetch: string[])
 export function getStatements(resource: string, className: string): Action {
   if (!className) throw new Error("missing classname. cannot get statements");
   if (!resource) throw new Error("missing resource IRI. cannot get statements");
-  const q = `${getAsString()} ${CLASSES[className].resourceDescriptionQuery(resource)}`;
+  const q = `${getAsString(getPrefixes(Config))} ${CLASSES[className].resourceDescriptionQuery(resource)}`;
   console.groupCollapsed("Querying for resource description of " + resource);
   console.info(q);
   console.groupEnd();
@@ -193,7 +194,7 @@ export type SelectWidget = (tree: Tree) => WidgetConfig;
  */
 const selectGeometry: SelectWidget = t => {
   const node = t
-    .find([prefixes.geo + "hasGeometry", null, prefixes.geo + "asWKT"])
+    .find([prefix(getPrefixes(Config), 'geo', "hasGeometry"), null, prefix(getPrefixes(Config), 'geo', "asWKT")])
     .exec();
   if (node.length) {
     return <WidgetConfig>{
@@ -207,7 +208,7 @@ const selectGeometry: SelectWidget = t => {
 };
 const selectDescription: SelectWidget = t => {
   const node = t
-    .find([prefixes.dct + "description", null])
+    .find([prefix(getPrefixes(Config), 'dct', "description"), null])
     .limit(1)
     .exec();
   if (node.length) {
@@ -237,7 +238,7 @@ $(IRI) foaf:depiction ?img .
 */
 const selectImage: SelectWidget = t => {
   // console.log(t)
-  const patterns: QueryPattern[] = [...findImageLiteralPatterns, [prefixes.foaf + "depiction", null]];
+  const patterns: QueryPattern[] = [...findImageLiteralPatterns, [prefix(getPrefixes(Config), 'foaf' , "depiction"), null]];
   const images: WidgetConfig[] = [];
   const nodes = t
     .find(...patterns)
@@ -248,7 +249,7 @@ const selectImage: SelectWidget = t => {
     //this might be an image literal, or a depiction resource
     if (node.hasChildren()) {
       const label = node
-        .find([prefixes.rdfs + "label", null], [prefixes.dct + "description", null])
+        .find([prefix(getPrefixes(Config), 'rdfs', "label"), null], [prefix(getPrefixes(Config), 'dct' , "description"), null])
         .limit(1)
         .exec();
       var img: Tree[] = [];
@@ -284,7 +285,7 @@ const selectImage: SelectWidget = t => {
 };
 const selectLabel: SelectWidget = t => {
   const node = t
-    .find([prefixes.rdfs + "label", null])
+    .find([prefix(getPrefixes(Config), 'rdfs' , "label"), null])
     .limit(1)
     .exec();
   if (node.length) {

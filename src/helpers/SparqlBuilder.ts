@@ -1,6 +1,6 @@
 import * as sparqlJs from 'sparqljs'
-import {default as prefixes, getAsString, prefix} from '../prefixes'
-
+import {getPrefixes, getAsString, prefix} from '../prefixes'
+import {default as Config} from '../config/config'
 export default class SparqlBuilder {
   private query:sparqlJs.Query = {
     prefixes: {},
@@ -37,7 +37,7 @@ export default class SparqlBuilder {
       return {type: 'bgp',
       triples: [{
         subject: '?_r',
-        predicate: prefix('rdf', 'type'),
+        predicate: prefix(getPrefixes(Config),'rdf', 'type'),
         object: c
       }]
       }
@@ -58,13 +58,13 @@ export default class SparqlBuilder {
     return this;
   }
   static fromQueryString(qString:string, _prefixes?:sparqlJs.Prefixes) {
-    const parser = new sparqlJs.Parser({...prefixes, ..._prefixes}, 'https://triply.cc/base');
+    const parser = new sparqlJs.Parser({...getPrefixes(Config), ..._prefixes}, 'https://triply.cc/base');
     return new SparqlBuilder(parser.parse(qString))
   }
   static getQueryPattern(bgpString:string, _prefixes?:sparqlJs.Prefixes) {
     bgpString = bgpString.trim();
     if (bgpString[0] !== '{') throw new Error(`Expected a BGP clause. Did you forget to enclose the BGP in parenthesis? ('{' and '}'). The string I received: ${bgpString}`)
-    const parser = new sparqlJs.Parser({...prefixes, ..._prefixes}, 'https://triply.cc/base');
+    const parser = new sparqlJs.Parser({...getPrefixes(Config), ..._prefixes}, 'https://triply.cc/base');
     const parsed = parser.parse(`SELECT * WHERE { ${bgpString} }`)
     return parsed.where[0]
   }
