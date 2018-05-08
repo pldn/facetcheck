@@ -3,6 +3,9 @@
 .resourceDescription {
   position: relative;
   width: 100%;
+  &:global(.whiteSink) {
+    margin-bottom: 10px;
+  }
   .header {
     z-index: 2001;
     position: absolute;

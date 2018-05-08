@@ -10,7 +10,7 @@ import { RadioGroup, RadioButton } from 'react-toolbox/lib/radio';
 
 import Checkbox from 'react-toolbox/lib/checkbox';
 import { GlobalState } from "../../reducers";
-import {setSelectedClass,FacetsProps,setSelectedFacetValue,setSelectedObject,StateRecordInterface} from '../../reducers/facets'
+import {setSelectedClass,FacetsProps,setSelectedFacetValue,setSelectedObject,FacetState} from '../../reducers/facets'
 import {CLASSES,FACETS} from '../../facetConf'
 import {
   Facet,
@@ -28,7 +28,7 @@ namespace Panel {
   export interface PropsFromState {
     selectedClass: string,
     facets: FacetsProps
-    facetLabels: StateRecordInterface['facetLabels']
+    facetLabels: FacetState['facetLabels']
   }
 
   export interface State {

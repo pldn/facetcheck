@@ -76,7 +76,7 @@ export interface GlobalState extends Partial<reactRedux.ProviderProps> {
   // auth: auth.StateRecordInterface,
   app: app.StateRecordInterface;
   config: config.StateRecordInterface;
-  facets: facets.StateRecordInterface;
+  facets: facets.FacetState;
   // contact: contact.StateRecordInterface,
   // containerManagement:containerManagement.StateInterface,
   // containers:containers.StateInterface,

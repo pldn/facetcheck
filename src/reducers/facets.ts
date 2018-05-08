@@ -16,6 +16,7 @@ import * as sparqljs from "sparqljs";
 import { default as SparqlJson } from "../helpers/SparqlJson";
 // import {Actions as FacetActions} from './facets'
 //import own dependencies
+export const RESOURCE_PAGE_SIZE = 6;
 export enum Actions {
   GET_MATCHING_IRIS = "facetcheck/facets/GET_MATCHING_IRIS" as any,
   GET_MATCHING_IRIS_SUCCESS = "facetcheck/facets/GET_MATCHING_IRIS_SUCCESS" as any,
@@ -67,6 +68,8 @@ export var StateRecord = Immutable.Record(
     matchingIris: Immutable.List<string>(),
     facetLabels: Immutable.Map<string,string>(),
     fetchResources: 0,
+    nextPageOffset: 0,
+    hasNextPage: false,
     updateFacetInfoQueue: Immutable.List<string>(),
     selectedClass: defaultClass ? defaultClass.iri: null,
     facets: Immutable.OrderedMap<string, Facet>()
@@ -75,8 +78,8 @@ export var StateRecord = Immutable.Record(
 );
 export var initialState = new StateRecord();
 
-export type StateRecordInterface = typeof initialState;
-export type FacetsProps = StateRecordInterface["facets"];
+export type FacetState = typeof initialState;
+export type FacetsProps = FacetState["facets"];
 
 export interface Action extends GlobalActions<Actions> {
   className?: string;
@@ -86,7 +89,9 @@ export interface Action extends GlobalActions<Actions> {
     optionObject?: FacetProps["optionObject"];
     iris?:string[];
     labelKeys?: {[key:string]:string}
+    hasNextPage?:boolean
   };
+  offset?:number
   facetQueue?: string[];
   facetValueKey?: string;
   checked?: boolean;
@@ -97,17 +102,25 @@ export interface Action extends GlobalActions<Actions> {
 export function reducer(state = initialState, action: Action) {
   switch (action.type) {
     case Actions.GET_MATCHING_IRIS:
-      return state.update("fetchResources", num => num + 1);
+      var result =  state.update("fetchResources", num => num + 1).set('nextPageOffset', action.offset)
+      if (!action.offset) result = state.set('matchingIris', Immutable.List<string>())
+
+      return result;
     case Actions.GET_MATCHING_IRIS_FAIL:
       return state.update("fetchResources", num => num - 1);
     case Actions.GET_MATCHING_IRIS_SUCCESS:
-      return state
+      var result =  state
         .update("fetchResources", num => num - 1)
-        .set("matchingIris", Immutable.List<string>(action.result.iris));
+        .set('hasNextPage', action.result.hasNextPage)
+        .update("matchingIris", iris => iris.concat(action.result.iris));
+      if (action.result.hasNextPage) {
+        var result = result.update('nextPageOffset', offset => offset += action.result.iris.length)
+      }
+      return result;
     case Actions.SET_SELECTED_CLASS:
-      return state.set("selectedClass",action.className);
+      return state.set("nextPageOffset", 0).set("selectedClass",action.className);
     case Actions.SET_FACET_VALUE:
-      return state.update("facets", facet => {
+      return state.set('nextPageOffset', 0).update("facets", facet => {
         return facet.update(action.facetName, new Facet(), _vals => {
           return _vals.withMutations(vals => {
             if (action.facetValueKey) {
@@ -185,13 +198,15 @@ export var epics: [(action: Action$, store: Store) => any] = [
   //update matching iris when facets change
   (action$: Action$, store: Store) => {
     return action$.ofType(Actions.SET_FACET_VALUE).map((action: Action) => {
-      return store.dispatch(getMatchingIris(store.getState()));
+      const facetState = store.getState().facets;
+      return store.dispatch(getMatchingIris(facetState.facets,facetState.selectedClass, facetState.nextPageOffset));
     });
   },
   //update matching iris when facets are refreshed (this triggers new resourcedescriptions as well)
   (action$: Action$, store: Store) => {
     return action$.ofType(Actions.REFRESH_FACETS).map((action: Action) => {
-      return store.dispatch(getMatchingIris(store.getState()));
+      const facetState = store.getState().facets;
+      return store.dispatch(getMatchingIris(facetState.facets,facetState.selectedClass, facetState.nextPageOffset));
     });
   },
 
@@ -218,17 +233,18 @@ export function getFacetsForClass(selectedClass:string):string[] {
   if (!CLASSES[selectedClass]) throw new Error('No class definition found for ' + selectedClass)
   return CLASSES[selectedClass].facets;
 }
-export function facetsToQuery(state: GlobalState) {
+export function facetsToQuery(facets: FacetState['facets'], selectedClass:string, nextPageOffset:number) {
   const sparqlBuilder = SparqlBuilder.get(getPrefixes(Config));
   sparqlBuilder
     .vars("?_r")
-    .limit(5)
+    .limit(RESOURCE_PAGE_SIZE + 1)
+    .offset(nextPageOffset)
     .distinct();
 
   /**
    * Add classes
    */
-  const selectedClass = getSelectedClass(state.facets);
+  // const selectedClass = getSelectedClass(facetState);
 
   const classConf = CLASSES[selectedClass];
   if (!classConf) {
@@ -245,7 +261,7 @@ export function facetsToQuery(state: GlobalState) {
    * Get facets we might need to integrate in this query
    */
   var facetsToCheck: string[] = getFacetsForClass(selectedClass).filter(f => {
-    const facetsValues = state.facets.facets.get(f);
+    const facetsValues = facets.get(f);
     if (!facetsValues) return false;
     return !!_.size(facetsValues.selectedObject) || !!facetsValues.selectedFacetValues.size;
   });
@@ -254,7 +270,7 @@ export function facetsToQuery(state: GlobalState) {
   for (const facetKey of facetsToCheck) {
     const facetConfig = FACETS[facetKey];
     const facetIri = facetKey;
-    const facetsValues = state.facets.facets.get(facetKey);
+    const facetsValues = facets.get(facetKey);
     var bgp = "";
     if (facetsValues.selectedFacetValues.size) {
       const listOfFacetValues = facetsValues.optionList
@@ -309,15 +325,16 @@ export function setSelectedObject(facetProp: string, facetObject: FacetProps["se
 }
 
 var lastExecutedQuery: string;
-export function getMatchingIris(state: GlobalState): any {
+export function getMatchingIris(facets: FacetState['facets'], selectedClass:string, nextPageOffset:number): any {
   try {
-    const query = facetsToQuery(state);
+    const query = facetsToQuery(facets, selectedClass, nextPageOffset);
     if (lastExecutedQuery === query) {
       //return a no-op. no use executing this query again (I think...)
       return () => {};
     }
     lastExecutedQuery = query;
     return {
+      offset: nextPageOffset,
       types: [Actions.GET_MATCHING_IRIS, Actions.GET_MATCHING_IRIS_SUCCESS, Actions.GET_MATCHING_IRIS_FAIL],
       promise: (client: ApiClient) =>
         client
@@ -326,7 +343,8 @@ export function getMatchingIris(state: GlobalState): any {
           })
           .then(sparql => {
             return {
-              iris: sparql.getValuesForVar('_r')
+              iris: sparql.getValuesForVar('_r').slice(0, RESOURCE_PAGE_SIZE),
+              hasNextPage: sparql.getValues().length > RESOURCE_PAGE_SIZE
             };
           })
     };
@@ -338,7 +356,7 @@ export function getMatchingIris(state: GlobalState): any {
     }
   }
 }
-export function getSelectedClass(facetState:StateRecordInterface ):string {
+export function getSelectedClass(facetState:FacetState ):string {
   return facetState.selectedClass
 }
 

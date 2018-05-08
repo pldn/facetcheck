@@ -73,7 +73,6 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, FacetSlider.Sta
     // pad(d.getSeconds())
   }
   static numberToXsdDate(value: number): Partial<Term> {
-    console.log({value})
     return {
       value: FacetSlider.dateToString(new Date(value)),
       type: "typed-literal",

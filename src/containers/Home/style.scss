@@ -37,3 +37,12 @@ div.description {
     height:100%;
     align-items: center;
 }
+.buttons {
+  display:none;
+  width:100%;
+  justify-content: center;
+  &.hasNextPage {
+    display:flex;
+  }
+  margin-bottom: 10px
+}

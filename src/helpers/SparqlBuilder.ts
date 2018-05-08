@@ -27,6 +27,10 @@ export default class SparqlBuilder {
     this.query.limit = limit;
     return this;
   }
+  public offset(offset:number) {
+    this.query.offset = offset;
+    return this;
+  }
   public vars(...vars: string[]) {
     this.query.variables = vars;
     return this;

@@ -1,0 +1,221 @@
+@import "../../theme/bootstrap.overrides/variables.scss";
+// Button variants
+//
+// Easily pump out default styles, as well as :hover, :focus, :active,
+// and disabled options for all buttons
+
+@mixin button-variant-inverse($color, $background, $border, $inverse) {
+  $useColor: if($inverse, $background, $color);
+  $useBackgroundColor: if($inverse, transparent, $background);
+  $useBorderColor: $border;
+  // $useBorderColor: if($inverse, $background, $border);
+
+  color: $useColor;
+  background-color: $useBackgroundColor;
+  border-color: $useBorderColor;
+
+  $focusBgColorEffect: 10%;
+  $focusBorderColorEffect: 25%;
+  $hoverBgColorEffect: 10%;
+  $hoverBorderColorEffect: 12%;
+  $activeBgColorEffect: 10%;
+  $activeBorderColorEffect: 12%;
+  $activeHoverBgColorEffect: 17%;
+  $activeHoverBorderColorEffect: 25%;
+
+  $focusColor: $useColor;
+  $focusBgColor: if(
+    $inverse,
+    lighten($useBackgroundColor, $focusBgColorEffect),
+    darken($useBackgroundColor, $focusBgColorEffect)
+  );
+  $focusBorderColor: darken($useBorderColor, $focusBorderColorEffect);
+
+  $hoverColor: $useColor;
+  $hoverBgColor: if(
+    $inverse,
+    lighten($useBackgroundColor, $hoverBgColorEffect),
+    darken($useBackgroundColor, $hoverBgColorEffect)
+  );
+  $hoverBorderColor: darken($useBorderColor, $hoverBorderColorEffect);
+
+  $activeColor: $useColor;
+  $activeBgColor: if(
+    $inverse,
+    lighten($useBackgroundColor, $activeBgColorEffect),
+    darken($useBackgroundColor, $activeBgColorEffect)
+  );
+  $activeBorderColor: darken($useBorderColor, $activeBorderColorEffect);
+
+  $activeHoverColor: $useColor;
+  $activeHoverBgColor: if(
+    $inverse,
+    lighten($useBackgroundColor, $activeHoverBgColorEffect),
+    darken($useBackgroundColor, $activeHoverBgColorEffect)
+  );
+  $activeHoverBorderColor: darken($useBorderColor, $activeHoverBorderColorEffect);
+
+  //Disabled overwriting the focus, hover, and active vars for inverse, because that would
+  //make e.g. the font color the same color as the background
+  //not sure whether this breaks anything else, so just keeping it here for reference
+  // @if $inverse {
+  //   $focusColor: $color;
+  //   $focusBgColor: $background;
+  //   $focusBorderColor: $border;
+  //
+  //   $hoverColor: $color;
+  //   $hoverBgColor: $background;
+  //   $hoverBorderColor: $border;
+  //
+  //   $activeColor: $color;
+  //   $activeBgColor: $background;
+  //   $activeBorderColor: $border;
+  //
+  //   $activeHoverColor: $color;
+  //   $activeHoverBgColor: $background;
+  //   $activeHoverBorderColor: $border;
+  // }
+  &:focus,
+  &.focus {
+    color: $focusColor;
+    background-color: $focusBgColor;
+    border-color: $focusBorderColor;
+  }
+  &:hover {
+    color: $focusColor;
+    background-color: $hoverBgColor;
+    border-color: $hoverBorderColor;
+  }
+  &:active,
+  &.active,
+  .open > &.dropdown-toggle {
+    color: $activeColor;
+    background-color: $activeBgColor;
+    border-color: $activeBorderColor;
+
+    &:hover,
+    &:focus,
+    &.focus {
+      color: $activeHoverColor;
+      background-color: $activeHoverBgColor;
+      border-color: $activeHoverBorderColor;
+    }
+  }
+  &:active,
+  &.active,
+  .open > &.dropdown-toggle {
+    background-image: none;
+  }
+  &.disabled,
+  &[disabled],
+  fieldset[disabled] & {
+    &,
+    &:hover,
+    &:focus,
+    &.focus,
+    &:active,
+    &.active {
+      background-color: $useBackgroundColor;
+      border-color: $useBorderColor;
+    }
+  }
+
+  .badge {
+    color: $useBackgroundColor;
+    background-color: $useColor;
+  }
+}
+
+// Button sizes
+@mixin button-size($padding-vertical, $padding-horizontal, $font-size, $line-height, $border-radius) {
+  padding: $padding-vertical $padding-horizontal;
+  font-size: $font-size;
+  line-height: $line-height;
+  border-radius: $border-radius;
+}
+
+.btn {
+  transition: color 0.4s, background-color 0.4s, opacity 0.4s;
+  margin-top: 5px;
+
+  display: inline-block;
+  margin-bottom: 0; // For input.btn
+  font-weight: $btn-font-weight;
+  text-align: center;
+  vertical-align: middle;
+  touch-action: manipulation;
+  cursor: pointer;
+  background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
+  border: 1px solid transparent;
+  white-space: nowrap;
+  @include button-size($padding-base-vertical, $padding-base-horizontal, $font-size-base, $line-height-base, $btn-border-radius-base);
+  user-select: none;
+
+  &:hover,
+  &:focus,
+  &.focus {
+    color: $btn-default-color;
+    text-decoration: none;
+    outline: none;
+  }
+
+  &:active,
+  &.active {
+    outline: 0;
+    background-image: none;
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  }
+
+  &.disabled,
+  &[disabled],
+  fieldset[disabled] & {
+    cursor: $cursor-disabled;
+    opacity: 0.65;
+    box-shadow: none;
+  }
+  @include button-variant-inverse($btn-default-color, $btn-default-bg, $btn-default-border, false);
+
+  &.primary {
+    @include button-variant-inverse($btn-primary-color, $btn-primary-bg, $btn-primary-border, false);
+  }
+  // Success appears as green
+  &.success {
+    @include button-variant-inverse($btn-success-color, $btn-success-bg, $btn-success-border, false);
+  }
+  // Info appears as blue-green
+  &.info {
+    @include button-variant-inverse($btn-info-color, $btn-info-bg, $btn-info-border, false);
+  }
+  // Warning appears as orange
+  &.warning {
+    @include button-variant-inverse($btn-warning-color, $btn-warning-bg, $btn-warning-border, false);
+  }
+  // Danger and error appear as red
+  &.danger {
+    @include button-variant-inverse($btn-danger-color, $btn-danger-bg, $btn-danger-border, false);
+  }
+  // Neutral appears as grey
+  &.primaryInverse {
+    @include button-variant-inverse($btn-primary-color, $btn-primary-bg, $btn-primary-border, true);
+  }
+  &.infoInverse {
+    @include button-variant-inverse($btn-info-color, $btn-info-bg, $btn-info-border, true);
+  }
+}
+
+// Alternate buttons
+// --------------------------------------------------
+
+// Button Sizes
+// --------------------------------------------------
+.lg {
+  // line-height: ensure even-numbered height of button next to large input
+  @include button-size($padding-large-vertical, $padding-large-horizontal, $font-size-large, $line-height-large, $btn-border-radius-large);
+}
+.sm {
+  // line-height: ensure proper height of button next to small input
+  @include button-size($padding-small-vertical, $padding-small-horizontal, $font-size-small, $line-height-small, $btn-border-radius-small);
+}
+.xs {
+  @include button-size($padding-xs-vertical, $padding-xs-horizontal, $font-size-small, $line-height-small, $btn-border-radius-small);
+}

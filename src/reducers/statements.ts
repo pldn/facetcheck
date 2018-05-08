@@ -91,14 +91,17 @@ export var epics: [(action: Action$, store: Store) => any] = [
   (action$: Action$, store: Store) => {
     return action$
       .ofType(FacetsActions.GET_MATCHING_IRIS_SUCCESS)
-      .map((action: FacetAction) => action.result)
-      .map(result => {
-        const matchingIris = result.iris;
+      // .map((action: FacetAction) => action.result)
+      .map((action: FacetAction) => {
+
+        const matchingIris = action.result.iris;
         const existingStatements = store
           .getState()
           .statements.resourceDescriptions.keySeq()
           .toArray();
-        const toRemove = _.difference(existingStatements, matchingIris);
+
+        //don't remove anything when we have an offset (we'd like to append)
+        const toRemove = action.offset ? []:_.difference(existingStatements, matchingIris);
         const toFetch = matchingIris.filter(s => {
           return existingStatements.indexOf(s) < 0;
         });
