@@ -47,8 +47,8 @@ and cookie issues...
 // });
 app.disable("x-powered-by");
 app.set("trust proxy", true);
-app.use(Express.static(path.join(__dirname, "..", "assets")));
-app.use(favicon('./public/images/favicon.ico'));
+app.use(__BASENAME__, Express.static(path.join(__dirname, "..", "assets")));
+app.use(__BASENAME__, favicon('./public/images/favicon.ico'));
 // Proxy to API server
 // app.use("/sparql", (req: Express.Request, res: Express.Response) => {
 //   proxy.web(req, res, { target: "http://lod.labs.vu.nl:8899/sparql" });

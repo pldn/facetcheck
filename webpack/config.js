@@ -56,6 +56,7 @@ module.exports = {
     path: path.resolve(paths.assets),
     filename: "[name]-[hash].js",
     chunkFilename: "[name]-[chunkhash].js",
+    publicPath: process.env.BASENAME ? process.env.BASENAME + "/" : ""
     //using dev server url. setting this to actual path will let webpack write files to disk
     //NOTE: using a _relative_ dist dir in production, so we can proxy to this webservice via a location directive
     //This relative path will create issues if we implement a multi-page facetcheck
@@ -384,7 +385,7 @@ module.exports = {
       __CLIENT__: true,
       __SERVER__: false,
       __DEVELOPMENT__: isDev,
-      __BASENAME__: process.env["BASENAME"] || "",
+      __BASENAME__: process.env.BASENAME?JSON.stringify(process.env["BASENAME"]) :JSON.stringify(""),
       __DEVTOOLS__: isDev // <-------- DISABLE redux-devtools HERE
     }),
     ifProd(new LodashModuleReplacementPlugin()),

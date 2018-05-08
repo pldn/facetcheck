@@ -61,9 +61,9 @@ const getComponent = (renderProps: any = {}) => {
     </Router>
   );
 };
-
+declare const __BASENAME__:string
 const renderApp = () => {
-  match({ routes: getRoutes(store), basename: (global as any)['__BASENAME__'], history: syncedHistory as any }, (error, redirectLocation, renderProps) => {
+  match({ routes: getRoutes(store), basename:__BASENAME__ || "" , history: syncedHistory as any }, (error, redirectLocation, renderProps) => {
     ReactDOM.render(
       <AppContainer>
         <Provider store={store} key="provider">
