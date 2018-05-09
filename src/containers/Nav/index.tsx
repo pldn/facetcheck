@@ -10,7 +10,7 @@ import { Navbar, Button } from "react-bootstrap";
 
 //import own dependencies
 // import {IConfig} from 'reducers/config'
-import { HamburgerBtn, NavIcon, Notifications, Svg } from "../../components";
+import { HamburgerBtn,  Notifications, Svg } from "../../components";
 import { Panel } from "../../containers";
 // import {getCurrentUrl} from 'staticConfig'
 import { toggleDsPanelCollapseLg } from "../../reducers/app";
@@ -18,7 +18,6 @@ import { StateInterface, removeNotification } from "../../reducers/notifications
 import { RouteComponentProps } from "../../containers";
 import * as reactRouterRedux from "react-router-redux";
 import { GlobalState } from "../../reducers";
-import { setRootClassname } from "../../reducers/app";
 
 export interface IAppProps extends RouteComponentProps {
   logout?: Function;
@@ -48,16 +47,6 @@ const mapDispatchToProps: MapDispatchToPropsObject = {
   toggleDsPanelCollapseLg
 };
 
-@asyncConnect([
-  {
-    promise: ({ store: { dispatch, getState } }) => {
-      var promises: any = [];
-      var state: GlobalState = getState();
-      if (state.app.className !== "console") promises.push(dispatch(setRootClassname("console")));
-      return Promise.all(promises);
-    }
-  } as IAsyncConnect<any>
-])
 @(connect as any)(mapStateToProps, mapDispatchToProps)
 export default //had to modify the typescript definition of the connect function to return ClassDecorator.
 //otherwise, you're not able to extend the component with any other properties than defined in the component class

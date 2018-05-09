@@ -5,7 +5,6 @@ import * as _ from "lodash";
 import { connect, MapDispatchToPropsObject } from "react-redux";
 import * as getClassName from "classnames";
 //import own dependencies
-import { asyncConnect, IAsyncConnect } from "redux-connect";
 import { RadioGroup, RadioButton } from 'react-toolbox/lib/radio';
 
 import Checkbox from 'react-toolbox/lib/checkbox';

@@ -14,17 +14,20 @@ import * as getClassName from "classnames";
 // import {Account} from 'reducers/accounts'
 import { getPageMetadata } from "../../reducers/config";
 // import {getSubclassRelations,fetchShapes} from 'reducers/schema'
-import { getMatchingIris, refreshFacets } from "../../reducers/facets";
+import { getMatchingIris, refreshFacets,FacetState } from "../../reducers/facets";
 import { GlobalState } from "../../reducers";
 
 namespace App {
   export interface DispatchProps {
     pushState: Function;
+    refreshFacets: typeof refreshFacets
   }
   export interface PropsFromState {
     head: Helmet.HelmetProps;
     appClassName: string;
     globalErr:string
+    facetLabels: FacetState['facetLabels'],
+    selectedClass: string
   }
   export interface State {
     error:string
@@ -34,17 +37,21 @@ namespace App {
 }
 
 const styles = require("./style.scss");
-@asyncConnect([
-  {
-    promise: ({ store: { dispatch, getState } }) => {
-      return Promise.all([dispatch(refreshFacets(getState()))]);
-    }
-  } as IAsyncConnect<any>
-])
+// @asyncConnect([
+//   {
+//     promise: ({ store: { dispatch, getState } }) => {
+//       const state:GlobalState = getState();
+//       return Promise.all([dispatch(refreshFacets(state.facets.facetLabels, state.facets.selectedClass))]);
+//     }
+//   } as IAsyncConnect<any>
+// ])
 class App extends React.PureComponent<App.Props, App.State> {
   state:App.State = { error:null}
   componentDidCatch(e:Error) {
     this.setState({error: e.message})
+  }
+  componentWillMount() {
+    this.props.refreshFacets(this.props.facetLabels, this.props.selectedClass)
   }
   render() {
     const { appClassName, head } = this.props;
@@ -73,10 +80,13 @@ export default connect<GlobalState, App.PropsFromState, App.DispatchProps, any>(
   state => ({
     head: getPageMetadata(),
     appClassName: state.app.className,
-    globalErr:state.app.globalErr
+    globalErr:state.app.globalErr,
+    selectedClass: state.facets.selectedClass,
+    facetLabels: state.facets.facetLabels
   }),
   //dispatch
   {
-    pushState: reactRouterRedux.push
+    pushState: reactRouterRedux.push,
+    refreshFacets: refreshFacets
   }
 )(App);

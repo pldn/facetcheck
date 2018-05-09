@@ -192,7 +192,8 @@ export var epics: [(action: Action$, store: Store) => any] = [
     return action$.ofType(Actions.SET_SELECTED_CLASS).map((action: Action) => {
       //facet settings might need removing before fetching the matching iris. So make sure we don't call one before the other
       // store.dispatch(getMatchingIris(store.getState()));
-      return store.dispatch(refreshFacets(store.getState(), action.className));
+      const state = store.getState();
+      return store.dispatch(refreshFacets(state.facets.facetLabels, action.className));
     });
   },
   //update matching iris when facets change
@@ -360,10 +361,8 @@ export function getSelectedClass(facetState:FacetState ):string {
   return facetState.selectedClass
 }
 
-export function refreshFacets(state: GlobalState, forClass?: string): Action {
+export function refreshFacets(facetLabels: FacetState['facetLabels'], forClass: string): Action {
   try {
-
-    if (!forClass || forClass.length === 0) forClass = getSelectedClass(state.facets);
     if (!forClass) throw new Error('No class is selected. Either no default class is selected in the class config, or something else is wrong')
     var facets: string[] = [];
 
@@ -372,7 +371,7 @@ export function refreshFacets(state: GlobalState, forClass?: string): Action {
       throw new Error("Could not find class config for " + forClass);
     }
     var facets: string[] = classConf.facets
-    const fetchLabelsFor:string[] = facets.filter(f => (FACETS[f] && !( 'label' in FACETS[f]) && !state.facets.facetLabels.has(f)));
+    const fetchLabelsFor:string[] = facets.filter(f => (FACETS[f] && !( 'label' in FACETS[f]) && !facetLabels.has(f)));
     const getLabelQuery = () => {
       if (fetchLabelsFor.length === 0) return 'SELECT * WHERE {[] [] []} LIMIT 0'
       return `
