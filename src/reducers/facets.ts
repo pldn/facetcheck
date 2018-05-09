@@ -103,7 +103,7 @@ export function reducer(state = initialState, action: Action) {
   switch (action.type) {
     case Actions.GET_MATCHING_IRIS:
       var result =  state.update("fetchResources", num => num + 1).set('nextPageOffset', action.offset)
-      if (!action.offset) result = state.set('matchingIris', Immutable.List<string>())
+      if (!action.offset) result = result.set('matchingIris', Immutable.List<string>())
 
       return result;
     case Actions.GET_MATCHING_IRIS_FAIL:

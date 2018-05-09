@@ -21,6 +21,7 @@ namespace Home {
     fetchingMatchingIris: boolean;
     selectedClass: string;
     hasNextPage: boolean;
+    loadingNextPage: boolean
     facets: FacetState["facets"];
     nextPageOffset: number;
   }
@@ -91,9 +92,10 @@ class Home extends React.PureComponent<Home.Props, any> {
         <div className={getClassName(styles.buttons, { [styles.hasNextPage]: this.props.hasNextPage })}>
           <Button
             primary
+            disabled={this.props.loadingNextPage}
             onClick={() => this.props.showMore(this.props.facets, this.props.selectedClass, this.props.nextPageOffset)}
           >
-            Show more
+            Show more  {this.props.loadingNextPage && <i className={"fa fa-cog fa-spin"}/>}
           </Button>
         </div>
       </div>
@@ -112,7 +114,8 @@ export default connect<GlobalState, Home.PropsFromState, Home.DispatchProps, {}>
       fetchingMatchingIris: state.facets.fetchResources > 0,
       selectedClass: state.facets.selectedClass,
       facets: state.facets.facets,
-      nextPageOffset: state.facets.nextPageOffset
+      nextPageOffset: state.facets.nextPageOffset,
+      loadingNextPage: state.facets.fetchResources > 0
     };
   },
   //dispatch
