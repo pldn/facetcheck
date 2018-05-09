@@ -16,7 +16,8 @@ build: stop
 up:
 	@echo "Starting ${NAME} container. Access at http://${HOSTNAME}:5000"
 	@docker-compose up -d
-
+bundle:
+	@docker-compose run --rm ${NAME} app:bundle
 upProd:
 	@echo "Starting ${NAME} container. Access at http://${HOSTNAME}:5000"
 	@docker-compose -f docker-compose-prod.yml up -d
