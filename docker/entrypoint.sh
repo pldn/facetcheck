@@ -16,6 +16,7 @@ case ${1} in
     case ${1} in
       app:bundle)
         exec_as_facetcheck npm run build;
+        rm -rf ./src/config/.bundle;
         cp -r ./build/assets/dist ./src/config/.bundle;
         ;;
       app:start)
