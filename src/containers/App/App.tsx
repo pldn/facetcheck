@@ -3,18 +3,16 @@ import * as React from "react";
 
 import { Helmet } from "react-helmet";
 import * as reactRouterRedux from "react-router-redux";
-import { asyncConnect, IAsyncConnect } from "redux-connect";
+
 import {ErrorPage} from '../'
 import { connect } from "react-redux";
 import * as getClassName from "classnames";
 // import {ActionCreator} from 'redux';
 
 //import own dependencies
-// import { shouldLoadAuth, load as loadAuth, logout} from 'reducers/auth';
-// import {Account} from 'reducers/accounts'
-import { getPageMetadata } from "../../reducers/config";
+
 // import {getSubclassRelations,fetchShapes} from 'reducers/schema'
-import { getMatchingIris, refreshFacets,FacetState } from "../../reducers/facets";
+import {  refreshFacets,FacetState } from "../../reducers/facets";
 import { GlobalState } from "../../reducers";
 
 namespace App {
@@ -23,7 +21,6 @@ namespace App {
     refreshFacets: typeof refreshFacets
   }
   export interface PropsFromState {
-    head: Helmet.HelmetProps;
     appClassName: string;
     globalErr:string
     facetLabels: FacetState['facetLabels'],
@@ -54,7 +51,7 @@ class App extends React.PureComponent<App.Props, App.State> {
     this.props.refreshFacets(this.props.facetLabels, this.props.selectedClass)
   }
   render() {
-    const { appClassName, head } = this.props;
+    const { appClassName } = this.props;
     const activeStyles = {
       [styles.app]: !!styles.home,
       [appClassName]: !!appClassName
@@ -67,6 +64,24 @@ class App extends React.PureComponent<App.Props, App.State> {
     } else {
       mainComponent = this.props.children
     }
+    const head = {
+    htmlAttributes: {
+      lang: "en"
+    },
+    titleTemplate: "%s - FacetCheck",
+    defaultTitle: "FacetCheck",
+    meta: [
+      { name: "description", content: "FacetCheck" },
+      { charset: "utf-8" },
+      { property: "og:site_name", content: "FacetCheck" },
+      // {property: 'og:image', content: clientConfig.branding.logo},
+      { property: "og:locale", content: "en_US" },
+      { property: "og:title", content: "FacetCheck" },
+      { property: "og:description", content: "FacetCheck" },
+      { property: "og:site", content: "FacetCheck" },
+      { property: "og:creator", content: "triply.cc" }
+    ]
+  }
     return (
       <div className={getClassName(activeStyles)}>
         <Helmet {...head} />
@@ -78,7 +93,6 @@ class App extends React.PureComponent<App.Props, App.State> {
 
 export default connect<GlobalState, App.PropsFromState, App.DispatchProps, any>(
   state => ({
-    head: getPageMetadata(),
     appClassName: state.app.className,
     globalErr:state.app.globalErr,
     selectedClass: state.facets.selectedClass,

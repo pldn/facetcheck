@@ -24,7 +24,7 @@ import { Router, browserHistory, match, applyRouterMiddleware } from "react-rout
 import ApiClient from "./helpers/ApiClient";
 import getRoutes from "./routes";
 
-const client = new ApiClient(fromJs(window.__data));
+const client = new ApiClient();
 // const history = useScroll(() => browserHistory)();
 
 const dest = document.getElementById("app");

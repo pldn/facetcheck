@@ -7,7 +7,7 @@
   "scripts": {
     "build": "npm run clean && npm run setup-build-context && better-npm-run build-client && tsc  -p tsconfig-build.json",
     "clean": "rm -rf build",
-    "setup-build-context": "mkdir -p build && better-npm-run compile-config",
+    "setup-build-context": "mkdir -p build",
     "start": "better-npm-run start-server-prod",
     "watch-client": "better-npm-run watch-client",
     "dev": "npm run clean && npm run setup-build-context && npm run watch-client",
@@ -21,9 +21,6 @@
     "test": {
       "command": "mocha $(find ./build/src -name '*-test.js') --require source-map-support/register",
       "env": {}
-    },
-    "compile-config": {
-      "command": "ENV=console && node ./bin/config-build"
     },
     "start-server-prod": {
       "command": "ENV=console && node ./bin/server.js",

@@ -3,7 +3,6 @@
 var fs = require("fs");
 var path = require("path");
 var webpack = require("webpack");
-var appConfig = require("./_appConfig").getConfig();
 var paths = require("./paths");
 var WatchMissingNodeModulesPlugin = require("react-dev-utils/WatchMissingNodeModulesPlugin");
 var ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
@@ -18,7 +17,7 @@ const isProd = process.env.NODE_ENV === "production";
 const ifDev = ifElse(isDev);
 const ifProd = ifElse(isProd);
 
-var host = appConfig.clientConnection.domain || "localhost";
+var host =  "localhost";
 var autoprefixer = require("autoprefixer");
 // https://github.com/halt-hammerzeit/webpack-isomorphic-tools
 
@@ -43,7 +42,6 @@ module.exports = {
       ifDev("react-hot-loader/patch"),
       require.resolve("./polyfills"),
       // ifDev("webpack/hot/dev-server"),
-      // ifDev("webpack-dev-server/client?http://0.0.0.0:" + appConfig.getDevServerPort() + "/"),
       ifDev("bootstrap-loader", "bootstrap-loader/extractStyles"),
       //using a fork of the package font-awesome-webpack
       //the original one is not properly compatible with webpack2
@@ -60,9 +58,6 @@ module.exports = {
     //using dev server url. setting this to actual path will let webpack write files to disk
     //NOTE: using a _relative_ dist dir in production, so we can proxy to this webservice via a location directive
     //This relative path will create issues if we implement a multi-page facetcheck
-    // publicPath: isDev
-    //   ? "http://" + host + ":" + appConfig.getDevServerPort() + "/dist/"
-    //   : (process.env["BASENAME"] || "") + "/dist/"
   },
   resolve: {
     alias: {

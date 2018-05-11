@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const _ = require("lodash");
 function getEnvironmentVarsAsObject(envPrefix) {
     if (!process || !process.env || _.size(process.env) === 0) {
-        console.trace("WARNING: No environment variables set. Config cannot be overwritten by env");
         return;
     }
     var autocast = require("autocast");

@@ -4,9 +4,7 @@ import { routerMiddleware } from "react-router-redux";
 import { createEpicMiddleware } from "redux-observable";
 import { rootEpic } from "../reducers";
 import createPromiseMw from "./promiseMw";
-// import {persistState} from 'redux-devtools';
-// import * as ReactRouter from 'react-router';
-import { Config } from "../staticConfig";
+
 //import own dependencies
 import { GlobalState, default as reducer, fromJs } from "../reducers";
 // import * as History from 'history'

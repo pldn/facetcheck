@@ -6,7 +6,6 @@ import * as N3 from 'n3'
 import * as NTriply from '@triply/triply-node-utils/build/src/nTriply'
 //import own dependencies
 import { GlobalState } from "../reducers";
-import { getConfig, Config, ConnectionConfig } from "../staticConfig";
 import {CONFIG} from '../facetConf'
 import SparqlJson from './SparqlJson'
 import * as parseLinkHeader from "parse-link-header";
@@ -51,30 +50,11 @@ export interface RequestArguments {
 interface RunningRequests {
   [reqTag: string]: { [uuid: string]: superagent.Request<any> };
 }
-export function reformatUrlForClient(clientConnection: ConnectionConfig, url: string): string {
-  const parsed = urlParse(url);
-  parsed.set("pathname", "/_api" + parsed.pathname);
-  parsed.set("hostname", clientConnection.domain);
-  if (clientConnection.publicPort !== 80) parsed.set("port", clientConnection.publicPort);
-  parsed.set("protocol", clientConnection.ssl ? "https:" : "http:");
-  return parsed.toString();
-}
+
 export default class ApiClient {
   private static requests: RunningRequests = {};
-  private request: Request;
-  private config: Config;
-  constructor(state: GlobalState, req?: Request) {
-    if (state && state.config && state.config.staticConfig) {
-      this.config = state.config.staticConfig;
-    } else {
-      //just get state from module directly.
-      //Would like to avoid this when the class is ran from the client,
-      //because the client would not know about env variable overwrites
-      this.config = getConfig();
-    }
+  // private request: Request;
 
-    this.request = req;
-  }
 
   formatUrl(urlOrPath: string) {
     if (!urlOrPath) return "";
@@ -84,20 +64,6 @@ export default class ApiClient {
     }
     const adjustedPath = urlOrPath[0] !== "/" ? "/" + urlOrPath : urlOrPath;
     return "/_api" + adjustedPath;
-  }
-
-  //Modify urls gotten from server, so they are send via our proxy (needed because of cookie stuff...)
-  reformatUrlForClient(url: string): string {
-    return reformatUrlForClient(this.config.clientConnection, url);
-  }
-
-  formatLinkHeader(linkHeader: string) {
-    if (!linkHeader) return {};
-    const links = parseLinkHeader(linkHeader);
-    _.forEach(links, (val, key) => {
-      links[key].url = this.reformatUrlForClient(val.url);
-    });
-    return links;
   }
 
   private addRequestReference(tag: string, request: superagent.Request<any>) {
@@ -119,7 +85,7 @@ export default class ApiClient {
 
   public req<A extends RequestArguments, R extends Object>(args: A) {
     return new Promise<R>((resolve, reject) => {
-      var requestTo = args.apiUrl ? this.reformatUrlForClient(args.apiUrl) : this.formatUrl(args.url);
+      var requestTo = this.formatUrl(args.url);
       //set params based on sparql-specific settings
       if (args.sparqlSelect || args.sparqlConstruct) {
         args.method = "post";
@@ -155,12 +121,7 @@ export default class ApiClient {
         }
       }
       if (args.isForm) request.type("form");
-      if (__SERVER__) {
-        //always behind a proxy anyway, so proxy these headers
-        ["cookie", "x-forwarded-for", "x-real-ip", "x-forwarded-proto"].forEach(key => {
-          if (this.request.get(key)) request.set(key, this.request.get(key));
-        });
-      }
+
       if (args.contentType) {
         request.set("Content-Type", args.contentType);
       }
@@ -215,7 +176,6 @@ export default class ApiClient {
         const meta = {
           status: res.status,
           header: res.header,
-          links: this.formatLinkHeader(res.header.link),
           req: request
         };
 

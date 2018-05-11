@@ -19,7 +19,6 @@ import ApiClient from "../helpers/ApiClient";
 // import * as accounts from './accounts';
 import * as app from "./app";
 // import * as auth from './auth';
-import * as config from "./config";
 import * as facets from "./facets";
 // import * as contact from './contact';
 // import * as containerManagement from './containerManagement';
@@ -41,7 +40,6 @@ const transitImmutable = require("transit-immutable-js");
 const transitHandler = transitImmutable.withRecords(
   [
     app.StateRecord,
-    config.StateRecord,
     facets.StateRecord,
     facets.Facet,
     routing.LocationRecord,
@@ -75,7 +73,6 @@ export interface GlobalState extends Partial<reactRedux.ProviderProps> {
   // accounts: accounts.StateRecordInterface,
   // auth: auth.StateRecordInterface,
   app: app.StateRecordInterface;
-  config: config.StateRecordInterface;
   facets: facets.FacetState;
   // contact: contact.StateRecordInterface,
   // containerManagement:containerManagement.StateInterface,
@@ -105,7 +102,6 @@ const appReducer = Redux.combineReducers(
     // accounts: accounts.reducer,
     app: app.reducer,
     // auth: auth.reducer,
-    config: config.reducer,
     facets: facets.reducer,
     // contact:contact.reducer,
     // containers:containers.reducer,
