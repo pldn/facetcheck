@@ -373,7 +373,7 @@ export function refreshFacets(facetLabels: FacetState['facetLabels'], forClass: 
     var facets: string[] = classConf.facets
     const fetchLabelsFor:string[] = facets.filter(f => (FACETS[f] && !( 'label' in FACETS[f]) && !facetLabels.has(f)));
     const getLabelQuery = () => {
-      if (fetchLabelsFor.length === 0) return 'SELECT * WHERE {[] [] []} LIMIT 0'
+      if (fetchLabelsFor.length === 0) return 'SELECT * WHERE {?s ?p ?o} LIMIT 0'
       return `
       SELECT ${_.keys(fetchLabelsFor).map((k) => '?'+k).join(' ')} WHERE {
         ${fetchLabelsFor.map((val,key) => {
