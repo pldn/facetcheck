@@ -13,6 +13,7 @@ export interface Sparql {
     bindings: Binding[];
   };
 }
+import {isEmpty} from 'lodash'
 
 export default class SparqlJson {
   sparqlJson: Sparql;
@@ -41,6 +42,13 @@ export default class SparqlJson {
   }
   getValues() {
     return this.sparqlJson.results.bindings;
+  }
+  hasResult():boolean {
+    if (!this.sparqlJson) return false;
+    if (!this.sparqlJson.results) return false;
+    if (!this.sparqlJson.results.bindings) return false;
+    if (this.sparqlJson.results.bindings.length === 1 && isEmpty(this.sparqlJson.results.bindings[0]) ) return false;
+    return true;
   }
   getValuesForVars(...varnames: string[]): string[][] {
     return this.sparqlJson.results.bindings.map(binding => {

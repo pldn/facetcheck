@@ -25,7 +25,7 @@ namespace FacetSlider {
     [key: string]: number;
   }
   export interface State {
-    isDate:boolean
+    isDate: boolean;
   }
   export interface FacetProps extends GenericFacetProps {
     selectedObject: Options;
@@ -61,13 +61,7 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, FacetSlider.Sta
     }
     var dash = "-";
     // var colon=":"
-    return (
-      d.getFullYear() +
-      dash +
-      pad(d.getMonth() + 1) +
-      dash +
-      pad(d.getDate())
-    );
+    return d.getFullYear() + dash + pad(d.getMonth() + 1) + dash + pad(d.getDate());
     // pad(d.getHours())+colon+
     // pad(d.getMinutes())+colon+
     // pad(d.getSeconds())
@@ -110,32 +104,26 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, FacetSlider.Sta
       max: maxValue,
       minLabel: minValueLabel || minValue,
       maxLabel: maxValueLabel || maxValue,
-      isDate: isDate as any,
+      isDate: isDate as any
     };
   }
   componentWillMount() {
     if (this.props.facet && this.props.facet.optionObject && this.props.facet.optionObject.isDate) {
-      this.setState({isDate:true})
+      this.setState({ isDate: true });
     }
   }
   render() {
     const { facet } = this.props;
     if (!facet.optionObject) return null;
     var { min, max, maxLabel, minLabel } = facet.optionObject;
+
     if (!_.isFinite(min)) {
-      console.warn(
-        "Invalid minimum value for slider of " +
-          facet.iri +
-          ". Assuming min val 0"
-      );
+      console.warn(`Invalid minimum value for slider of ${facet.iri} (${min}). Assuming min val 0`);
       min = 0;
     }
     if (!_.isFinite(max)) {
       throw new Error(
-        "Trying to render a slider for prop " +
-          facet.iri +
-          ", but no maximum value is given: max " +
-          max
+        "Trying to render a slider for prop " + facet.iri + ", but no maximum value is given: max " + max
       );
     }
     var stepSize = 1;
@@ -150,7 +138,7 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, FacetSlider.Sta
           max={max}
           defaultValue={[min, max]}
           step={stepSize}
-          tipFormatter={(value:number) => {
+          tipFormatter={(value: number) => {
             // return 'bla'
             if (this.state && this.state.isDate) return FacetSlider.numberToXsdDate(value).value;
             return value;
@@ -176,14 +164,8 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, FacetSlider.Sta
             }
             //do some further conversion
             if (this.state && this.state.isDate) {
-              if (selectedObject.min)
-                selectedObject.min = FacetSlider.numberToXsdDate(
-                  selectedObject.min
-                );
-              if (selectedObject.max)
-                selectedObject.max = FacetSlider.numberToXsdDate(
-                  selectedObject.max
-                );
+              if (selectedObject.min) selectedObject.min = FacetSlider.numberToXsdDate(selectedObject.min);
+              if (selectedObject.max) selectedObject.max = FacetSlider.numberToXsdDate(selectedObject.max);
             }
 
             this.props.setSelectedObject(facet.iri, selectedObject);

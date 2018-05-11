@@ -165,6 +165,10 @@ export function reducer(state = initialState, action: Action) {
       return state.update("facets", facet => {
         return facet.update(action.facetName, new Facet(), _vals => {
           return _vals.withMutations(vals => {
+            if (action.type === Actions.FETCH_FACET_PROPS_FAIL) {
+
+              vals.set('error', action.message)
+            }
             vals.set("iri", action.facetName);
             if (action.result && action.result.optionList) {
               vals.set("optionList", action.result.optionList);
@@ -460,6 +464,7 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
             sparqlSelect:sparqlString
           })
           .then(sparql => {
+            if (!sparql.hasResult())  throw new Error('No SPARQL results returned when querying the facet properties of ' + forProp)
             const opts = facetComponent.getOptionsForQueryResult(sparql);
             if (Array.isArray(opts)) {
               return {
@@ -476,7 +481,7 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
     return {
       type: Actions.FETCH_FACET_PROPS_FAIL,
       facetName: forProp,
-      error:<any>`Failed to fetch facet props for ${forProp} (${e.message})` 
+      error:<any>`Failed to fetch facet props for ${forProp} (${e.message})`
     }
   }
 
