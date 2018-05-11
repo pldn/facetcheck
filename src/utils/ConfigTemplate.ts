@@ -4,7 +4,7 @@ import * as _ from "lodash";
 
 export function getEnvironmentVarsAsObject(envPrefix: string) {
   if (!process || !process.env || _.size(process.env) === 0) {
-    console.trace("WARNING: No environment variables set. Config cannot be overwritten by env");
+    // console.trace("WARNING: No environment variables set. Config cannot be overwritten by env");
     return;
   }
   var autocast = require("autocast");

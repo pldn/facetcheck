@@ -473,11 +473,10 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
           })
     };
   } catch(e) {
-    console.error('Failed to fetch facet props for ' + forProp,e)
     return {
       type: Actions.FETCH_FACET_PROPS_FAIL,
       facetName: forProp,
-      error:e.message
+      error:<any>`Failed to fetch facet props for ${forProp} (${e.message})` 
     }
   }
 
