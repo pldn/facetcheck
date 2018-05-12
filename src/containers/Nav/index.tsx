@@ -12,6 +12,7 @@ import { StateInterface, removeNotification } from "../../reducers/notifications
 import { RouteComponentProps } from "../../containers";
 import * as reactRouterRedux from "react-router-redux";
 import { GlobalState } from "../../reducers";
+import {getLogo} from '../../facetConf'
 
 export interface IAppProps extends RouteComponentProps {
   logout?: Function;
@@ -20,7 +21,7 @@ export interface IAppProps extends RouteComponentProps {
   toggleDsPanelCollapseLg?: typeof toggleDsPanelCollapseLg;
   pushState?: Function;
 }
-const kadasterSvg = require("./kadaster.svg");
+
 const styles = require("./style.scss");
 const mapStateToProps = (state: GlobalState): IAppProps =>
   ({
@@ -53,7 +54,7 @@ class App extends React.PureComponent<IAppProps, any> {
         <Navbar fixedTop fluid bsStyle={null} className={styles.navbar}>
           <Navbar.Header>
             <div className={styles.brandWrapper + " hidden-xs"}>
-              <Svg src={kadasterSvg} onClick={this.goToMainPage} className={styles.kadasterSvg} />
+              <Svg src={getLogo()} onClick={this.goToMainPage} className={styles.kadasterSvg} />
             </div>
             <HamburgerBtn
               onClick={this.props.toggleDsPanelCollapseLg}

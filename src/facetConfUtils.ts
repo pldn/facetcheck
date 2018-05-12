@@ -20,6 +20,8 @@ export interface GlobalConfig {
     token?:string
   },
   prefixes: {[label:string]:string}
+  title?:string
+  logo?:string
 }
 export interface ClassConfig {
   default: boolean;
