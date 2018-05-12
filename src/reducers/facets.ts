@@ -255,7 +255,7 @@ export function facetsToQuery(facets: FacetState['facets'], selectedClass:string
   if (!classConf) {
     throw new Error("Could not find class config for " + selectedClass);
   }
-  if (classConf.facets.length) {
+  if (!classConf.facets.length) {
     throw new Error(`Class ${selectedClass} does not have any configured facets`);
   }
   if (classConf.classToQueryPattern) {

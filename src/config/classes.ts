@@ -40,14 +40,14 @@ const CLASSES: { [className: string]: ClassConfig } = {
     iri: "http://bgt.basisregistraties.overheid.nl/def/bgt#Pand",
     label: "Pand",
     facets: [
-      // "http://bgt.basisregistraties.overheid.nl/def/bgt#bronhouder",
-      // "http://bgt.basisregistraties.overheid.nl/def/bgt#eindRegistratie",
-      // "http://bgt.basisregistraties.overheid.nl/def/bgt#objectBegintijd",
-      // "http://bgt.basisregistraties.overheid.nl/def/bgt#objectEindtijd",
-      // "http://bgt.basisregistraties.overheid.nl/def/bgt#publicatiedatumLandelijkeVoorziening",
-      // "http://bgt.basisregistraties.overheid.nl/def/bgt#relatieveHoogteligging"
-      // //"http://bgt.basisregistraties.overheid.nl/def/bgt#status",
-      // //"http://bgt.basisregistraties.overheid.nl/def/bgt#tijdstipRegistratie"
+      "http://bgt.basisregistraties.overheid.nl/def/bgt#bronhouder",
+      "http://bgt.basisregistraties.overheid.nl/def/bgt#eindRegistratie",
+      "http://bgt.basisregistraties.overheid.nl/def/bgt#objectBegintijd",
+      "http://bgt.basisregistraties.overheid.nl/def/bgt#objectEindtijd",
+      "http://bgt.basisregistraties.overheid.nl/def/bgt#publicatiedatumLandelijkeVoorziening",
+      "http://bgt.basisregistraties.overheid.nl/def/bgt#relatieveHoogteligging"
+      //"http://bgt.basisregistraties.overheid.nl/def/bgt#status",
+      //"http://bgt.basisregistraties.overheid.nl/def/bgt#tijdstipRegistratie"
     ],
     resourceDescriptionQuery: function(iri: string) {
       var projectPattern = `
