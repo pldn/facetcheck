@@ -459,7 +459,7 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
 
     const sparqlString = sparqlBuilder.toString();
     console.groupCollapsed(`Querying for ${forProp} facet values`)
-    console.log(sparqlString)
+    console.info(sparqlString)
     console.groupEnd();
     return {
       types: [Actions.FETCH_FACET_PROPS, Actions.FETCH_FACET_PROPS_SUCCESS, Actions.FETCH_FACET_PROPS_FAIL],
@@ -484,7 +484,7 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
           })
     };
   } catch(e) {
-    console.log(e)
+    console.error(e)
     return {
       type: Actions.FETCH_FACET_PROPS_FAIL,
       facetName: forProp,

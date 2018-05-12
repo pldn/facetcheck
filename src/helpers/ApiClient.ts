@@ -1,19 +1,31 @@
 //external dependencies
 import * as superagent from "superagent";
-import { Request } from "express";
 import * as _ from "lodash";
 import * as N3 from 'n3'
 import * as NTriply from '@triply/triply-node-utils/build/src/nTriply'
 //import own dependencies
-import { GlobalState } from "../reducers";
 import {CONFIG} from '../facetConf'
 import SparqlJson from './SparqlJson'
 import * as parseLinkHeader from "parse-link-header";
-const urlParse = require("url-parse");
 
 // const config = getConfig();
 // declare var __SERVER__: boolean;
 // const methods = ['get', 'post', 'put', 'patch', 'del'];
+type Query  = {[key:string]:string}
+const getQueryArgs = ():Query => {
+  if (!window || !window.location || !window.location.search) {
+    return { };
+  }
+  const query = window.location.search
+
+  return (/^[?#]/.test(query) ? query.slice(1) : query)
+    .split('&')
+    .reduce<Query>((params, param) => {
+      let [ key, value ] = param.split('=');
+      params[key] = value ? decodeURIComponent(value.replace(/\+/g, ' ')) : '';
+      return params;
+    }, { });
+}
 export interface Links extends parseLinkHeader.Links {
   next: parseLinkHeader.Link;
   first: parseLinkHeader.Link;
@@ -98,7 +110,10 @@ export default class ApiClient {
         if (args.graph) {
           args.body["default-graph-uri"] = args.graph;
         }
-        if (args.endpoint) {
+        const query = getQueryArgs();
+        if (query.endpoint) {
+          requestTo = query.endpoint
+        } else if (args.endpoint) {
           requestTo = args.endpoint;
         } else {
           requestTo = CONFIG.endpoint.url
