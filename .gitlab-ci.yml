@@ -12,13 +12,13 @@ build:
   stage: build
   script:
   - ./bin/ci/build
-  skip:
+  except:
     - master
 
 release:
   stage: release
   script:
     - ./bin/ci/release
-  skip:
+  except:
     - master
 
