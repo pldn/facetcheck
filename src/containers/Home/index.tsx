@@ -8,7 +8,7 @@ import { GlobalState } from "../../reducers";
 import { getMatchingIris, FacetState } from "../../reducers/facets";
 import { Alert } from "react-bootstrap";
 import { ResourceDescriptions, Errors, getStatementsAsTree } from "../../reducers/statements";
-import {ErrorPage} from '../'
+import { ErrorPage } from "../";
 namespace Home {
   export interface DispatchProps {
     showMore: typeof getMatchingIris;
@@ -21,12 +21,12 @@ namespace Home {
     fetchingMatchingIris: boolean;
     selectedClass: string;
     hasNextPage: boolean;
-    loadingNextPage: boolean
+    loadingNextPage: boolean;
     facets: FacetState["facets"];
     nextPageOffset: number;
   }
   export interface State {
-    error:string
+    error: string;
   }
   export type Props = DispatchProps & PropsFromState;
 }
@@ -35,14 +35,20 @@ const styles = require("./style.scss");
 
 // @(connect as any)(mapStateToProps, {getMatchingIris,getResourceDescription,fetchLabel,fetchShapes})
 class Home extends React.PureComponent<Home.Props, Home.State> {
-state:Home.State = { error:null}
-  isSingleCol():boolean {
-    if (this.props.resourceDescriptionErrors.size) return true;
-  }
-  renderDescriptions = () => {
-    if (this.props.error) {
-      return <Alert bsStyle="danger">{this.props.error}</Alert>;
+  state: Home.State = { error: null };
+  renderFullSizeWidgets() {
+    if (this.props.resourceDescriptions.size === 0 && this.props.resourceDescriptionErrors.size === 0) {
+      if (this.props.fetchingResources) {
+        return (
+            <i style={{ fontSize: 40 }} className="fa fa-cog fa-spin" />
+        );
+      }
+      return (
+          <div className={"whiteSink"}>No descriptions matched your criteria</div>
+      );
     }
+  }
+  renderDescriptions() {
     var els: any[] = [];
 
     if (this.props.resourceDescriptionErrors.size) {
@@ -65,43 +71,26 @@ state:Home.State = { error:null}
         />
       );
     });
-    if (els.length <= 0) {
-      // this.singleCol = true;
-      if (this.props.fetchingResources) {
-        return (
-          <div className={styles.noDescriptionWrapper}>
-            <i style={{ fontSize: 40 }} className="fa fa-cog fa-spin" />
-          </div>
-        );
-      }
-      return (
-        <div className={styles.noDescriptionWrapper}>
-          <div className={"whiteSink"}>No descriptions matched your criteria</div>
-        </div>
-      );
-    } else {
-      return els;
-    }
-  };
-  componentDidCatch(e:Error) {
-    this.setState({error: e.message})
+    return els;
   }
+  componentDidCatch(e: Error) {
+    this.setState({ error: e.message });
+  }
+  showMore = () => this.props.showMore(this.props.facets, this.props.selectedClass, this.props.nextPageOffset);
   render() {
-    // const {resourceDescriptions, labels,fetchLabel, matchingIris} = this.props
-    if (this.state.error) {
-    return <ErrorPage title="Something went wrong" message={this.state.error}/>
-  }
+    if (this.state.error || this.props.error) {
+      return <ErrorPage title="Something went wrong" message={this.state.error || this.props.error} />;
+    }
+
+    const fullSizeWidgets = this.renderFullSizeWidgets();
+    if (fullSizeWidgets) return <div className={styles.messages}>{fullSizeWidgets}</div>
     const descriptions = this.renderDescriptions();
     return (
       <div>
-        <div className={getClassName(styles.home, { [styles.singlePage]: this.isSingleCol() })}>{descriptions}</div>
+        <div className={getClassName(styles.home)}>{descriptions}</div>
         <div className={getClassName(styles.buttons, { [styles.hasNextPage]: this.props.hasNextPage })}>
-          <Button
-            primary
-            disabled={this.props.loadingNextPage}
-            onClick={() => this.props.showMore(this.props.facets, this.props.selectedClass, this.props.nextPageOffset)}
-          >
-            Show more  {this.props.loadingNextPage && <i className={"fa fa-cog fa-spin"}/>}
+          <Button primary disabled={this.props.loadingNextPage} onClick={this.showMore}>
+            Show more {this.props.loadingNextPage && <i className={"fa fa-cog fa-spin"} />}
           </Button>
         </div>
       </div>

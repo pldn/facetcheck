@@ -1,5 +1,12 @@
 @import '../../theme/bootstrap.overrides/variables.scss';
 
+.messages {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
 .home {
   padding: 10px;
   width:100%;
@@ -16,10 +23,6 @@
 
     page-break-inside: avoid;
     break-inside: avoid;
-  }
-  &.singlePage {
-    column-count:1 !important;
-    height:100%;
   }
 }
 div.description {
