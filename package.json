@@ -39,7 +39,9 @@
     },
     "build-client": {
       "command": "webpack --config ./webpack/config.js --progress --profile --colors",
-      "env": {}
+      "env": {
+        "NODE_ENV": "production"
+      }
     },
     "build-client-dev": {
       "command": "webpack --colors --display-error-details --config webpack/config.js"
@@ -141,6 +143,13 @@
     "wicket": "git+https://github.com/arthur-e/Wicket.git"
   },
   "devDependencies": {
+    "@types/chai": "^4.0.4",
+    "@types/fs-extra": "^4.0.2",
+    "@types/mocha": "^2.2.43",
+    "@types/node": "^8.0.31",
+    "@types/numeral": "0.0.22",
+    "@types/react": "^16.0.7",
+    "@types/react-dom": "^15.5.5",
     "better-npm-run": "^0.1.0",
     "bootstrap-loader": "^2.1.0",
     "chai": "^4.1.2",
@@ -150,9 +159,18 @@
     "extract-text-webpack-plugin": "^3.0.1",
     "font-awesome-webpack2": "^0.0.6",
     "fork-ts-checker-webpack-plugin": "^0.2.2",
+    "gulp": "^3.9.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^2.6.0",
+    "gulp-typescript": "^3.1.7",
+    "gulp-util": "^3.0.8",
+    "html-webpack-include-assets-plugin": "^1.0.4",
+    "html-webpack-plugin": "^3.2.0",
     "http-proxy-middleware": "^0.17.4",
+    "husky": "^0.14.3",
     "json-loader": "^0.5.4",
     "less-loader": "^4.0.4",
+    "lint-staged": "^4.2.3",
     "loader-utils": "^1.1.0",
     "lodash-webpack-plugin": "^0.11.4",
     "mocha": "^4.0.0",
@@ -160,34 +178,19 @@
     "node-sass": "^4.7.2",
     "npm-check": "^5.4.5",
     "postcss-loader": "^2.0.5",
+    "prettier": "^1.7.4",
     "resolve-url-loader": "^2.0.2",
     "run-sequence": "^2.2.0",
     "strip-loader": "^0.1.2",
     "style-loader": "^0.19.0",
-    "url-loader": "^0.5.8",
-    "gulp": "^3.9.1",
-    "gulp-rename": "^1.2.2",
-    "gulp-sourcemaps": "^2.6.0",
-    "gulp-typescript": "^3.1.7",
-    "gulp-util": "^3.0.8",
     "svg-react-loader": "^0.4.5",
     "typescript": "^2.4.0",
+    "url-loader": "^0.5.8",
     "webpack": "^3.6.0",
     "webpack-build-notifier": "^0.1.13",
     "webpack-dev-middleware": "^1.10.2",
     "webpack-dev-server": "^2.9.1",
     "webpack-hot-middleware": "^2.19.1",
-    "webpack-sources": "^1.0.1",
-    "@types/chai": "^4.0.4",
-    "@types/fs-extra": "^4.0.2",
-    "@types/mocha": "^2.2.43",
-    "@types/node": "^8.0.31",
-    "@types/numeral": "0.0.22",
-    "@types/react": "^16.0.7",
-    "@types/react-dom": "^15.5.5",
-    "html-webpack-plugin": "^3.2.0",
-    "husky": "^0.14.3",
-    "lint-staged": "^4.2.3",
-    "prettier": "^1.7.4"
+    "webpack-sources": "^1.0.1"
   }
 }

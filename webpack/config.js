@@ -16,11 +16,11 @@ const isDev = process.env.NODE_ENV !== "production";
 const isProd = process.env.NODE_ENV === "production";
 const ifDev = ifElse(isDev);
 const ifProd = ifElse(isProd);
-
-var host =  "localhost";
+const HtmlWebpackIncludeAssetsPlugin = require("html-webpack-include-assets-plugin");
+var host = "localhost";
 var autoprefixer = require("autoprefixer");
 // https://github.com/halt-hammerzeit/webpack-isomorphic-tools
-
+console.log('IS DEV', isDev,process.env.NODE_ENV)
 //If you change this value, make sure to also update the postcss.config.js file
 const SUPPORTED_BROWSERS = [
   "last 3 versions",
@@ -380,7 +380,7 @@ module.exports = {
       __CLIENT__: true,
       __SERVER__: false,
       __DEVELOPMENT__: isDev,
-      __BASENAME__: process.env.BASENAME?JSON.stringify(process.env["BASENAME"]) :JSON.stringify(""),
+      __BASENAME__: process.env.BASENAME ? JSON.stringify(process.env["BASENAME"]) : JSON.stringify(""),
       __DEVTOOLS__: isDev // <-------- DISABLE redux-devtools HERE
     }),
     ifProd(new LodashModuleReplacementPlugin()),
@@ -394,7 +394,8 @@ module.exports = {
     ),
     new HtmlWebpackPlugin({
       template: "./src/template.html"
-    })
+    }),
+    new HtmlWebpackIncludeAssetsPlugin({ assets: [], append: true })
   ]),
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.
