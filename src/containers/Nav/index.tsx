@@ -37,7 +37,7 @@ const mapDispatchToProps: MapDispatchToPropsObject = {
 export default //had to modify the typescript definition of the connect function to return ClassDecorator.
 //otherwise, you're not able to extend the component with any other properties than defined in the component class
 class App extends React.PureComponent<IAppProps, any> {
-  goToMainPage() {
+  goToMainPage = () => {
     this.props.pushState("/");
   }
 
@@ -53,7 +53,7 @@ class App extends React.PureComponent<IAppProps, any> {
         <Navbar fixedTop fluid bsStyle={null} className={styles.navbar}>
           <Navbar.Header>
             <div className={styles.brandWrapper + " hidden-xs"}>
-              <Svg src={kadasterSvg} onClick={this.goToMainPage.bind(this)} className={styles.kadasterSvg} />
+              <Svg src={kadasterSvg} onClick={this.goToMainPage} className={styles.kadasterSvg} />
             </div>
             <HamburgerBtn
               onClick={this.props.toggleDsPanelCollapseLg}

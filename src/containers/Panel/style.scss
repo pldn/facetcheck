@@ -2,7 +2,11 @@
 @import '../Nav/vars.scss';
 
 
-
+.classSelectors {
+  label {
+    cursor:pointer;
+  }
+}
 .panel {
   color:$custom6;
   label {
