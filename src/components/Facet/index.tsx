@@ -52,8 +52,12 @@ class Facet extends React.PureComponent<Facet.Props, any> {
   }
 
   componentDidCatch(e:Error) {
-    console.error(e)
+    console.error('DID CATCH',e)
     return <div>ERRR</div>
+  }
+  getLabel() {
+    if (FACETS[this.props.facet.iri] && FACETS[this.props.facet.iri].label) return FACETS[this.props.facet.iri].label;
+    return this.props.label
   }
   render() {
     const { className,label } = this.props;
@@ -64,14 +68,15 @@ class Facet extends React.PureComponent<Facet.Props, any> {
       for (const FacetComponent of this.FacetComponents) {
         if (FacetComponent.shouldRender(this.props)) facet = <FacetComponent {...this.props} />;
       }
+      if (!FACETS[this.props.facet.iri]) {
+        throw new Error('No facet configuration found for ' + this.props.facet.iri)
+      }
     }
-    if (!FACETS[this.props.facet.iri]) {
-      throw new Error('No facet configuration found for ' + this.props.facet.iri)
-    }
+
     if (facet) {
       return (
         <div className={getClassName(className)}>
-          <div className={styles.facetHeader}>{FACETS[this.props.facet.iri].label || label}</div>
+          <div className={styles.facetHeader}>{this.getLabel()}</div>
           {facet}
         </div>
       );

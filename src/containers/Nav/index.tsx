@@ -1,18 +1,12 @@
 //external dependencies
 import * as React from "react";
 import { connect, MapDispatchToPropsObject } from "react-redux";
-// import {ActionCreator} from 'redux';
-import { asyncConnect, IAsyncConnect } from "redux-connect";
-// import { LinkContainer} from 'react-router-bootstrap';
-import { Link } from "react-router";
 import * as getClassName from "classnames";
-import { Navbar, Button } from "react-bootstrap";
+import { Navbar } from "react-bootstrap";
 
 //import own dependencies
-// import {IConfig} from 'reducers/config'
 import { HamburgerBtn,  Notifications, Svg } from "../../components";
 import { Panel } from "../../containers";
-// import {getCurrentUrl} from 'staticConfig'
 import { toggleDsPanelCollapseLg } from "../../reducers/app";
 import { StateInterface, removeNotification } from "../../reducers/notifications";
 import { RouteComponentProps } from "../../containers";
@@ -24,21 +18,13 @@ export interface IAppProps extends RouteComponentProps {
   notifications: StateInterface;
   removeNotification?: typeof removeNotification;
   toggleDsPanelCollapseLg?: typeof toggleDsPanelCollapseLg;
-  // panelToggled?:boolean,
-  // panelCollapsed?:boolean,
-  // currentUrl?:string,
   pushState?: Function;
-  // appConfig?:IConfig
 }
 const kadasterSvg = require("./kadaster.svg");
 const styles = require("./style.scss");
 const mapStateToProps = (state: GlobalState): IAppProps =>
   ({
-    // appConfig: state.config.config,
     notifications: state.notifications
-    // panelToggled: state.app.panelToggled,
-    // panelCollapsed: state.app.panelCollapsed,
-    // currentUrl: getCurrentUrl(state.config.config,state.routing.locationBeforeTransitions.pathname, state.routing.locationBeforeTransitions.search)
   } as IAppProps);
 
 const mapDispatchToProps: MapDispatchToPropsObject = {
@@ -59,8 +45,6 @@ class App extends React.PureComponent<IAppProps, any> {
     const {  notifications, removeNotification } = this.props;
 
     const enabledStyles = {
-      // 'collapsed': panelCollapsed,
-      // 'toggled': panelToggled,
       [styles.app]: true
     };
 

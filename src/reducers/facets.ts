@@ -255,6 +255,9 @@ export function facetsToQuery(facets: FacetState['facets'], selectedClass:string
   if (!classConf) {
     throw new Error("Could not find class config for " + selectedClass);
   }
+  if (classConf.facets.length) {
+    throw new Error(`Class ${selectedClass} does not have any configured facets`);
+  }
   if (classConf.classToQueryPattern) {
     sparqlBuilder.addQueryPatterns([SparqlBuilder.getQueryPattern('{ ' + classConf.classToQueryPattern(selectedClass) + '}')])
   } else {
@@ -375,6 +378,9 @@ export function refreshFacets(facetLabels: FacetState['facetLabels'], forClass: 
       throw new Error("Could not find class config for " + forClass);
     }
     var facets: string[] = classConf.facets
+    if (!facets.length) {
+      throw new Error(`Class ${forClass} does not have any configured facets`)
+    }
     const fetchLabelsFor:string[] = facets.filter(f => (FACETS[f] && !( 'label' in FACETS[f]) && !facetLabels.has(f)));
     const getLabelQuery = () => {
       if (fetchLabelsFor.length === 0) return 'SELECT * WHERE {?s ?p ?o} LIMIT 0'
@@ -478,6 +484,7 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
           })
     };
   } catch(e) {
+    console.log(e)
     return {
       type: Actions.FETCH_FACET_PROPS_FAIL,
       facetName: forProp,

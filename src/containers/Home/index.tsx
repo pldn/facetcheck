@@ -8,7 +8,7 @@ import { GlobalState } from "../../reducers";
 import { getMatchingIris, FacetState } from "../../reducers/facets";
 import { Alert } from "react-bootstrap";
 import { ResourceDescriptions, Errors, getStatementsAsTree } from "../../reducers/statements";
-
+import {ErrorPage} from '../'
 namespace Home {
   export interface DispatchProps {
     showMore: typeof getMatchingIris;
@@ -26,7 +26,7 @@ namespace Home {
     nextPageOffset: number;
   }
   export interface State {
-    // modalShown: boolean
+    error:string
   }
   export type Props = DispatchProps & PropsFromState;
 }
@@ -34,7 +34,8 @@ namespace Home {
 const styles = require("./style.scss");
 
 // @(connect as any)(mapStateToProps, {getMatchingIris,getResourceDescription,fetchLabel,fetchShapes})
-class Home extends React.PureComponent<Home.Props, any> {
+class Home extends React.PureComponent<Home.Props, Home.State> {
+state:Home.State = { error:null}
   isSingleCol():boolean {
     if (this.props.resourceDescriptionErrors.size) return true;
   }
@@ -82,9 +83,14 @@ class Home extends React.PureComponent<Home.Props, any> {
       return els;
     }
   };
+  componentDidCatch(e:Error) {
+    this.setState({error: e.message})
+  }
   render() {
     // const {resourceDescriptions, labels,fetchLabel, matchingIris} = this.props
-
+    if (this.state.error) {
+    return <ErrorPage title="Something went wrong" message={this.state.error}/>
+  }
     const descriptions = this.renderDescriptions();
     return (
       <div>

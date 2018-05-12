@@ -7,10 +7,9 @@ import * as getClassName from "classnames";
 //import own dependencies
 import { RadioGroup, RadioButton } from 'react-toolbox/lib/radio';
 
-import Checkbox from 'react-toolbox/lib/checkbox';
 import { GlobalState } from "../../reducers";
 import {setSelectedClass,FacetsProps,setSelectedFacetValue,setSelectedObject,FacetState} from '../../reducers/facets'
-import {CLASSES,FACETS} from '../../facetConf'
+import {CLASSES} from '../../facetConf'
 import {
   Facet,
 } from "../../components";
@@ -51,17 +50,6 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
 
         }
         </RadioGroup>
-      // this.props.selectedClass.map((val,key) => {
-      //   const CLASS = CLASSES[key]
-      //     return <Checkbox
-      //       label={CLASS.label}
-      //       checked={val}
-      //       key={key}
-      //       onChange={(checked:boolean) => {
-      //         this.props.toggleClass(key, checked)
-      //       }}
-      //       />
-      // }).valueSeq().toArray()
       }
 
 
@@ -79,7 +67,6 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
       [styles.panel]: true,
       [styles.main]: true
     };
-
     return (
       <div className={getClassName(classNames)}>
         {this.renderClasses()}
