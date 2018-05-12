@@ -1,9 +1,7 @@
 import { ClassConfig } from "@triply/facetcheck/build/src/facetConfUtils";
 
-
-const CLASSES: { [className: string]: ClassConfig } = {
-  "http://dbpedia.org/ontology/WindMotor": {
-    default: false,
+const CLASSES: ClassConfig[] = [
+  {
     iri: "http://dbpedia.org/ontology/WindMotor",
     label: "Windturbine",
     facets: [
@@ -35,8 +33,7 @@ const CLASSES: { [className: string]: ClassConfig } = {
       return `construct { ${projectPattern} } { ${selectPattern} }`;
     }
   },
-  "http://bgt.basisregistraties.overheid.nl/def/bgt#Pand": {
-    default: true,
+  {
     iri: "http://bgt.basisregistraties.overheid.nl/def/bgt#Pand",
     label: "Pand",
     facets: [
@@ -88,5 +85,5 @@ const CLASSES: { [className: string]: ClassConfig } = {
       return `construct { ${projectPattern} } { ${selectPattern} }`;
     }
   }
-};
+];
 export default CLASSES;

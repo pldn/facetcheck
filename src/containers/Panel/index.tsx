@@ -46,7 +46,7 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
         <RadioGroup className={styles.classSelectors} value={this.props.selectedClass} onChange={this.props.setSelectedClass}>
 
         {
-          _.keys(CLASSES).map(key => <RadioButton key={key} label={CLASSES[key].label} value={CLASSES[key].iri}/>)
+          CLASSES.map(classConf => <RadioButton key={classConf.iri} label={classConf.label} value={classConf.iri}/>)
 
         }
         </RadioGroup>

@@ -22,9 +22,9 @@ export interface GlobalConfig {
   prefixes: {[label:string]:string}
   title?:string
   logo?:string
+  defaultClass?:string
 }
 export interface ClassConfig {
-  default: boolean;
   iri: string;
   label: string;
   facets: string[];

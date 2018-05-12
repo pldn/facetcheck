@@ -5,6 +5,7 @@ const conf: GlobalConfig = {
     url: "https://triply.eculture.labs.vu.nl/sparql",
     token: null
   },
+  defaultClass: 'http://bgt.basisregistraties.overheid.nl/def/bgt#Pand',
   prefixes: {
     dct: "http://purl.org/dc/terms/",
     foaf: "http://xmlns.com/foaf/0.1/",

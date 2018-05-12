@@ -145,7 +145,7 @@ export function markForFetchingOrDeletion(toRemove: string[], toFetch: string[])
 export function getStatements(resource: string, className: string): Action {
   if (!className) throw new Error("missing classname. cannot get statements");
   if (!resource) throw new Error("missing resource IRI. cannot get statements");
-  const q = `${getAsString(getPrefixes(Config))} ${CLASSES[className].resourceDescriptionQuery(resource)}`;
+  const q = `${getAsString(getPrefixes(Config))} ${CLASSES.find(c => c.iri === className).resourceDescriptionQuery(resource)}`;
   console.groupCollapsed("Querying for resource description of " + resource);
   console.info(q);
   console.groupEnd();

@@ -4,7 +4,7 @@ import * as N3 from "n3";
 import * as Immutable from "immutable";
 import ApiClient from "../helpers/ApiClient";
 import { GlobalActions, GlobalState } from "../reducers";
-import { FACETS, CLASSES } from "../facetConf";
+import { FACETS, CLASSES,CONFIG } from "../facetConf";
 import { FacetValue,ClassConfig } from "../facetConfUtils";
 import * as ReduxObservable from "redux-observable";
 import * as Redux from "redux";
@@ -62,7 +62,20 @@ export var Facet = Immutable.Record<FacetProps>(
 );
 export type Facet = Immutable.Record.Inst<FacetProps>;
 
-const defaultClass = _.values<ClassConfig>(CLASSES).find((val) => val.default)
+var defaultClass:string;
+if (CONFIG.defaultClass) {
+  if (!CLASSES.find(c => c.iri === CONFIG.defaultClass)) {
+    console.warn(`Cannot find class configuration for class that is set as default (${CONFIG.defaultClass})`)
+    defaultClass = CLASSES[0].iri
+  } else {
+    defaultClass = CONFIG.defaultClass
+  }
+} else {
+  defaultClass = CLASSES[0].iri
+
+}
+
+// const defaultClass = _.values<ClassConfig>(CLASSES).find((val) => val.default)
 export var StateRecord = Immutable.Record(
   {
     matchingIris: Immutable.List<string>(),
@@ -71,7 +84,7 @@ export var StateRecord = Immutable.Record(
     nextPageOffset: 0,
     hasNextPage: false,
     updateFacetInfoQueue: Immutable.List<string>(),
-    selectedClass: defaultClass ? defaultClass.iri: null,
+    selectedClass: defaultClass ,
     facets: Immutable.OrderedMap<string, Facet>()
   },
   "facets"
@@ -235,8 +248,9 @@ export var epics: [(action: Action$, store: Store) => any] = [
   }
 ];
 export function getFacetsForClass(selectedClass:string):string[] {
-  if (!CLASSES[selectedClass]) throw new Error('No class definition found for ' + selectedClass)
-  return CLASSES[selectedClass].facets;
+  const classConf = CLASSES.find(c => c.iri === selectedClass);
+  if (!classConf) throw new Error('No class definition found for ' + selectedClass)
+  return classConf.facets;
 }
 export function facetsToQuery(facets: FacetState['facets'], selectedClass:string, nextPageOffset:number) {
   const sparqlBuilder = SparqlBuilder.get(getPrefixes(Config));
@@ -251,7 +265,7 @@ export function facetsToQuery(facets: FacetState['facets'], selectedClass:string
    */
   // const selectedClass = getSelectedClass(facetState);
 
-  const classConf = CLASSES[selectedClass];
+  const classConf = CLASSES.find(c => c.iri === selectedClass);
   if (!classConf) {
     throw new Error("Could not find class config for " + selectedClass);
   }
@@ -373,7 +387,7 @@ export function refreshFacets(facetLabels: FacetState['facetLabels'], forClass: 
     if (!forClass) throw new Error('No class is selected. Either no default class is selected in the class config, or something else is wrong')
     var facets: string[] = [];
 
-    const classConf = CLASSES[forClass];
+    const classConf = CLASSES.find(c => c.iri === forClass);
     if (!classConf) {
       throw new Error("Could not find class config for " + forClass);
     }
