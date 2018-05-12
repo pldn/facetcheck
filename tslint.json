@@ -1,0 +1,18 @@
+{
+  "defaultSeverity": "warning",
+  "extends": [],
+  "jsRules": {},
+  "rules": {
+    "no-floating-promises": true,
+	  "mocha-avoid-only": true,
+    "no-console":  [true, "log"],
+    "jsx-no-lambda": true,
+    "jsx-no-bind": true
+  },
+  "project": "tsconfig.json",
+  "typeCheck": false,
+  "rulesDirectory": [
+    "node_modules/tslint-microsoft-contrib",
+    "node_modules/tslint-react/rules"
+  ]
+}

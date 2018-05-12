@@ -47,15 +47,7 @@ const getComponent = (renderProps: any = {}) => {
     <Router
       {...renderProps}
       history={syncedHistory as any}
-      render={(props: any) =>
-        (
-          <ReduxAsyncConnect
-            {...props}
-            helpers={{ client }}
-            filter={(item: any) => !item.deferred}
-            render={applyRouterMiddleware(useScroll())}
-          />
-        ) as any}
+      render={applyRouterMiddleware(useScroll())}
     >
       {getRoutes(store)}
     </Router>

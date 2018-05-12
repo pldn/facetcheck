@@ -20,7 +20,9 @@ export class Ellipsis extends React.PureComponent<Ellipsis.Props, Ellipsis.State
       showAll: false
     };
   }
-
+  showAll = () => {
+    this.setState({ showAll: true });
+  }
   render() {
     const value = this.props.value;
     const size = 30;
@@ -34,9 +36,7 @@ export class Ellipsis extends React.PureComponent<Ellipsis.Props, Ellipsis.State
       <span>
         {value.substr(0, size)}{" "}
         <span
-          onClick={() => {
-            this.setState({ showAll: true });
-          }}
+          onClick={this.showAll}
           className={getClassName(styles.dots, "btn-link")}
         >
           ......
