@@ -9,8 +9,8 @@ import { FacetValue,ClassConfig } from "../facetConfUtils";
 import * as ReduxObservable from "redux-observable";
 import * as Redux from "redux";
 import { Facet as FacetComponent } from "../components";
-import {getPrefixes, getAsString, prefix} from '../prefixes'
-import {default as Config} from '../config/config'
+import {getAsString, prefix} from '../prefixes'
+import {getPrefixes, getPageSize} from '../facetConf'
 import SparqlBuilder from "../helpers/SparqlBuilder";
 import * as sparqljs from "sparqljs";
 import { default as SparqlJson } from "../helpers/SparqlJson";
@@ -252,10 +252,10 @@ export function getFacetsForClass(selectedClass:string):string[] {
   return classConf.facets;
 }
 export function facetsToQuery(facets: FacetState['facets'], selectedClass:string, nextPageOffset:number) {
-  const sparqlBuilder = SparqlBuilder.get(getPrefixes(Config));
+  const sparqlBuilder = SparqlBuilder.get(getPrefixes());
   sparqlBuilder
     .vars("?_r")
-    .limit(Config.pageSize + 1)
+    .limit(getPageSize() + 1)
     .offset(nextPageOffset)
     .distinct();
 
@@ -364,8 +364,8 @@ export function getMatchingIris(facets: FacetState['facets'], selectedClass:stri
           })
           .then(sparql => {
             return {
-              iris: sparql.getValuesForVar('_r').slice(0, Config.pageSize),
-              hasNextPage: sparql.getValues().length > Config.pageSize
+              iris: sparql.getValuesForVar('_r').slice(0, getPageSize()),
+              hasNextPage: sparql.getValues().length > getPageSize()
             };
           })
     };

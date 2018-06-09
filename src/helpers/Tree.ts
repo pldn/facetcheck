@@ -1,8 +1,8 @@
 import * as N3 from 'n3';
 import * as _ from 'lodash'
 import {Statements,Term,ntriplyToNquads} from '@triply/triply-node-utils/build/src/nTriply'
-import {getPrefixes, getAsString, prefix} from '../prefixes'
-import {default as Config} from '../config/config'
+import { getAsString, prefix} from '../prefixes'
+import {getPrefixes} from '../facetConf'
 export default class TreeNode {
   private term:Term;
   private childrenCount = 0
@@ -35,7 +35,7 @@ export default class TreeNode {
   }
   public getLabel() {
     if (this.label) return this.label;
-    const rdfsLabel =  this.find([prefix(getPrefixes(Config),'rdfs', 'label'), null]).limit(1).exec();
+    const rdfsLabel =  this.find([prefix(getPrefixes(),'rdfs', 'label'), null]).limit(1).exec();
     if (rdfsLabel.length) return rdfsLabel[0].getTerm().value;
     return null;
   }

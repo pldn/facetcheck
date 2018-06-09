@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 import { GlobalConfig } from "./facetConfUtils";
-var _prefixes: GlobalConfig["prefixes"] = {
+export var staticPrefixes: GlobalConfig["prefixes"] = {
   bgt: "http://bgt.basisregistraties.overheid.nl/def/bgt#",
   brt: "http://brt.basisregistraties.overheid.nl/def/top10nl#",
   dct: "http://purl.org/dc/terms/",
@@ -11,12 +11,7 @@ var _prefixes: GlobalConfig["prefixes"] = {
   xsd: "http://www.w3.org/2001/XMLSchema#"
 };
 
-// export default prefixes;
-var prefixes:GlobalConfig['prefixes'];
-export function getPrefixes(conf: GlobalConfig) {
-  if (!prefixes) prefixes = { ...conf.prefixes, ..._prefixes };
-  return prefixes;
-}
+
 
 export function prefix(prefixes: GlobalConfig["prefixes"], pref: keyof typeof prefixes, localName: string) {
   return prefixes[pref] + localName;

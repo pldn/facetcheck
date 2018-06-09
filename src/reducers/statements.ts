@@ -5,7 +5,7 @@ import { extname } from "path";
 import * as Immutable from "immutable";
 import ApiClient from "../helpers/ApiClient";
 import { GlobalActions } from "../reducers";
-import {getPrefixes, getAsString, prefix} from '../prefixes'
+import {getAsString, prefix} from '../prefixes'
 import {default as Config} from '../config/config'
 const urlParse = require("url-parse");
 import { default as Tree, QueryPattern, QueryObject } from "../helpers/Tree";
@@ -16,7 +16,7 @@ import * as Redux from "redux";
 import { GlobalState } from "./";
 import * as RX from "rxjs";
 import "rxjs";
-import { CLASSES, FACETS } from "../facetConf";
+import { CLASSES, FACETS,getPrefixes } from "../facetConf";
 
 // import {Actions as FacetActions} from './facets'
 //import own dependencies
@@ -145,7 +145,7 @@ export function markForFetchingOrDeletion(toRemove: string[], toFetch: string[])
 export function getStatements(resource: string, className: string): Action {
   if (!className) throw new Error("missing classname. cannot get statements");
   if (!resource) throw new Error("missing resource IRI. cannot get statements");
-  const q = `${getAsString(getPrefixes(Config))} ${CLASSES.find(c => c.iri === className).resourceDescriptionQuery(resource)}`;
+  const q = `${getAsString(getPrefixes())} ${CLASSES.find(c => c.iri === className).resourceDescriptionQuery(resource)}`;
   console.groupCollapsed("Querying for resource description of " + resource);
   console.info(q);
   console.groupEnd();
@@ -197,7 +197,7 @@ export type SelectWidget = (tree: Tree) => WidgetConfig;
  */
 const selectGeometry: SelectWidget = t => {
   const node = t
-    .find([prefix(getPrefixes(Config), 'geo', "hasGeometry"), null, prefix(getPrefixes(Config), 'geo', "asWKT")])
+    .find([prefix(getPrefixes(), 'geo', "hasGeometry"), null, prefix(getPrefixes(), 'geo', "asWKT")])
     .exec();
   if (node.length) {
     return <WidgetConfig>{
@@ -211,7 +211,21 @@ const selectGeometry: SelectWidget = t => {
 };
 const selectDescription: SelectWidget = t => {
   const node = t
-    .find([prefix(getPrefixes(Config), 'dct', "description"), null])
+    .find([prefix(getPrefixes(), 'dct', "description"), null])
+    .limit(1)
+    .exec();
+  if (node.length) {
+    return <WidgetConfig>{
+      values: node,
+      config: {
+        type: "textarea"
+      }
+    };
+  }
+};
+const selectSummary: SelectWidget = t => {
+  const node = t
+    .find([prefix(getPrefixes(), 'rdf', "comment"), null])
     .limit(1)
     .exec();
   if (node.length) {
@@ -241,7 +255,7 @@ $(IRI) foaf:depiction ?img .
 */
 const selectImage: SelectWidget = t => {
   // console.log(t)
-  const patterns: QueryPattern[] = [...findImageLiteralPatterns, [prefix(getPrefixes(Config), 'foaf' , "depiction"), null]];
+  const patterns: QueryPattern[] = [...findImageLiteralPatterns, [prefix(getPrefixes(), 'foaf' , "depiction"), null]];
   const images: WidgetConfig[] = [];
   const nodes = t
     .find(...patterns)
@@ -252,7 +266,7 @@ const selectImage: SelectWidget = t => {
     //this might be an image literal, or a depiction resource
     if (node.hasChildren()) {
       const label = node
-        .find([prefix(getPrefixes(Config), 'rdfs', "label"), null], [prefix(getPrefixes(Config), 'dct' , "description"), null])
+        .find([prefix(getPrefixes(), 'rdfs', "label"), null], [prefix(getPrefixes(), 'dct' , "description"), null])
         .limit(1)
         .exec();
       var img: Tree[] = [];
@@ -288,7 +302,7 @@ const selectImage: SelectWidget = t => {
 };
 const selectLabel: SelectWidget = t => {
   const node = t
-    .find([prefix(getPrefixes(Config), 'rdfs' , "label"), null])
+    .find([prefix(getPrefixes(), 'rdfs' , "label"), null])
     .limit(1)
     .exec();
   if (node.length) {
@@ -347,6 +361,7 @@ export var SelectWidgets: SelectWidget[] = [
   selectImage,
   selectDescription,
   selectGeometry,
+//  selectSummary,
   catchAll
 ];
 
