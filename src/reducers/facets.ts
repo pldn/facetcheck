@@ -16,7 +16,6 @@ import * as sparqljs from "sparqljs";
 import { default as SparqlJson } from "../helpers/SparqlJson";
 // import {Actions as FacetActions} from './facets'
 //import own dependencies
-export const RESOURCE_PAGE_SIZE = 6;
 export enum Actions {
   GET_MATCHING_IRIS = "facetcheck/facets/GET_MATCHING_IRIS" as any,
   GET_MATCHING_IRIS_SUCCESS = "facetcheck/facets/GET_MATCHING_IRIS_SUCCESS" as any,
@@ -256,7 +255,7 @@ export function facetsToQuery(facets: FacetState['facets'], selectedClass:string
   const sparqlBuilder = SparqlBuilder.get(getPrefixes(Config));
   sparqlBuilder
     .vars("?_r")
-    .limit(RESOURCE_PAGE_SIZE + 1)
+    .limit(Config.pageSize + 1)
     .offset(nextPageOffset)
     .distinct();
 
@@ -365,8 +364,8 @@ export function getMatchingIris(facets: FacetState['facets'], selectedClass:stri
           })
           .then(sparql => {
             return {
-              iris: sparql.getValuesForVar('_r').slice(0, RESOURCE_PAGE_SIZE),
-              hasNextPage: sparql.getValues().length > RESOURCE_PAGE_SIZE
+              iris: sparql.getValuesForVar('_r').slice(0, Config.pageSize),
+              hasNextPage: sparql.getValues().length > Config.pageSize
             };
           })
     };

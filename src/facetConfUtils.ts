@@ -20,6 +20,7 @@ export interface GlobalConfig {
     token?:string
   },
   prefixes: {[label:string]:string}
+  pageSize?: number
   title?:string
   logo?:string
   defaultClass?:string
