@@ -29,3 +29,4 @@ export { default as TermLink } from "./TermLink";
 export { default as TermLiteralDefault } from "./TermLiteralDefault";
 export { default as TermLiteralBoolean } from "./TermLiteralBoolean";
 export { default as TermLiteralTextarea } from "./TermLiteralTextarea";
+export { default as TermLiteralHtml } from "./TermLiteralHtml";

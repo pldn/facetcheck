@@ -361,7 +361,7 @@ export var SelectWidgets: SelectWidget[] = [
   selectImage,
   selectDescription,
   selectGeometry,
-//  selectSummary,
+  selectSummary,
   catchAll
 ];
 

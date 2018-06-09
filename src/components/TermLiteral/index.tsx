@@ -12,6 +12,7 @@ import {
   TermLiteralNumeric,
   TermLiteralImage,
   TermLiteralLink,
+  TermLiteralHtml,
   TermLiteralTextarea
 } from "../";
 import * as styles from "./style.scss";
@@ -52,6 +53,7 @@ export class TermLiteral extends React.PureComponent<TermLiteral.Props, TermLite
     super(props);
     this.LiteralRenderers = [
       TermLiteralString,
+      TermLiteralHtml,//should be before text area (more specific)
       TermLiteralTextarea,
       TermLiteralBoolean,
       TermLiteralWktLeaflet,

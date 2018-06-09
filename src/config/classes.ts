@@ -55,9 +55,12 @@ const CLASSES: ClassConfig[] = [
                  bgt:objectBegintijd ?objectBegintijd ;
                  bgt:publicatiedatumLandelijkeVoorziening ?publicatiedatum ;
                  bgt:tijdstipRegistratie ?tijdstipRegistratie ;
-                 bgt:objectEindtijd ?objectEindtijd .
+                 bgt:objectEindtijd ?objectEindtijd ;
+                 dct:description "some description";
+                 rdf:comment "some <b>summary</b>"^^rdf:HTML .
         ?bronhouder rdfs:label ?bronhouderLabel .
         ?geo geo:asWKT ?wkt .
+
         ?p rdfs:label ?pLabel .
         ?o rdfs:label ?oLabel .`;
       var selectPattern = `
