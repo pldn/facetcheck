@@ -94,13 +94,11 @@
 
 
 .appContent {
-  height: 100%;//to allow a full-height vertical menu
-  // padding-top: $navbar-height;
-  position:absolute;
-  top:$navbar-height;
-  right:0;
-  bottom:0;
-  left: 0;
+  position: absolute;
+  overflow: auto;
+  top: $navbar-height;
+  right: 0;
+  bottom: 0;
   transition: left $animateDuration cubic-bezier(0.4,0.0,0.2,1);
 }
 .brandWrapper {
