@@ -2,7 +2,7 @@ import * as React from "react";
 
 import * as _ from "lodash";
 // import * as getClassName from "classnames";
-import { Facet } from "../";
+import { Facet, TermLiteralNumeric } from "../";
 import { Facet as GenericFacetProps } from "../../reducers/facets";
 import { FACETS } from "../../facetConf";
 import { FacetValue } from "../../facetConfUtils";
@@ -44,7 +44,7 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, FacetSlider.Sta
   static prepareOptionsQuery(sparqlBuilder: SparqlBuilder) {
     return sparqlBuilder.limit(1);
   }
-  static valueToNumber(term: Term): { value: number; type: "date" | "number" } {
+  static valueToNumber(term: Term): { value: number; type: "date" | "number"; label?: string } {
     if (
       term.datatype === "http://www.w3.org/2001/XMLSchema#dateTime" ||
       term.datatype === "http://www.w3.org/2001/XMLSchema#date"
@@ -52,6 +52,13 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, FacetSlider.Sta
       // console.log(term.value.substr(0, 10).split('-').join('')
       return { value: Date.parse(term.value).valueOf(), type: "date" };
       // return +term.value.substr(0, 10).split('-').join('')
+    }
+    if(TermLiteralNumeric.isNumeric(term.datatype)) {
+      return {
+        type: "number",
+        value: +term.value,
+        label: TermLiteralNumeric.formatNumber(term.value)
+      };
     }
     return { type: "number", value: +term.value };
   }
@@ -85,11 +92,13 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, FacetSlider.Sta
       if (binding._min) {
         const info = FacetSlider.valueToNumber(binding._min);
         minValue = info.value;
+        if (info.label) minValueLabel = info.label;
         if (!isDate && info.type === "date") isDate = true;
       }
       if (binding._max) {
         const info = FacetSlider.valueToNumber(binding._max);
         maxValue = info.value;
+        if (info.label) maxValueLabel = info.label;
         if (!isDate && info.type === "date") isDate = true;
       }
       if (binding._minLabel) minValueLabel = binding._minLabel.value;
