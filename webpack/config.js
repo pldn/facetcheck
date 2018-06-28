@@ -70,6 +70,11 @@ module.exports = {
     modules: [paths.src, paths.nodeModules],
     extensions: [".json", ".js", ".jsx", ".ts", ".tsx"]
   },
+  devServer:{
+    historyApiFallback: true,
+    hot: true,
+    disableHostCheck: true
+  },
   module: {
     rules: removeEmpty([
       {
