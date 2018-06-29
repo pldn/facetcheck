@@ -16,6 +16,13 @@ Startup:
 npm run dev
 ```
 
+## Release procedure
+- `npm version <patch|minor|major`
+- `npm publish`
+- `git push`
+
+This will release a new docker image automatically (our ci takes care of that)
+
 ## Configuration of FacetCheck
 
 FacetCheck delivers a good out of the box browsing experience that
