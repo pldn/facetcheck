@@ -12,7 +12,17 @@ const app = express();
 const basename = process.env.BASENAME || ""
 console.log('basename on server', basename)
 // serve static assets normally
-app.use(basename, express.static(`${__dirname}/../build/assets/dist`));
+app.use(basename,
+  function(req,res,next) {
+
+    res.set({
+      Expires: "Fri, 29 Jun 2018 13:40:55 GMT",
+      "Cache-Control": "max-age=600"
+    });
+    next();
+  },
+  express.static(`${__dirname}/../build/assets/dist`)
+);
 
 // handle every other route with index.html, which will contain
 // a script tag to your application's JavaScript file(s).

@@ -1,17 +1,19 @@
 import { GlobalConfig } from "@triply/facetcheck/build/src/facetConfUtils";
-
 const conf: GlobalConfig = {
   endpoint: {
-    url: "https://triply.eculture.labs.vu.nl/sparql",
-    token: null
+    token: null,
+    url: "https://data.labs.pdok.nl/sparql"
   },
-  defaultClass: 'http://bgt.basisregistraties.overheid.nl/def/bgt#Pand',
+  logo: "https://demo.triply.cc/imgs/avatars/d/5af446ea41fcac027d4b3978.png?v=0",
+  pageSize: 10,
   prefixes: {
+    dbeerpedia: "http://dbeerpedia.com/def#",
     dct: "http://purl.org/dc/terms/",
-    foaf: "http://xmlns.com/foaf/0.1/",
     geo: "http://www.opengis.net/ont/geosparql#",
-    rdf: "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
     rdfs: "http://www.w3.org/2000/01/rdf-schema#",
-  }
+    schema: "http://schema.org/",
+    xsd: "http://www.w3.org/2001/XMLSchema#"
+  },
+  title: "🍺 Bier browserij"
 };
 export default conf;

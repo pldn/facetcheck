@@ -1,13 +1,50 @@
-import { FacetConfig as _FacetConfig, toEntity } from "@triply/facetcheck/build/src/facetConfUtils";
+import { FacetConfig, toEntity } from "@triply/facetcheck/build/src/facetConfUtils";
 import * as _ from "lodash";
-const FACETS: { [property: string]: _FacetConfig } = {
-  "http://data.labs.pdok.nl/dataset/windstats/def#Ashoogte": {
-    label: "As hoogte (m)",
+const FACETS: { [property: string]: FacetConfig } = {
+  "pdok-approved": {
+    facetType: "multiselect",
+    label: "PDOK approved",
+    facetValues: [
+      {
+        value: "true",
+        label: "✓"
+      },
+      {
+        value: "false",
+        label: "❌"
+      }
+    ],
+    facetToQueryPatterns: (iri, values) => {
+      if (values instanceof Array && values.length) {
+        //no need to apply pattern. should be either true or false
+        if (values.length === 2) {
+          return;
+        }
+        const val = values[0];
+        if (val.value === "true") {
+          return `
+            graph <https://data.pdok.nl/bier> {
+              ?_r foaf:depiction ?picture
+            }`;
+        } else if (val.value === "false") {
+          return `
+            graph <https://data.pdok.nl/bier> {
+              ?_r a <http://dbeerpedia.com/def#Beer>
+              filter not exists {
+                ?_r foaf:depiction ?picture
+              }
+            }`;
+        }
+      }
+    }
+  },
+  "http://dbeerpedia.com/def#alcoholpercentage": {
     facetType: "slider",
+    label: "Alcoholpercentage",
     getFacetValuesQuery: iri => {
       return `
-        select (min(?asHoogte) as ?_min) (max(?asHoogte) as ?_max) {
-          ?_r <${iri}> ?asHoogte .
+        select (min(?value) as ?_min) (max(?value) as ?_max) {
+          ?_r <${iri}> ?value .
         }`;
     },
     facetToQueryPatterns: (iri, values) => {
@@ -15,43 +52,49 @@ const FACETS: { [property: string]: _FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `?_r <${iri}> ?asHoogte .`;
-        if (_.isFinite(values.min)) pattern += `filter(?asHoogte >= ${values.min}) `;
-        if (_.isFinite(values.max)) pattern += `filter(?asHoogte <= ${values.max}) `;
+        var pattern = `
+            ?_r <${iri}> ?count1_ .
+            bind(xsd:integer(?count1_) as ?count1)`;
+        if (_.isFinite(values.min)) {
+          pattern += `filter(?count1 >= ${values.min}) `;
+        }
+        if (_.isFinite(values.max)) {
+          pattern += `filter(?count1 <= ${values.max}) `;
+        }
         return pattern;
       }
     }
   },
-  "http://bgt.basisregistraties.overheid.nl/def/bgt#bronhouder": {
+  "http://dbeerpedia.com/def#categorie": {
+    label: "Categorie",
     facetType: "multiselect",
-    label: "Bronhouder",
-    getFacetValuesQuery: iri => {
-      return `
-      select ?_value ?_valueLabel {
-        {
-          select ?_value ?label (count(?_r) as ?n) {
-            ?_r foaf:isPrimaryTopicOf/<${iri}> ?_value .
-            ?_value rdfs:label ?label .
-          }
-          order by desc(?n)
-          limit 8
-        }
-        bind (concat(str(?label),' (',replace(?n,"[0-9](?=(?:[0-9]{3})+(?![0-9]))","$0."),')') as ?_valueLabel)
-      }`;
-    },
+    facetValues: [
+      {
+        value: "http://dbeerpedia.com/def#Brouwerijhuurder",
+        label: "Brouwerij huurder"
+      },
+      {
+        value: "http://dbeerpedia.com/def#Bierbrouwerij",
+        label: "Bierbrouwerij"
+      },
+      {
+        value: "http://dbeerpedia.com/def#Brouwerijverhuurder",
+        label: "Brouwerij verhuurder"
+      }
+    ],
     facetToQueryPatterns: (iri, values) => {
       if (values instanceof Array && values.length) {
-        return values.map(v => `?_r foaf:isPrimaryTopicOf/<${iri}> ${toEntity(v)} . `).join("} union {");
+        return values.map(v => `?_r <${iri}> <${v.value}>`).join("} union {");
       }
     }
   },
-  "http://data.labs.pdok.nl/dataset/windstats/def#Diameter": {
-    label: "Diameter (m)",
+  "http://dbeerpedia.com/def#opgericht": {
     facetType: "slider",
+    label: "Oprichtingsjaar",
     getFacetValuesQuery: iri => {
       return `
-        select (min(?diameter) as ?_min) (max(?diameter) as ?_max) {
-          ?_r <${iri}> ?diameter .
+        select (min(?value) as ?_min) (max(?value) as ?_max) {
+          ?_r <${iri}> ?value .
         }`;
     },
     facetToQueryPatterns: (iri, values) => {
@@ -59,163 +102,20 @@ const FACETS: { [property: string]: _FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `?_r <${iri}> ?diameter .`;
-        if (_.isFinite(values.min)) pattern += `filter(?diameter >= ${values.min}) `;
-        if (_.isFinite(values.max)) pattern += `filter(?diameter <= ${values.max}) `;
+        var pattern = `
+            ?_r <${iri}> ?count_ .
+            bind(xsd:integer(?count_) as ?count)`;
+        if (_.isFinite(values.min)) {
+          pattern += `filter(?count >= ${values.min}) `;
+        }
+        if (_.isFinite(values.max)) {
+          pattern += `filter(?count <= ${values.max}) `;
+        }
         return pattern;
       }
     }
   },
-  "http://bgt.basisregistraties.overheid.nl/def/bgt#eindRegistratie": {
-    label: "Eind registratie",
-    facetType: "slider",
-    getFacetValuesQuery: iri => {
-      return `
-      select ?_min ?_minLabel ?_max ?_maxLabel {
-        {
-          select (min(?dateTime) as ?_min) (max(?dateTime) as ?_max) {
-            ?_r foaf:isPrimaryTopicOf/<${iri}> ?dateTime ;
-                a bgt:Pand .
-          }
-          limit 1
-        }
-        bind (concat(year(?_min),'-',month(?_min),'-',day(?_min)) as ?_minLabel)
-        bind (concat(year(?_max),'-',month(?_max),'-',day(?_max)) as ?_maxLabel)
-      }`;
-    },
-    facetToQueryPatterns: (iri, values) => {
-      if (Array.isArray(values)) {
-        return null;
-      }
-      if (!_.isNil(values.min) || !_.isNil(values.max)) {
-        var pattern = `?_r foaf:isPrimaryTopicOf/<${iri}> ?dateTime1 .`;
-        if (!_.isNil(values.min)) pattern += `filter(?dateTime1 >= ${toEntity(values.min)}) `;
-        if (!_.isNil(values.max)) pattern += `filter(?dateTime1 <= ${toEntity(values.max)}) `;
-        return pattern;
-      }
-    }
-  },
-  "http://data.labs.pdok.nl/dataset/windstats/def#Fabrikant": {
-    label: "Fabrikant",
-    facetType: "multiselect",
-    getFacetValuesQuery: iri => {
-      return `
-      select ?_value ?_valueLabel ?n {
-        {
-          select ?_value (count(?_r) as ?n) {
-            ?_r <${iri}> ?_value .
-          }
-          order by desc(?n)
-          limit 5
-        }
-        bind (concat(str(?_value),' (',?n,')') as ?_valueLabel)
-      }
-      order by desc(?n)`;
-    },
-    facetToQueryPatterns: (iri, values) => {
-      if (values instanceof Array && values.length) {
-        return values.map(v => `?_r <${iri}> ${toEntity(v)} . `).join("} union {");
-      }
-    }
-  },
-  "http://bgt.basisregistraties.overheid.nl/def/bgt#objectBegintijd": {
-    label: "Object begintijd",
-    facetType: "slider",
-    getFacetValuesQuery: iri => {
-      return `
-      select ?_minLabel ?_min ?_maxLabel ?_max {
-        {
-          select (min(?dateTime) as ?_min) (max(?dateTime) as ?_max) {
-            ?_r foaf:isPrimaryTopicOf/<${iri}> ?dateTime ;
-                a bgt:Pand .
-          }
-          limit 1
-        }
-        bind (concat(year(?_min),'-',month(?_min),'-',day(?_min)) as ?_minLabel)
-        bind (concat(year(?_max),'-',month(?_max),'-',day(?_max)) as ?_maxLabel)
-      }`;
-    },
-    facetToQueryPatterns: (iri, values) => {
-      if (Array.isArray(values)) {
-        return null;
-      }
-      if (!_.isNil(values.min) || !_.isNil(values.max)) {
-        var pattern = `?_r foaf:isPrimaryTopicOf/<${iri}> ?dateTime2 .`;
-        if (!_.isNil(values.min)) pattern += `filter(?dateTime2 >= ${toEntity(values.min)}) `;
-        if (!_.isNil(values.max)) pattern += `filter(?dateTime2 <= ${toEntity(values.max)}) `;
-        return pattern;
-      }
-    }
-  },
-  "http://bgt.basisregistraties.overheid.nl/def/bgt#objectEindtijd": {
-    label: "Object eindtijd",
-    facetType: "slider",
-    getFacetValuesQuery: iri => {
-      return `
-      select ?_minLabel ?_min ?_maxLabel ?_max {
-        {
-          select (min(?dateTime) as ?_min) (max(?dateTime) as ?_max) {
-            ?_r foaf:isPrimaryTopicOf/<${iri}> ?dateTime ;
-                a bgt:Pand .
-          }
-          limit 1
-        }
-        bind (concat(year(?_min),'-',month(?_min),'-',day(?_min)) as ?_minLabel)
-        bind (concat(year(?_max),'-',month(?_max),'-',day(?_max)) as ?_maxLabel)
-      }`;
-    },
-    facetToQueryPatterns: (iri, values) => {
-      if (Array.isArray(values)) {
-        return null;
-      }
-      if (!_.isNil(values.min) || !_.isNil(values.max)) {
-        var pattern = `?_r foaf:isPrimaryTopicOf/<${iri}> ?dateTime3 .`;
-        if (!_.isNil(values.min)) pattern += `filter(?dateTime3 >= ${toEntity(values.min)}) `;
-        if (!_.isNil(values.max)) pattern += `filter(?dateTime3 <= ${toEntity(values.max)}) `;
-        return pattern;
-      }
-    }
-  },
-  "http://bgt.basisregistraties.overheid.nl/def/bgt#opTalud": {
-    label: "Op talud",
-    facetType: "multiselect",
-    getFacetValuesQuery: iri => {
-      return `
-      select ?_value ?_valueLabel {
-        values (?_value ?_valueLabel) {
-          ("false"^^xsd:boolean "❌")
-          ("true"^^xsd:boolean "✓")
-        }
-      }`;
-    },
-    facetToQueryPatterns: (iri, values) => {
-      if (values instanceof Array && values.length) {
-        return values.map(v => `?_r <${iri}> ${toEntity(v)} .`).join("} union {");
-      }
-    }
-  },
-  "http://data.labs.pdok.nl/dataset/windstats/def#Productie": {
-    label: "Productie",
-    facetType: "slider",
-    getFacetValuesQuery: iri => {
-      return `
-        select (min(?productie) as ?_min) (max(?productie) as ?_max) {
-          ?_r <${iri}> ?productie ;
-        }`;
-    },
-    facetToQueryPatterns: (iri, values) => {
-      if (Array.isArray(values)) {
-        return null;
-      }
-      if (values.min !== undefined || values.max !== undefined) {
-        var pattern = `?_r <${iri}> ?productie .`;
-        if (values.min !== undefined) pattern += `filter(?productie >= ${toEntity(values.min)}) `;
-        if (values.max !== undefined) pattern += `filter(?productie <= ${toEntity(values.max)}) `;
-        return pattern;
-      }
-    }
-  },
-  "http://data.labs.pdok.nl/dataset/windstats/def#Provincie": {
+  "http://dbeerpedia.com/def#provincie": {
     label: "Provincie",
     facetType: "nlProvinces",
     facetValues: {
@@ -229,7 +129,7 @@ const FACETS: { [property: string]: _FacetConfig } = {
       },
       friesland: {
         value: "http://www.gemeentegeschiedenis.nl/provincie/Friesland",
-        label: "Fryslân"
+        label: "Friesland"
       },
       gelderland: {
         value: "http://www.gemeentegeschiedenis.nl/provincie/Gelderland",
@@ -274,146 +174,13 @@ const FACETS: { [property: string]: _FacetConfig } = {
       }
     }
   },
-  "http://bgt.basisregistraties.overheid.nl/def/bgt#publicatiedatumLandelijkeVoorziening": {
-    label: "Publicatied. landelijke voorz.",
+  "http://dbeerpedia.com/def#minSchenkTemperatuur": {
+    label: "🌡 Min. schenktemperatuur (℃)",
     facetType: "slider",
     getFacetValuesQuery: iri => {
       return `
-        select ?_minLabel ?_min ?_maxLabel ?_max {
-          {
-            select (min(?dateTime) as ?_min) (max(?dateTime) as ?_max) {
-              ?_r foaf:isPrimaryTopicOf/<${iri}> ?dateTime ;
-                  a bgt:Pand .
-            }
-            limit 1
-          }
-          bind (concat(year(?_min),'-',month(?_min),'-',day(?_min)) as ?_minLabel)
-          bind (concat(year(?_max),'-',month(?_max),'-',day(?_max)) as ?_maxLabel)
-        }`;
-    },
-    facetToQueryPatterns: (iri, values) => {
-      if (Array.isArray(values)) {
-        return null;
-      }
-      if (!_.isNil(values.min) || !_.isNil(values.max)) {
-        var pattern = `?_r foaf:isPrimaryTopicOf/<${iri}> ?dateTime4 .`;
-        if (!_.isNil(values.min)) pattern += `filter(?dateTime4 >= ${toEntity(values.min)}) `;
-        if (!_.isNil(values.max)) pattern += `filter(?dateTime4 <= ${toEntity(values.max)}) `;
-        return pattern;
-      }
-    }
-  },
-  "http://bgt.basisregistraties.overheid.nl/def/bgt#relatieveHoogteligging": {
-    label: "Hoogteligging",
-    facetType: "multiselect",
-    getFacetValuesQuery: iri => {
-      return `
-      select distinct ?_value {
-        ?_r <${iri}> ?_value
-      }
-      order by asc(?_value)`;
-    },
-    facetToQueryPatterns: (iri, values) => {
-      if (values instanceof Array && values.length) {
-        return values.map(v => `?_r <${iri}> ${toEntity(v)} .`).join("} union {");
-      }
-    }
-  },
-  "http://data.labs.pdok.nl/dataset/windstats/def#Startjaar": {
-    label: "Startjaar",
-    facetType: "slider",
-    getFacetValuesQuery: iri => {
-      return `
-        select (min(?start) as ?_min) (max(?start) as ?_max) {
-          ?_r <${iri}> ?start .
-        }`;
-    },
-    facetToQueryPatterns: (iri, values) => {
-      if (Array.isArray(values)) {
-        return null;
-      }
-      if (values.min !== undefined || values.max !== undefined) {
-        var pattern = `?_r <${iri}> ?start .`;
-        if (values.min !== undefined) pattern += `filter(?start >= ${toEntity(values.min)}) `;
-        if (values.max !== undefined) pattern += `filter(?start <= ${toEntity(values.max)}) `;
-        return pattern;
-      }
-    }
-  },
-  "http://bgt.basisregistraties.overheid.nl/def/bgt#status": {
-    label: "Status",
-    facetType: "multiselect",
-    facetValues: {
-      bestaand: {
-        value: "http://bgt.basisregistraties.overheid.nl/bgt/id/begrip/bestaand_Status",
-        label: "Bestaand"
-      }
-    },
-    facetToQueryPatterns: (iri, values) => {
-      if (values instanceof Array && values.length) {
-        return values.map(v => `?_r <${iri}> <${v.value}> .`).join("} union {");
-      }
-    }
-  },
-  "http://bgt.basisregistraties.overheid.nl/def/bgt#tijdstipRegistratie": {
-    label: "Tijdstip registratie",
-    facetType: "slider",
-    getFacetValuesQuery: iri => {
-      return `
-      select ?_minLabel ?_min ?_maxLabel ?_max {
-        {
-          select (min(?dateTime) as ?_min) (max(?dateTime) as ?_max) {
-            ?_r foaf:isPrimaryTopicOf/<${iri}> ?dateTime ;
-                a bgt:Pand .
-          }
-          limit 1
-        }
-        bind (concat(year(?_min),'-',month(?_min),'-',day(?_min)) as ?_minLabel)
-        bind (concat(year(?_max),'-',month(?_max),'-',day(?_max)) as ?_maxLabel)
-      }`;
-    },
-    facetToQueryPatterns: (iri, values) => {
-      if (Array.isArray(values)) {
-        return null;
-      }
-      if (!_.isNil(values.min) || !_.isNil(values.max)) {
-        var pattern = `?_r foaf:isPrimaryTopicOf/<${iri}> ?dateTime5 .`;
-        if (!_.isNil(values.min)) pattern += `filter(?dateTime5 >= ${toEntity(values.min)}) `;
-        if (!_.isNil(values.max)) pattern += `filter(?dateTime5 <= ${toEntity(values.max)}) `;
-        return pattern;
-      }
-    }
-  },
-  "http://data.labs.pdok.nl/dataset/windstats/def#Type": {
-    label: "Type",
-    facetType: "multiselect",
-    getFacetValuesQuery: iri => {
-      return `
-      select ?_value ?_valueLabel ?n {
-        {
-          select ?_value (count(?_r) as ?n) {
-            ?_r <${iri}> ?_value .
-          }
-          order by desc(?n)
-          limit 5
-        }
-        bind (concat(str(?_value),' (',?n,')') as ?_valueLabel)
-      }
-      order by desc(?n)`;
-    },
-    facetToQueryPatterns: (iri, values) => {
-      if (values instanceof Array && values.length) {
-        return values.map(v => `?_r <${iri}> ${toEntity(v)} . `).join("} union {");
-      }
-    }
-  },
-  "http://data.labs.pdok.nl/dataset/windstats/def#Vermogen": {
-    label: "🗲 Vermogen (kW)",
-    facetType: "slider",
-    getFacetValuesQuery: iri => {
-      return `
-        select (min(?vermogen) as ?_min) (max(?vermogen) as ?_max) {
-          ?_r <${iri}> ?vermogen .
+        select (min(?minTemp) as ?_min) (max(?minTemp) as ?_max) {
+          ?_r <${iri}> ?minTemp .
         }`;
     },
     facetToQueryPatterns: (iri, values) => {
@@ -421,29 +188,87 @@ const FACETS: { [property: string]: _FacetConfig } = {
         return null;
       }
       if (_.isFinite(values.min) || _.isFinite(values.max)) {
-        var pattern = `?_r <${iri}> ?vermogen .`;
-        if (_.isFinite(values.min)) pattern += `filter(?vermogen >= ${values.min}) `;
-        if (_.isFinite(values.max)) pattern += `filter(?vermogen <= ${values.max}) `;
+        var pattern = `?_r <${iri}> ?minTemp .`;
+        if (_.isFinite(values.min)) {
+          pattern += `filter(?minTemp >= ${values.min}) `;
+        }
+        if (_.isFinite(values.max)) {
+          pattern += `filter(?minTemp <= ${values.max}) `;
+        }
         return pattern;
       }
     }
   },
-  "http://data.labs.pdok.nl/dataset/windstats/def#Windpark": {
-    label: "Windpark",
-    facetType: "multiselect",
+  "http://dbeerpedia.com/def#maxSchenkTemperatuur": {
+    label: "🌡 Max. schenktemperatuur (℃)",
+    facetType: "slider",
     getFacetValuesQuery: iri => {
       return `
-      select ?_value ?_valueLabel ?n {
-        {
-          select ?_value (count(?_r) as ?n) {
-            ?_r <${iri}> ?_value .
-          }
-          order by desc(?n)
-          limit 5
-        }
-        bind (concat(str(?_value),' (',?n,')') as ?_valueLabel)
+        select (min(?maxTemp) as ?_min) (max(?maxTemp) as ?_max) {
+          ?_r <${iri}> ?maxTemp .
+          filter(str(?maxTemp) != 'C')
+        }`;
+    },
+    facetToQueryPatterns: (iri, values) => {
+      if (Array.isArray(values)) {
+        return null;
       }
-      order by desc(?n)`;
+      if (_.isFinite(values.min) || _.isFinite(values.max)) {
+        var pattern = `
+          ?_r <${iri}> ?maxTemp .
+          filter(str(?maxTemp) != 'C')`;
+        if (_.isFinite(values.min)) {
+          pattern += `filter(?maxTemp >= ${values.min}) `;
+        }
+        if (_.isFinite(values.max)) {
+          pattern += `filter(?maxTemp <= ${values.max}) `;
+        }
+        return pattern;
+      }
+    }
+  },
+  "http://dbeerpedia.com/def#stamwortgehalte": {
+    label: "Stamwortgehalte (°P)",
+    facetType: "slider",
+    getFacetValuesQuery: iri => {
+      return `
+        select (min(?stamwort) as ?_min) (max(?stamwort) as ?_max) {
+          ?_r <${iri}> ?stamwort .
+        }`;
+    },
+    facetToQueryPatterns: (iri, values) => {
+      if (Array.isArray(values)) {
+        return null;
+      }
+      if (_.isFinite(values.min) || _.isFinite(values.max)) {
+        var pattern = `?_r <${iri}> ?stamwort .`;
+        if (_.isFinite(values.min)) {
+          pattern += `filter(?stamwort >= ${values.min}) `;
+        }
+        if (_.isFinite(values.max)) {
+          pattern += `filter(?stamwort <= ${values.max}) `;
+        }
+        return pattern;
+      }
+    }
+  },
+  "http://dbeerpedia.com/def#style": {
+    facetType: "multiselect",
+    label: "Bierstijl",
+    getFacetValuesQuery: iri => {
+      return `
+        select ?_value ?_valueLabel ?n {
+          {
+            select ?_value (count(?_r) as ?n) {
+              ?_r <${iri}> ?_value .
+            }
+            group by ?_value
+            order by desc(?n)
+            limit 12
+          }
+          bind(concat(str(?_value),' (',str(?n),')') as ?_valueLabel)
+        }
+        order by desc(?n)`;
     },
     facetToQueryPatterns: (iri, values) => {
       if (values instanceof Array && values.length) {
@@ -452,5 +277,4 @@ const FACETS: { [property: string]: _FacetConfig } = {
     }
   }
 };
-export type FacetConfig = _FacetConfig;
 export default FACETS;
