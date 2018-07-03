@@ -22,10 +22,12 @@ namespace FacetSlider {
     minLabel?: any;
     maxLabel?: any;
     isDate?: any;
+    isNumber?: any;
     [key: string]: number;
   }
   export interface State {
     isDate: boolean;
+    isNumber: boolean;
   }
   export interface FacetProps extends GenericFacetProps {
     selectedObject: Options;
@@ -44,7 +46,7 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, FacetSlider.Sta
   static prepareOptionsQuery(sparqlBuilder: SparqlBuilder) {
     return sparqlBuilder.limit(1);
   }
-  static valueToNumber(term: Term): { value: number; type: "date" | "number"; label?: string } {
+  static parseTerm(term: Term): { value: number; type: "date" | "number" | "other"; label?: string } {
     if (
       term.datatype === "http://www.w3.org/2001/XMLSchema#dateTime" ||
       term.datatype === "http://www.w3.org/2001/XMLSchema#date"
@@ -60,7 +62,7 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, FacetSlider.Sta
         label: TermLiteralNumeric.formatNumber(term.value)
       };
     }
-    return { type: "number", value: +term.value };
+    return { type: "other", value: +term.value };
   }
   static dateToString(d: Date) {
     function pad(n: number) {
@@ -82,24 +84,28 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, FacetSlider.Sta
   }
 
   static getOptionsForQueryResult(sparql: SparqlJson): FacetSlider.Options {
-    var minValue: number;
-    var maxValue: number;
-    var minValueLabel: any;
-    var maxValueLabel: any;
-    var isDate = false;
+    let minValue: number;
+    let maxValue: number;
+    let minValueLabel: any;
+    let maxValueLabel: any;
+    let isDate = false;
+    let isNumber = false;
+
     const result = sparql.getValues();
     for (const binding of result) {
       if (binding._min) {
-        const info = FacetSlider.valueToNumber(binding._min);
+        const info = FacetSlider.parseTerm(binding._min);
         minValue = info.value;
         if (info.label) minValueLabel = info.label;
-        if (!isDate && info.type === "date") isDate = true;
+        if (info.type === "date") isDate = true;
+        if (info.type === "number") isNumber = true;
       }
       if (binding._max) {
-        const info = FacetSlider.valueToNumber(binding._max);
+        const info = FacetSlider.parseTerm(binding._max);
         maxValue = info.value;
         if (info.label) maxValueLabel = info.label;
-        if (!isDate && info.type === "date") isDate = true;
+        if (info.type === "date") isDate = true;
+        if (info.type === "number") isNumber = true;
       }
       if (binding._minLabel) minValueLabel = binding._minLabel.value;
       if (binding._maxLabel) maxValueLabel = binding._maxLabel.value;
@@ -113,12 +119,16 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, FacetSlider.Sta
       max: maxValue,
       minLabel: minValueLabel || minValue,
       maxLabel: maxValueLabel || maxValue,
-      isDate: isDate as any
+      isDate: isDate as any,
+      isNumber: isNumber as any
     };
   }
   componentWillMount() {
     if (this.props.facet && this.props.facet.optionObject && this.props.facet.optionObject.isDate) {
       this.setState({ isDate: true });
+    }
+    if (this.props.facet && this.props.facet.optionObject && this.props.facet.optionObject.isNumber) {
+      this.setState({ isNumber: true });
     }
   }
   render() {
@@ -150,6 +160,7 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, FacetSlider.Sta
           tipFormatter={(value: number) => {
             // return 'bla'
             if (this.state && this.state.isDate) return FacetSlider.numberToXsdDate(value).value;
+            if (this.state && this.state.isNumber) return TermLiteralNumeric.formatNumber(value.toString());
             return value;
           }}
           marks={{

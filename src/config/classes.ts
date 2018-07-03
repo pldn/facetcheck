@@ -1,57 +1,141 @@
 import { ClassConfig } from "@triply/facetcheck/build/src/facetConfUtils";
 const CLASSES: ClassConfig[] = [
+  // cbs:Gemeente_Geografisch
   {
-    iri: "http://dbeerpedia.com/def#Beer",
-    label: "🍺 Bier",
+    iri: "http://betalinkeddata.cbs.nl/def/cbs#Gemeente_Geografisch",
+    label: "Gemeente",
     facets: [
-      "http://dbeerpedia.com/def#style",
-      "http://dbeerpedia.com/def#alcoholpercentage",
-      "http://dbeerpedia.com/def#minSchenkTemperatuur",
-      "http://dbeerpedia.com/def#maxSchenkTemperatuur",
-      "http://dbeerpedia.com/def#stamwortgehalte",
-      "pdok-approved"
+      "bevolking_AantalInwoners",
+      "bevolking_BurgerlijkeStaat_Gehuwd-percentage",
+      "bevolking_BurgerlijkeStaat_Gescheiden-percentage",
+      "bevolking_BurgerlijkeStaat_Ongehuwd-percentage",
+      "bevolking_GeboorteEnSterfte_GeboorteRelatief",
+      "bevolking_GeboorteEnSterfte_SterfteRelatief",
+      "bevolking_Geslacht_Mannen-percentage",
+      "bevolking_Geslacht_Vrouwen-percentage",
+      "bevolking_Leeftijdsgroepen_0Tot15Jaar",
+      "bevolking_Leeftijdsgroepen_15Tot25Jaar",
+      "bevolking_Leeftijdsgroepen_25Tot45Jaar",
+      "bevolking_Leeftijdsgroepen_45Tot65Jaar",
+      "bevolking_Leeftijdsgroepen_65JaarOfOuder",
+      "bevolking_ParticuliereHuishoudens_GemiddeldeHuishoudensgrootte", //-
+      "bevolking_ParticuliereHuishoudens_HuishoudensTotaal",
+      "bevolking_ParticuliereHuishoudens_Eenpersoonshuishoudens-percentage",
+      "bevolking_ParticuliereHuishoudens_HuishoudensMetKinderen-percentage",
+      "bevolking_ParticuliereHuishoudens_HuishoudensZonderKinderen-percentage"
     ],
     resourceDescriptionQuery: function(iri: string) {
       var projectPattern = `
-        <${iri}>
-          ?p ?o ;
-          dct:description ?description .`;
+        <${iri}> ?p ?o .
+        ?geo geo:asWKT ?wkt .
+        ?p rdfs:label ?pLabel .
+        ?o rdfs:label ?oLabel .`;
       var selectPattern = `
-        graph <https://data.pdok.nl/bier> {
+        {
           <${iri}> ?p ?o .
           optional {
-            <${iri}> dbeerpedia:description ?description
+            <${iri}> geo:hasGeometry ?geo .
+            ?geo geo:asWKT ?wkt .
           }
-        }`;
+        } union {
+          ?observation dimension:regio <${iri}> ; ?p ?o .
+          ?p a qb:MeasureProperty
+        }
+        optional { ?p rdfs:label ?pLabel }
+        optional { ?o rdfs:label ?oLabel }`;
       return `construct { ${projectPattern} } { ${selectPattern} }`;
     }
   },
+  // cbs:Wijk
   {
-    iri: "http://schema.org/Brewery",
-    label: "🏭 Brouwerij",
+    iri: "http://betalinkeddata.cbs.nl/def/cbs#Wijk",
+    label: "Wijk",
     facets: [
-      "http://dbeerpedia.com/def#provincie",
-      "http://dbeerpedia.com/def#categorie",
-      "http://dbeerpedia.com/def#opgericht"
+      "bevolking_AantalInwoners",
+      "bevolking_BurgerlijkeStaat_Gehuwd-percentage",
+      "bevolking_BurgerlijkeStaat_Gescheiden-percentage",
+      "bevolking_BurgerlijkeStaat_Ongehuwd-percentage",
+      "bevolking_GeboorteEnSterfte_GeboorteRelatief",
+      "bevolking_GeboorteEnSterfte_SterfteRelatief",
+      "bevolking_Geslacht_Mannen-percentage",
+      "bevolking_Geslacht_Vrouwen-percentage",
+      "bevolking_Leeftijdsgroepen_0Tot15Jaar",
+      "bevolking_Leeftijdsgroepen_15Tot25Jaar",
+      "bevolking_Leeftijdsgroepen_25Tot45Jaar",
+      "bevolking_Leeftijdsgroepen_45Tot65Jaar",
+      "bevolking_Leeftijdsgroepen_65JaarOfOuder",
+      "bevolking_ParticuliereHuishoudens_GemiddeldeHuishoudensgrootte", //-
+      "bevolking_ParticuliereHuishoudens_HuishoudensTotaal",
+      "bevolking_ParticuliereHuishoudens_Eenpersoonshuishoudens-percentage",
+      "bevolking_ParticuliereHuishoudens_HuishoudensMetKinderen-percentage",
+      "bevolking_ParticuliereHuishoudens_HuishoudensZonderKinderen-percentage"
     ],
     resourceDescriptionQuery: function(iri: string) {
       var projectPattern = `
-        <${iri}>
-          ?p ?o ;
-          geo:hasGeometry <${iri}-1> ;
-          rdfs:label ?label .
-        <${iri}-1> geo:asWKT ?wkt .`;
+        <${iri}> ?p ?o .
+        ?geo geo:asWKT ?wkt .
+        ?p rdfs:label ?pLabel .
+        ?o rdfs:label ?oLabel .`;
       var selectPattern = `
-        <${iri}>
-          ?p ?o ;
-          schema:address ?address ;
-          schema:name ?label .
-        optional{
-          ?address
-            schema:latitude ?lat ;
-            schema:longitude ?long .
+        {
+          <${iri}> ?p ?o .
+          optional {
+            <${iri}> geo:hasGeometry ?geo .
+            ?geo geo:asWKT ?wkt .
+          }
+        } union {
+          ?observation dimension:regio <${iri}> ; ?p ?o .
+          ?p a qb:MeasureProperty
         }
-        bind(strdt(concat('Point(',str(?long),' ',str(?lat),')'),geo:wktLiteral) as ?wkt)`;
+        optional { ?p rdfs:label ?pLabel }
+        optional { ?o rdfs:label ?oLabel }`;
+      return `construct { ${projectPattern} } { ${selectPattern} }`;
+    }
+  },
+  // cbs:Buurt
+  {
+    iri: "http://betalinkeddata.cbs.nl/def/cbs#Buurt",
+    label: "Buurt",
+    facets: [
+      "bevolking_AantalInwoners",
+      "bevolking_BurgerlijkeStaat_Gehuwd-percentage",
+      "bevolking_BurgerlijkeStaat_Gescheiden-percentage",
+      "bevolking_BurgerlijkeStaat_Ongehuwd-percentage",
+      "bevolking_GeboorteEnSterfte_GeboorteRelatief",
+      "bevolking_GeboorteEnSterfte_SterfteRelatief",
+      "bevolking_Geslacht_Mannen-percentage",
+      "bevolking_Geslacht_Vrouwen-percentage",
+      "bevolking_Leeftijdsgroepen_0Tot15Jaar",
+      "bevolking_Leeftijdsgroepen_15Tot25Jaar",
+      "bevolking_Leeftijdsgroepen_25Tot45Jaar",
+      "bevolking_Leeftijdsgroepen_45Tot65Jaar",
+      "bevolking_Leeftijdsgroepen_65JaarOfOuder",
+      "bevolking_ParticuliereHuishoudens_GemiddeldeHuishoudensgrootte", //-
+      "bevolking_ParticuliereHuishoudens_HuishoudensTotaal",
+      "bevolking_ParticuliereHuishoudens_Eenpersoonshuishoudens-percentage",
+      "bevolking_ParticuliereHuishoudens_HuishoudensMetKinderen-percentage",
+      "bevolking_ParticuliereHuishoudens_HuishoudensZonderKinderen-percentage"
+    ],
+    classToQueryPattern: (iri: string) => `?_r rdf:type <${iri}> .`,
+    resourceDescriptionQuery: function(iri: string) {
+      var projectPattern = `
+        <${iri}> ?p ?o .
+        ?geo geo:asWKT ?wkt .
+        ?p rdfs:label ?pLabel .
+        ?o rdfs:label ?oLabel .`;
+      var selectPattern = `
+        {
+          <${iri}> ?p ?o .
+          optional {
+            <${iri}> geo:hasGeometry ?geo .
+            ?geo geo:asWKT ?wkt .
+          }
+        } union {
+          ?observation dimension:regio <${iri}> ; ?p ?o .
+          ?p a qb:MeasureProperty
+        }
+        optional { ?p rdfs:label ?pLabel }
+        optional { ?o rdfs:label ?oLabel }`;
       return `construct { ${projectPattern} } { ${selectPattern} }`;
     }
   }
