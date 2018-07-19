@@ -40,9 +40,10 @@ class TermLiteralNumeric extends React.PureComponent<TermLiteral.Props, any> {
   render() {
     const {  className } = this.props;
     const term = this.props.value.getTerm()
+    const formated = TermLiteralNumeric.formatNumber(term.value);
     return (
-      <div className={className} title={term.value}>
-        {TermLiteralNumeric.formatNumber(term.value)}
+      <div className={className} title={formated}>
+        {formated}
       </div>
     );
   }
