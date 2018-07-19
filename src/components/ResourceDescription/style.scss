@@ -1,18 +1,12 @@
 @import "../../theme/bootstrap.overrides/variables.scss";
 
 .resourceDescription {
-  position: relative;
   width: 100%;
   &:global(.whiteSink) {
     margin-bottom: 10px;
   }
   .header {
-    z-index: 2001;
-    position: absolute;
-    top: -20px;
-    left: 0;
-    right: 0;
-
+    margin-top: -40px;
     display: flex;
     justify-content: center;
     .iri {
@@ -33,11 +27,5 @@
   }
 }
 .overlay {
-  background-color: rgba(0, 0, 0, 0.5);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 2000;
+  opacity: 0.5;
 }

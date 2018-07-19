@@ -31,13 +31,15 @@ class ResourceDescription extends React.PureComponent<ResourceDescription.Props,
     const {
       className,
       statements,
-      forIri
+      forIri,
+      fetchingMatchingIris
     } = this.props;
 
     var style = {
       [styles.resourceDescription]: styles.resourceDescription,
       whiteSink: true,
       [className]: !!className,
+      [styles.overlay]: fetchingMatchingIris
     };
 
     const tree=getStatementsAsTree({value: forIri, termType:'iri'}, statements);
@@ -45,7 +47,6 @@ class ResourceDescription extends React.PureComponent<ResourceDescription.Props,
     const {label, ...widget} = rootWidget;
     return (
       <div className={getClassNames(style)}>
-      {this.props.fetchingMatchingIris && <div className={styles.overlay}/>}
         <div className={styles.header}>
 
           <div className={styles.iri}>
