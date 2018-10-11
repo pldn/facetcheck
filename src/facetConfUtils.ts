@@ -24,6 +24,7 @@ export interface GlobalConfig {
   title?:string
   logo?:string
   defaultClass?:string
+  getDereferenceableLink?:(link:string) => string
 }
 export interface ClassConfig {
   iri: string;

@@ -18,6 +18,13 @@ export function getPageSize() {
   return CONFIG.pageSize || 5;
 }
 
+export function getDereferenceableLink(link: string) {
+  if (CONFIG.getDereferenceableLink) {
+    return CONFIG.getDereferenceableLink(link);
+  }
+  return undefined;
+}
+
 var prefixes: GlobalConfig["prefixes"];
 export function getPrefixes() {
   // export function getPrefixes(conf: GlobalConfig) {

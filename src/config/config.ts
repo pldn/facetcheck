@@ -19,6 +19,12 @@ const conf: GlobalConfig = {
     slice: "http://betalinkeddata.cbs.nl/83487NED/id/slice/",
     xsd: "http://www.w3.org/2001/XMLSchema#"
   },
-  title: "👪 Bevolkings Browser"
+  title: "👪 Bevolkings Browser",
+  getDereferenceableLink: (link:string) => {
+      if(link.includes('http://betalinkeddata.cbs.nl')) return link;
+      if(link.includes('bevolking')) return conf.prefixes.def +link.split('-percentage')[0];
+    return undefined
+  }
+
 };
 export default conf;
