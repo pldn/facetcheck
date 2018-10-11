@@ -1,13 +1,13 @@
 import * as React from "react";
 
 import * as getClassName from "classnames";
-import {Label } from 'react-bootstrap'
+import { Label } from "react-bootstrap";
 import SparqlJson from "../../helpers/SparqlJson";
 import SparqlBuilder from "../../helpers/SparqlBuilder";
 import { Facet as FacetProps } from "../../reducers/facets";
 import { FacetMultiSelect, FacetSlider, FacetProvinces } from "../";
 import { setSelectedFacetValue, setSelectedObject } from "../../reducers/facets";
-import {  FACETS } from "../../facetConf";
+import { FACETS, getDereferenceableLink } from "../../facetConf";
 import { FacetTypes } from "../../facetConfUtils";
 
 namespace Facet {
@@ -20,7 +20,7 @@ namespace Facet {
   }
   export interface Props {
     className?: string;
-    label: string
+    label: string;
     facet: FacetProps;
     setSelectedFacetValue: typeof setSelectedFacetValue;
     setSelectedObject: typeof setSelectedObject;
@@ -51,25 +51,33 @@ class Facet extends React.PureComponent<Facet.Props, any> {
     this.FacetComponents = [FacetMultiSelect, FacetSlider as any, FacetProvinces];
   }
 
-  componentDidCatch(e:Error) {
-    console.error('DID CATCH',e)
-    return <div>ERRR</div>
+  componentDidCatch(e: Error) {
+    console.error("DID CATCH", e);
+    return <div>ERRR</div>;
   }
   getLabel() {
-    if (FACETS[this.props.facet.iri] && FACETS[this.props.facet.iri].label) return FACETS[this.props.facet.iri].label;
-    return this.props.label
+    let label;
+    if (FACETS[this.props.facet.iri] && FACETS[this.props.facet.iri].label) {
+      label = FACETS[this.props.facet.iri].label;
+    } else {
+      label = this.props.label;
+    }
+    if(getDereferenceableLink(this.props.facet.iri)){
+      return <a href={getDereferenceableLink(this.props.facet.iri)}>{label}</a>
+    }
+    return label
   }
   render() {
-    const { className,label } = this.props;
+    const { className } = this.props;
     var facet: any;
     if (this.props.facet.error) {
-      facet = <Label bsStyle="danger">{this.props.facet.error}</Label>
+      facet = <Label bsStyle="danger">{this.props.facet.error}</Label>;
     } else {
       for (const FacetComponent of this.FacetComponents) {
         if (FacetComponent.shouldRender(this.props)) facet = <FacetComponent {...this.props} />;
       }
       if (!FACETS[this.props.facet.iri]) {
-        throw new Error('No facet configuration found for ' + this.props.facet.iri)
+        throw new Error("No facet configuration found for " + this.props.facet.iri);
       }
     }
 
