@@ -10,6 +10,7 @@ ENV FACETCHECK_BUILD_DIR="${FACETCHECK_CACHE_DIR}/build" \
     FACETCHECK_RUNTIME_DIR="${FACETCHECK_CACHE_DIR}/runtime" \
     FACETCHECK__NODE_DIR=${HOME_DIR}/node
 
+LABEL com.centurylinklabs.watchtower.enable="true"
 COPY ./docker/assets/build ${FACETCHECK_BUILD_DIR}
 EXPOSE 5000
 RUN curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - \
