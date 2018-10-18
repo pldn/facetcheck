@@ -16,7 +16,7 @@ class TermLiteralLink extends React.PureComponent<TermLiteral.Props, any> {
     const parsed = url.parse(term.value);
     return parsed.protocol === "http:" || parsed.protocol === "https:"
       ? <div className={className}>
-          <a href={term.value} target="_blank">
+          <a href={term.value} target="_blank" target="_blank" rel="noopener noreferrer">
             {term.value}
           </a>
         </div>
