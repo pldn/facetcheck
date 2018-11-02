@@ -1,4 +1,4 @@
-FROM triply/ubuntu:20180228
+FROM triply/ubuntu:20181018
 ARG SSH_PRIVATE_KEY=''
 ARG BUILD_DATE
 
@@ -13,13 +13,6 @@ ENV FACETCHECK_BUILD_DIR="${FACETCHECK_CACHE_DIR}/build" \
 LABEL com.centurylinklabs.watchtower.enable="true"
 COPY ./docker/assets/build ${FACETCHECK_BUILD_DIR}
 EXPOSE 5000
-RUN curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - \
- && echo "deb-src https://deb.nodesource.com/node_8.x ${DIST} main" >> /etc/apt/sources.list.d/nodesource.list \
- && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927 \
- && echo "deb https://deb.nodesource.com/node_8.x ${DIST} main" > /etc/apt/sources.list.d/nodesource.list \
- && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y rsync nodejs \
- && npm install npm -g \
- && apt-get clean
 ENTRYPOINT ["/sbin/entrypoint.sh"]
 CMD ["app:start"]
 
