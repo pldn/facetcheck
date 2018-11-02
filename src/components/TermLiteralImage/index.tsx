@@ -54,7 +54,7 @@ class TermLiteralImage extends React.PureComponent<TermLiteral.Props, TermLitera
         {
           // !imageLoaded && !imageError && <i className={getClassName("fa fa-cog fa-spin", styles.spinner)} />
         }
-        <a href={term.value} target="_blank">
+        <a href={term.value} target="_blank" rel="noopener noreferrer">
           <img
             ref={el => (this.img = el)}
             src={term.value}

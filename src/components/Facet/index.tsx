@@ -63,7 +63,7 @@ class Facet extends React.PureComponent<Facet.Props, any> {
       label = this.props.label;
     }
     if(getDereferenceableLink(this.props.facet.iri)){
-      return <a href={getDereferenceableLink(this.props.facet.iri)}>{label}</a>
+      return <a href={getDereferenceableLink(this.props.facet.iri)} target="_blank" rel="noopener noreferrer">{label}</a>
     }
     return label
   }

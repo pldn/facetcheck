@@ -50,7 +50,7 @@ class ResourceDescription extends React.PureComponent<ResourceDescription.Props,
         <div className={styles.header}>
 
           <div className={styles.iri}>
-            <a href={forIri} target="_blank">
+            <a href={forIri} target="_blank" rel="noopener noreferrer">
               {
                 label || getLabel(forIri,tree)
               }

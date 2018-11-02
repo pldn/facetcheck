@@ -132,7 +132,7 @@ class ResourceDescriptionSection extends React.PureComponent<
         {label && (
           <div className={styles.title}>
             {getDereferenceableLink(values[0].getPredicate()) ? (
-              <a href={getDereferenceableLink(values[0].getPredicate())}>{label}</a>
+              <a href={getDereferenceableLink(values[0].getPredicate())} target="_blank" rel="noopener noreferrer">{label}</a>
             ) : (
               <span>{label}</span>
             )}
