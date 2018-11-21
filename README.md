@@ -7,7 +7,7 @@ A faceted browser for navigating Linked Data.
 One-time installation:
 
 ```sh
-npm install
+npm ci
 ```
 
 Startup:
