@@ -2,6 +2,8 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as getClassName from "classnames";
+import { getMap } from "../../facetConf";
+import * as _Leaflet from "leaflet";
 //import own dependencies
 export declare namespace Leaflet {
   export interface Props {
@@ -10,48 +12,68 @@ export declare namespace Leaflet {
   }
 }
 
-import * as leafletStyle from './leaflet.scss'
+import * as leafletStyle from "./leaflet.scss";
 var L: any;
-if (!__SERVER__) {
-  //these are resolved via a webpack alias, so won't work on the server. no need to though
-  // require("leaflet_marker");
-  // require("leaflet_marker_2x");
-  // require("leaflet_marker_shadow");
-  L = require("leaflet");//can't use leaflet higher than 1.0.3, as wicket is not compatible with it
-  require("proj4");
-  require("proj4leaflet");
-  (global as any).Wkt = require("wicket/wicket");
-  require("wicket/wicket-leaflet");
+L = require("leaflet"); //can't use leaflet higher than 1.0.3, as wicket is not compatible with it
+require("proj4");
+require("proj4leaflet");
+(global as any).Wkt = require("wicket/wicket");
+require("wicket/wicket-leaflet");
 
-  /**
-   * Some monkey patching. The wicket lib is too out-of-date. See
-   https://github.com/arthur-e/Wicket/issues/95
-   */
-  (global as any).Wkt.Wkt.prototype.construct.multipolygon = function(config: any) {
-    // Truncate the coordinates to remove the closing coordinate
-    var coords = this.trunc(this.components),
-      latlngs = this.coordsToLatLngs(coords, 2);
+/**
+ * Some monkey patching. The wicket lib is too out-of-date. See
+ https://github.com/arthur-e/Wicket/issues/95
+ */
+(global as any).Wkt.Wkt.prototype.construct.multipolygon = function(config: any) {
+  // Truncate the coordinates to remove the closing coordinate
+  var coords = this.trunc(this.components),
+    latlngs = this.coordsToLatLngs(coords, 2);
 
-    if (L.multiPolyline) {
-      return L.multiPolyline(latlngs, config);
-    } else {
-      return L.polygon(latlngs, config);
-    }
-  };
+  if (L.multiPolyline) {
+    return L.multiPolyline(latlngs, config);
+  } else {
+    return L.polygon(latlngs, config);
+  }
+};
 
-  (global as any).Wkt.Wkt.prototype.construct.multilinestring = function(config: any) {
-    var coords = this.components,
-      latlngs = this.coordsToLatLngs(coords, 1);
+(global as any).Wkt.Wkt.prototype.construct.multilinestring = function(config: any) {
+  var coords = this.components,
+    latlngs = this.coordsToLatLngs(coords, 1);
 
-    if (L.multiPolygon) {
-      return L.multiPolygon(latlngs, config);
-    } else {
-      return L.polygon(latlngs, config);
-    }
-  };
-}
+  if (L.multiPolygon) {
+    return L.multiPolygon(latlngs, config);
+  } else {
+    return L.polygon(latlngs, config);
+  }
+};
 
-import * as styles from "./style.module.scss"
+const maps = {
+  osm: {
+    gestureHandling: true,
+    layers: [
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+      })
+    ],
+    maxZoom: 18,
+    minZoom: 0
+  },
+  nlmaps: {
+    gestureHandling: true,
+    layers: [
+      L.tileLayer(
+        "https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=brtachtergrondkaart&STYLE=default&FORMAT=image/png&TILEMATRIXSET=EPSG:3857&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
+        // /brtachtergrondkaart/EPSG:3857/{z}/{x}/{y}.png",
+        {
+          attribution:
+            'NLMaps | Kaartgegevens © Kadaster | <a href="http://www.verbeterdekaart.nl/" ref="noopener noreferrer" target="_blank">verbeter de kaart</a>'
+        }
+      )
+    ],
+    maxZoom: 18,
+    minZoom: 6
+  }
+};
 
 //used for e.g. IRIs and graphnames
 class Leaflet extends React.PureComponent<Leaflet.Props, any> {
@@ -64,7 +86,7 @@ class Leaflet extends React.PureComponent<Leaflet.Props, any> {
   **/
   loadLeaflet() {
     var wktStrings = this.props.values;
-    if (!wktStrings || !wktStrings.length)  return;
+    if (!wktStrings || !wktStrings.length) return;
     // wktString = polygon; //works fine on OSM and on BRT
     // wktString = multi;//this is chili. gray on brt (correct). works fine on OSM
     var res = [3440.64, 1720.32, 860.16, 430.08, 215.04, 107.52, 53.76, 26.88, 13.44, 6.72, 3.36, 1.68, 0.84, 0.42];
@@ -73,34 +95,14 @@ class Leaflet extends React.PureComponent<Leaflet.Props, any> {
       scales.push(1 / res);
     });
 
-    var k = new L.Proj
-      .CRS(
-      "EPSG:28992",
-      "+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +units=m +towgs84=565.2369,50.0087,465.658,-0.406857330322398,0.350732676542563,-1.8703473836068,4.0812 +no_defs",
-      {
-        transformation: new L.Transformation(1, 285401.92, -1, 903401.92),
-        scales: scales,
-        bounds: new L.bounds([-285401.92, 22598.08], [595401.9199999999, 903401.9199999999])
-      }
-    );
+    var map = (this.map = L.map(ReactDOM.findDOMNode(this.mapWrapper), maps[getMap()]));
 
-    var map = (this.map = L.map(ReactDOM.findDOMNode(this.mapWrapper), {
-      crs: k,
-      minZoom: 2,
-      maxZoom: 13,
-      layers: [
-        new L.tileLayer.wms("//geodata.nationaalgeoregister.nl/tms/1.0.0/brtachtergrondkaart/{z}/{x}/{y}.png", {
-          tms: true
-        }),
-        // new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {minZoom: 2, maxZoom: 13, attribution: ''})
-      ],
-      attributionControl: false,
-      scrollWheelZoom: false,
-    }));
-
-    map.on('focus', function() { map.scrollWheelZoom.enable(); });
-    map.on('blur', function() { map.scrollWheelZoom.disable(); });
-
+    map.on("focus", function() {
+      map.scrollWheelZoom.enable();
+    });
+    map.on("blur", function() {
+      map.scrollWheelZoom.disable();
+    });
 
     var wicket = new (global as any).Wkt.Wkt();
 
@@ -118,16 +120,14 @@ class Leaflet extends React.PureComponent<Leaflet.Props, any> {
       popupAnchor: [1, -34], //
       tooltipAnchor: [16, -28] //
     });
-    const features:any[] = [];
+    const features: any[] = [];
     for (const val of this.props.values) {
       try {
         features.push(wicket.read(val).toObject({ icon: myIcon }));
-
       } catch (e) {
-        console.error('failed to read wkt value', e);
-        continue
+        console.error("failed to read wkt value", e);
+        continue;
       }
-
     }
     var group = new L.featureGroup(features).addTo(map);
     map.fitBounds(group.getBounds());
@@ -143,7 +143,11 @@ class Leaflet extends React.PureComponent<Leaflet.Props, any> {
     };
     return (
       <div className={getClassName(style)}>
-        <div style={{ width: "auto", height: 400, overflow: "hidden" }} className={leafletStyle.leaflet} ref={el => (this.mapWrapper = el)} />
+        <div
+          style={{ width: "auto", height: 400, overflow: "hidden" }}
+          className={leafletStyle.leaflet}
+          ref={el => (this.mapWrapper = el)}
+        />
       </div>
     );
   }

@@ -40,6 +40,7 @@ export interface GlobalConfig {
   logo?:string
   defaultClass?:string
   getDereferenceableLink?:(link:string) => string
+  geoMap?: 'nlmaps' | 'osm'
 }
 export interface ClassConfig {
   iri: string;

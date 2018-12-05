@@ -24,6 +24,9 @@ export function getDereferenceableLink(link: string) {
   }
   return undefined;
 }
+export function getMap() {
+  return _CONFIG.geoMap || "nlmaps"
+}
 
 var prefixes: GlobalConfig["prefixes"];
 export function getPrefixes() {
