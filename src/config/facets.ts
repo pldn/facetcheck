@@ -4,13 +4,13 @@ const FACETS: { [property: string]: FacetConfig } = {
   bevolking_AantalInwoners: {
     label: "👪 Inwoners",
     facetType: "slider",
-    getFacetValuesQuery: iri => {
+    getFacetValuesQuery: _iri => {
       return `select (min(?aantal1) as ?_min) (max(?aantal1) as ?_max) {
                 ?observatie1 def:bevolking_AantalInwoners ?aantal1 ;
                              dimension:regio ?_r .
               }`;
     },
-    facetToQueryPatterns: (iri, values) => {
+    facetToQueryPatterns: (_iri, values) => {
       if (Array.isArray(values)) {
         return null;
       }

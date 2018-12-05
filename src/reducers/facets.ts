@@ -12,7 +12,7 @@ import * as Redux from "redux";
 import { Facet as FacetComponent } from "../components";
 import { getPrefixes, getPageSize } from "../facetConf";
 import SparqlBuilder from "../helpers/SparqlBuilder";
-import * as sparqljs from 'sparqljs'
+import * as sparqljs from "sparqljs";
 import { default as SparqlJson } from "../helpers/SparqlJson";
 // import {Actions as FacetActions} from './facets'
 //import own dependencies
@@ -43,11 +43,27 @@ export interface FacetProps {
 
   //we're never modifying props in these objects, but always overwriting it completely
   //so no use using an immutable model here
-  optionList: FacetValue[];
-  optionObject: { [key: string]: FacetValue | number };
+  optionList: FacetOptionsList
+  optionObject: FacetOptionsObject | FacetOptionsNlProvinces
   // optionObject: { [key: string]: FacetValue  };
   selectedObject: { [key: string]: number };
   error: string;
+}
+export type FacetOptionsObject = { [key: string]: FacetValue | number };
+export type FacetOptionsList = FacetValue[];
+export interface FacetOptionsNlProvinces {
+  drenthe: FacetValue;
+  flevoland: FacetValue;
+  friesland: FacetValue;
+  gelderland: FacetValue;
+  limburg: FacetValue;
+  "n-brabant": FacetValue;
+  "n-holland": FacetValue;
+  overijssel: FacetValue;
+  zeeland: FacetValue;
+  "z-holland": FacetValue;
+  utrecht: FacetValue;
+  groningen: FacetValue;
 }
 export var Facet = Immutable.Record<FacetProps>(
   {
@@ -202,15 +218,15 @@ export function reducer(state = initialState, action: Action) {
 
 export type Action$ = ReduxObservable.ActionsObservable<any>;
 export type Store = Redux.Store<GlobalState>;
-export var epics: Array<ReduxObservable.Epic<any,Action,GlobalState>> = [
+export var epics: Array<ReduxObservable.Epic<any, Action, GlobalState>> = [
   //update matching iris when classes change
   (action$, store) => {
     return action$.pipe(
       ReduxObservable.ofType(Actions.SET_SELECTED_CLASS),
-      map((action) => {
+      map(action => {
         //facet settings might need removing before fetching the matching iris. So make sure we don't call one before the other
         // store.dispatch(getMatchingIris(store.getState()));
-        return refreshFacets(store.value.facets.facetLabels, action.className)
+        return refreshFacets(store.value.facets.facetLabels, action.className);
       })
     );
   },
@@ -218,8 +234,12 @@ export var epics: Array<ReduxObservable.Epic<any,Action,GlobalState>> = [
   (action$, store) => {
     return action$.pipe(
       ReduxObservable.ofType(Actions.SET_FACET_VALUE),
-      map((_action) => {
-        return getMatchingIris(store.value.facets.facets, store.value.facets.selectedClass, store.value.facets.nextPageOffset);
+      map(_action => {
+        return getMatchingIris(
+          store.value.facets.facets,
+          store.value.facets.selectedClass,
+          store.value.facets.nextPageOffset
+        );
       })
     );
   },
@@ -228,7 +248,11 @@ export var epics: Array<ReduxObservable.Epic<any,Action,GlobalState>> = [
     return action$.pipe(
       ReduxObservable.ofType(Actions.REFRESH_FACETS),
       map((_action: Action) => {
-        return getMatchingIris(store.value.facets.facets, store.value.facets.selectedClass, store.value.facets.nextPageOffset);
+        return getMatchingIris(
+          store.value.facets.facets,
+          store.value.facets.selectedClass,
+          store.value.facets.nextPageOffset
+        );
       })
     );
   },
@@ -250,7 +274,7 @@ export var epics: Array<ReduxObservable.Epic<any,Action,GlobalState>> = [
         return !!store.value.facets.updateFacetInfoQueue.size;
       }),
       map((_action: Action) => {
-        return getFacetProps(store.value, store.value.facets.updateFacetInfoQueue.first())
+        return getFacetProps(store.value, store.value.facets.updateFacetInfoQueue.first());
       })
     );
   }
@@ -304,21 +328,21 @@ export function facetsToQuery(facets: FacetState["facets"], selectedClass: strin
     const facetsValues = facets.get(facetKey);
     var bgp = "";
     if (facetsValues.selectedFacetValues.size) {
-      var listOfFacetValues:Array<FacetValue | number> = facetsValues.optionList
+      var listOfFacetValues: Array<FacetValue | number> = facetsValues.optionList;
       // if (facetsValues.optionList) {
       //   listOfFacetValues = facetsValues.optionList
       // }
       if (!listOfFacetValues) {
-        listOfFacetValues = _.values<FacetValue | number>(facetsValues.optionObject);
+        //cast to any, because provinces valuesmap will complain otherwise
+        listOfFacetValues = _.values<FacetValue | number>(facetsValues.optionObject as any);
       }
-      const pattern = facetConfig.facetToQueryPatterns(
-        facetIri,
-        listOfFacetValues.filter((v:any) => facetsValues.selectedFacetValues.has(v.value)) as any
-      );
+      const pattern = (facetConfig as any).facetToQueryPatterns(facetIri, listOfFacetValues.filter((v: any) =>
+        facetsValues.selectedFacetValues.has(v.value)
+      ) as any);
       if (pattern && pattern.length) bgp += `{ ${pattern} }`;
     } else {
       //just pass the object
-      const pattern = facetConfig.facetToQueryPatterns(facetIri, facetsValues.selectedObject);
+      const pattern = (facetConfig as any).facetToQueryPatterns(facetIri, facetsValues.selectedObject);
       if (pattern && pattern.length) {
         bgp += "{" + pattern + "}";
       }
@@ -460,7 +484,6 @@ export function refreshFacets(facetLabels: FacetState["facetLabels"], forClass: 
 export function getFacetProps(state: GlobalState, forProp: string): Action {
   try {
     const facetConf = FACETS[forProp];
-    facetConf.facetKey = forProp;
     if (!facetConf) {
       throw new Error("Could not find facet config for " + forProp);
     }
@@ -472,7 +495,6 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
           result: {
             optionList: facetConf.facetValues
           },
-          facetName: facetConf.facetKey,
           sync: true
         };
       } else {
@@ -481,7 +503,6 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
           result: {
             optionObject: facetConf.facetValues
           },
-          facetName: facetConf.facetKey,
           sync: true
         } as any;
       }

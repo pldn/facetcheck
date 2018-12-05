@@ -131,6 +131,33 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, FacetSlider.Sta
       this.setState({ isNumber: true });
     }
   }
+  tipFormatter = (value: number) => {
+    // return 'bla'
+    if (this.state && this.state.isDate) return FacetSlider.numberToXsdDate(value).value;
+    if (this.state && this.state.isNumber) return TermLiteralNumeric.formatNumber(value.toString());
+    return value;
+  }
+  onAfterChange = (values: number[]) => {
+    const { facet } = this.props;
+    var { min} = facet.optionObject;
+    const [selectedMin, selectedMax] = values;
+    var selectedObject: FacetSlider.Options = {};
+    //only set min/max when its different that the outer bounds (otherwise no use in including it in our query)
+    selectedObject.min = min !== selectedMin ? selectedMin : null;
+    selectedObject.max = min !== selectedMax ? selectedMax : null;
+
+    //one caveat: _do_ set min/max when they are at its bounds, and are the same (otherwise, the filter wont apply)
+    if (selectedMin === selectedMax) {
+      selectedObject = { min: selectedMin, max: selectedMax };
+    }
+    //do some further conversion
+    if (this.state && this.state.isDate) {
+      if (selectedObject.min) selectedObject.min = FacetSlider.numberToXsdDate(selectedObject.min);
+      if (selectedObject.max) selectedObject.max = FacetSlider.numberToXsdDate(selectedObject.max);
+    }
+
+    this.props.setSelectedObject(facet.iri, selectedObject);
+  }
   render() {
     const { facet } = this.props;
     if (!facet.optionObject) return null;
@@ -157,12 +184,7 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, FacetSlider.Sta
           max={max}
           defaultValue={[min, max]}
           step={stepSize}
-          tipFormatter={(value: number) => {
-            // return 'bla'
-            if (this.state && this.state.isDate) return FacetSlider.numberToXsdDate(value).value;
-            if (this.state && this.state.isNumber) return TermLiteralNumeric.formatNumber(value.toString());
-            return value;
-          }}
+          tipFormatter={this.tipFormatter}
           marks={{
             //TODO: see how we can use numeral, AND use this for dates as well
             // [min]: numeral(min).format('0,0'),
@@ -171,25 +193,7 @@ class FacetSlider extends React.PureComponent<FacetSlider.Props, FacetSlider.Sta
             [max]: maxLabel
           }}
           // value={[min,max]}
-          onAfterChange={(values: number[]) => {
-            const [selectedMin, selectedMax] = values;
-            var selectedObject: FacetSlider.Options = {};
-            //only set min/max when its different that the outer bounds (otherwise no use in including it in our query)
-            selectedObject.min = min !== selectedMin ? selectedMin : null;
-            selectedObject.max = min !== selectedMax ? selectedMax : null;
-
-            //one caveat: _do_ set min/max when they are at its bounds, and are the same (otherwise, the filter wont apply)
-            if (selectedMin === selectedMax) {
-              selectedObject = { min: selectedMin, max: selectedMax };
-            }
-            //do some further conversion
-            if (this.state && this.state.isDate) {
-              if (selectedObject.min) selectedObject.min = FacetSlider.numberToXsdDate(selectedObject.min);
-              if (selectedObject.max) selectedObject.max = FacetSlider.numberToXsdDate(selectedObject.max);
-            }
-
-            this.props.setSelectedObject(facet.iri, selectedObject);
-          }}
+          onAfterChange={this.onAfterChange}
         />
       </div>
     );

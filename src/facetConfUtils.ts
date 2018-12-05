@@ -1,15 +1,30 @@
 import { Term as SparqlTerm } from "./helpers/SparqlJson";
 export type FacetTypes = "multiselect" | "slider" | "nlProvinces" | "multiselectText";
-import { FacetProps } from "./reducers/facets";
-export interface FacetConfig {
-  facetKey?: string;
+import { FacetProps,FacetOptionsList, FacetOptionsNlProvinces,FacetOptionsObject } from "./reducers/facets";
+
+export type FacetToQueryPatterns<V> = (iri:string, values:V) => string
+export interface FacetConfigBase {
+
   label?: string;
-  // datatype: string;
-  facetType: FacetTypes;
   getFacetValuesQuery?: (iri: string) => string;
-  facetValues?: FacetProps["optionList"] | FacetProps["optionObject"];
-  facetToQueryPatterns: (iri:string, values:FacetProps["optionList"] | FacetProps["optionObject"]) => string
 }
+
+export interface FacetConfigMultiselect extends FacetConfigBase{
+  facetType: 'multiselect',
+  facetValues?:FacetOptionsList,
+  facetToQueryPatterns: FacetToQueryPatterns<FacetProps["optionList"]>
+}
+export interface FacetConfigNlProvinces extends FacetConfigBase{
+  facetType: 'nlProvinces',
+  facetValues?:FacetOptionsNlProvinces,
+  facetToQueryPatterns: FacetToQueryPatterns<FacetOptionsNlProvinces>
+}
+export interface FacetConfigSlider extends FacetConfigBase{
+  facetType: 'slider',
+  facetValues?:FacetOptionsObject
+  facetToQueryPatterns: FacetToQueryPatterns<FacetOptionsObject>
+}
+export type FacetConfig = FacetConfigMultiselect | FacetConfigNlProvinces | FacetConfigSlider
 export interface FacetValue extends Partial<SparqlTerm> {
   value:string,
   label?: string;
