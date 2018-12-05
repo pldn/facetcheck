@@ -14,6 +14,9 @@ export function getFacetcheckTitle() {
 export function getLogo() {
   return CONFIG.logo || require("./containers/Nav/kadaster.svg");
 }
+export function getFavIcon() {
+  return CONFIG.favIcon 
+}
 export function getPageSize() {
   return CONFIG.pageSize || 5;
 }

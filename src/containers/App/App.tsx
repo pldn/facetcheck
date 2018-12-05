@@ -1,7 +1,7 @@
 //external dependencies
 import * as React from "react";
 
-import { Helmet } from "react-helmet";
+import { Helmet,HelmetProps } from "react-helmet";
 
 import { ErrorPage } from "../";
 import { connect } from "react-redux";
@@ -13,7 +13,7 @@ import * as getClassName from "classnames";
 // import {getSubclassRelations,fetchShapes} from 'reducers/schema'
 import { refreshFacets, FacetState } from "../../reducers/facets";
 import { GlobalState } from "../../reducers";
-import { getFacetcheckTitle } from "../../facetConf";
+import { getFacetcheckTitle, getFavIcon } from "../../facetConf";
 import {Home, Nav} from '../'
 declare namespace App {
   export interface DispatchProps {
@@ -58,12 +58,13 @@ class App extends React.PureComponent<App.Props, App.State> {
       mainComponent = <Nav><Home/></Nav>;
     }
     const title = getFacetcheckTitle();
-    const head = {
+    const head:HelmetProps = {
       htmlAttributes: {
         lang: "en"
       },
       titleTemplate: `%s - ${title}`,
       defaultTitle: title,
+
       meta: [
         { name: "description", content: title },
         { charset: "utf-8" },
@@ -76,9 +77,12 @@ class App extends React.PureComponent<App.Props, App.State> {
         { property: "og:creator", content: "triply.cc" }
       ]
     };
+    const favIcon = getFavIcon();
     return (
       <div className={getClassName(activeStyles)}>
-        <Helmet {...head} />
+        <Helmet {...head} >
+          {favIcon && <link rel="shortcut icon" type="image/png" href={favIcon}/>}
+        </Helmet>
         {mainComponent}
       </div>
     );

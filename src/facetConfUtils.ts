@@ -38,6 +38,7 @@ export interface GlobalConfig {
   pageSize?: number
   title?:string
   logo?:string
+  favIcon?:string
   defaultClass?:string
   getDereferenceableLink?:(link:string) => string
   geoMap?: 'nlmaps' | 'osm'
