@@ -1,6 +1,6 @@
 //external dependencies
 import * as React from "react";
-const parse = require("wellknown");
+import {parse} from "wellknown";
 import { TermLiteral, Leaflet } from "../";
 
 const wkt = [

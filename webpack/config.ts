@@ -1,7 +1,7 @@
 // Webpack config for development
-import * as path from 'path'
-import * as webpack from 'webpack'
-import * as paths from './paths'
+import * as path from "path";
+import * as webpack from "webpack";
+import * as paths from "./paths";
 
 var WatchMissingNodeModulesPlugin = require("react-dev-utils/WatchMissingNodeModulesPlugin");
 import * as ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
@@ -9,15 +9,15 @@ import getClientEnvironment from "./env";
 var WebpackBuildNotifierPlugin = require("webpack-build-notifier");
 import * as LodashModuleReplacementPlugin from "lodash-webpack-plugin";
 import * as MiniCssExtractPlugin from "mini-css-extract-plugin";
-import { removeEmpty, ifElse  } from "./helpers";
-import * as HtmlWebpackPlugin  from "html-webpack-plugin";
+import { removeEmpty, ifElse } from "./helpers";
+import * as HtmlWebpackPlugin from "html-webpack-plugin";
 const isDev = process.env.NODE_ENV !== "production";
 const isProd = process.env.NODE_ENV === "production";
-
+const bgImage = require("postcss-bgimage"); //remove url reference in bgimage (as is done by leaflet)
 const ifDev = ifElse(isDev);
 const ifProd = ifElse(isProd);
 var HtmlWebpackIncludeAssetsPlugin = require("html-webpack-include-assets-plugin");
-import * as autoprefixer from 'autoprefixer'
+import * as autoprefixer from "autoprefixer";
 var TerserPlugin = require("terser-webpack-plugin");
 import * as OptimizeCSSAssetsPlugin from "optimize-css-assets-webpack-plugin";
 
@@ -31,21 +31,21 @@ const SUPPORTED_BROWSERS = [
 var env = getClientEnvironment();
 
 interface StyleLoaderConf {
-  isDev:boolean,
-  useModule:boolean,
-  requireModuleExtension?: boolean,
-  useSass:boolean,
-
+  isDev: boolean;
+  useModule: boolean;
+  moduleExt?: string;
+  ext: string;
+  onlyInclude?: Array<RegExp>;
 }
-function getStyleLoader(conf:StyleLoaderConf):webpack.RuleSetRule {
-  const ext = conf.useSass ? "\\.scss$" : "\\.css$";
-  const moduleExt = "\\.module" + ext;
-  const test = new RegExp(conf.useModule && conf.requireModuleExtension !== false ? moduleExt : ext);
-  const ignore:Array<string|RegExp> = [];
+function getStyleLoader(conf: StyleLoaderConf): webpack.RuleSetRule {
+  const ext = "\\" + conf.ext + "$";
+  const moduleExt = "\\" + conf.moduleExt + ext;
+  const test = new RegExp(conf.moduleExt ? moduleExt : ext);
+  const ignore: Array<string | RegExp> = [];
   if (!conf.useModule) {
     ignore.push(new RegExp(moduleExt));
   }
-  const loaders:webpack.RuleSetUse = [];
+  const loaders: webpack.RuleSetUse = [];
 
   loaders.push(
     conf.isDev
@@ -61,7 +61,7 @@ function getStyleLoader(conf:StyleLoaderConf):webpack.RuleSetRule {
       importLoaders: 2,
       modules: conf.useModule,
       sourceMap: conf.isDev,
-      localIdentName: conf.useModule?"[name]__[local]___[hash:base64:5]":undefined
+      localIdentName: conf.useModule ? "[name]__[local]___[hash:base64:5]" : undefined
     }
   });
   loaders.push({
@@ -69,10 +69,10 @@ function getStyleLoader(conf:StyleLoaderConf):webpack.RuleSetRule {
     options: {
       ident: "postcss",
       sourceMap: conf.isDev,
-      plugins: () => [autoprefixer({ browsers: SUPPORTED_BROWSERS })]
+      plugins: () => [autoprefixer({ browsers: SUPPORTED_BROWSERS }), bgImage({ mode: "cutter" })]
     }
   });
-  if (conf.useSass) {
+  if (conf.ext.indexOf("scss") >= 0) {
     loaders.push({
       loader: "sass-loader",
       query: {
@@ -81,13 +81,16 @@ function getStyleLoader(conf:StyleLoaderConf):webpack.RuleSetRule {
       }
     });
   }
-  return {
+  const loader: webpack.RuleSetRule = {
     test: test,
     exclude: ignore,
     loader: loaders
   };
+  if (conf.onlyInclude) loader.include = conf.onlyInclude;
+  return loader;
 }
-const conf:webpack.Configuration = {
+console.log();
+const conf: webpack.Configuration = {
   stats: {
     chunks: false
   },
@@ -126,11 +129,11 @@ const conf:webpack.Configuration = {
       // leaflet_marker_2x: __dirname + "/../node_modules/leaflet/dist/images/marker-icon-2x.png",
       // leaflet_marker_shadow: __dirname + "/../node_modules/leaflet/dist/images/marker-shadow.png"
     },
-    modules: [paths.src, 'node_modules'],
+    modules: [paths.src, "node_modules"],
     extensions: [".json", ".js", ".jsx", ".ts", ".tsx"]
   },
   module: {
-    rules: removeEmpty([
+    rules: removeEmpty<webpack.RuleSetRule>([
       {
         test: /\.(j|t)sx?$/,
         exclude: [/__tests__/, /node_modules/],
@@ -153,31 +156,39 @@ const conf:webpack.Configuration = {
           }
         }
       },
-      getStyleLoader({
-        isDev: isDev,
-        useModule: true,
-        useSass: true
-      }),
-      getStyleLoader({
-        isDev: isDev,
-        useModule: true,
-        useSass: false
-      }),
-      getStyleLoader({
-        isDev: isDev,
-        useModule: false,
-        useSass: true
-      }),
-      //This one is atypical: to get react-toolbox working, we're loading the css as modules
-      //Considering this is the only place where we require css, this works fine
-      //But, if we start using css in other places as well, we should make sure that non_postfixed (with .module) files
-      //are still loaded as modules for some deps
-      getStyleLoader({
-        isDev: isDev,
-        useModule: true,
-        requireModuleExtension: false,
-        useSass: false
-      }),
+      {
+        oneOf: [
+          getStyleLoader({
+            isDev: isDev,
+            useModule: true,
+            moduleExt: ".module",
+            ext: ".scss"
+          }),
+          getStyleLoader({
+            isDev: isDev,
+            useModule: true,
+            moduleExt: ".module",
+            ext: ".css"
+          }),
+          getStyleLoader({
+            isDev: isDev,
+            useModule: false,
+            ext: ".scss"
+          }),
+          //separate style loader for react toolbox (doesnt follow *.module.* pattern as expected)
+          getStyleLoader({
+            isDev: isDev,
+            useModule: true,
+            ext: ".css",
+            onlyInclude: [/react-toolbox/]
+          }),
+          getStyleLoader({
+            isDev: isDev,
+            useModule: false,
+            ext: ".css"
+          })
+        ]
+      },
 
       // "file" loader makes sure those assets get served by WebpackDevServer.
       // When you `import` an asset, you get its (virtual) filename.
