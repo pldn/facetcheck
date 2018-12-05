@@ -2,35 +2,32 @@
 import * as React from "react";
 
 import { Helmet } from "react-helmet";
-import { Grid, Row, Col } from "react-bootstrap";
 
 //import own dependencies
-import { Svg } from "../../components";
+import { Svg, FlexContainer } from "../../components";
 
-import * as styles from "./style.scss";
-const icon = require("./sad.svg");
+import * as styles from "./style.module.scss";
+var icon = require("./sad.svg");
 class ErrorPage extends React.PureComponent<ErrorPage.Props, any> {
   render() {
     const { message, title } = this.props;
     return (
-      <Grid className={styles.container}>
+      <FlexContainer className={styles.container}>
         <Helmet title={title || "Not found"} />
-        <Row className={styles.iconRow}>
-          <Col md={8}>
+        <div className={styles.iconRow}>
+          <div>
             <h2>Oops!</h2>
-            <p>
-              {message || "The page you're looking for does not exist"}
-            </p>
-          </Col>
-          <Col md={4}>
+            <p>{message || "The page you're looking for does not exist"}</p>
+          </div>
+          <div style={{flexGrow:1}}>
             <Svg src={icon} className={styles.icon} />
-          </Col>
-        </Row>
-      </Grid>
+          </div>
+        </div>
+      </FlexContainer>
     );
   }
 }
-namespace ErrorPage {
+declare namespace ErrorPage {
   export interface Props {
     message: string;
     title: string;

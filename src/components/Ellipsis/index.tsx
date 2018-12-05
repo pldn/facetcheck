@@ -2,9 +2,9 @@
 import * as React from "react";
 import * as getClassName from "classnames";
 
-import * as styles from "./style.scss";
+import * as styles from "./style.module.scss";
 
-export namespace Ellipsis {
+export declare namespace Ellipsis {
   export interface Props {
     value: string;
   }

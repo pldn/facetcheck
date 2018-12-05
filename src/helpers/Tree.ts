@@ -1,23 +1,22 @@
-import * as N3 from 'n3';
-import * as _ from 'lodash'
-import {Statements,Term,ntriplyToNquads} from '@triply/triply-node-utils/build/src/nTriply'
-import { getAsString, prefix} from '../prefixes'
-import {getPrefixes} from '../facetConf'
+import * as _ from "lodash";
+import * as N3 from 'n3'
+import { prefix } from "../prefixes";
+import { getPrefixes } from "../facetConf";
 export default class TreeNode {
-  private term:Term;
-  private childrenCount = 0
-  private parent:TreeNode;
-  private statements:Statements
-  private predicate:string
-  private label:string;
+  private term: N3.Term;
+  private childrenCount = 0;
+  private parent: TreeNode;
+  private statements: N3.Quad[];
+  private predicate: N3.Term;
+  private label: string;
   private children: {
-    [pred:string]: TreeNode[]
-  } = {}
+    [pred: string]: TreeNode[];
+  } = {};
   private depth = 0;
   /**
    * Private methods
    */
-  private constructor(term:Term, statements:Statements,predicate:string, depth:number, parent: TreeNode) {
+  private constructor(term: N3.Term, statements: N3.Quad[], predicate: N3.Term, depth: number, parent: TreeNode) {
     this.term = term;
     this.statements = statements;
     this.depth = depth;
@@ -25,41 +24,43 @@ export default class TreeNode {
     this.parent = parent;
   }
 
-  public getRoot():TreeNode {
+  public getRoot(): TreeNode {
     if (!this.parent) return this;
     return this.parent.getRoot();
   }
-  public setLabel(label:string) {
+  public setLabel(label: string) {
     this.label = label;
     return;
   }
   public getLabel() {
     if (this.label) return this.label;
-    const rdfsLabel =  this.find([prefix(getPrefixes(),'rdfs', 'label'), null]).limit(1).exec();
+    const rdfsLabel = this.find([prefix(getPrefixes(), "rdfs", "label"), null])
+      .limit(1)
+      .exec();
     if (rdfsLabel.length) return rdfsLabel[0].getTerm().value;
     return null;
   }
-  private addChild(predTerm:Term, objTerm:Term) {
+  private addChild(predTerm: N3.Term, objTerm: N3.Term) {
     const predTermVal = predTerm.value;
     this.childrenCount++;
     if (!this.children[predTermVal]) this.children[predTermVal] = [];
-    const obj = TreeNode.fromStatements(objTerm,this.statements, predTermVal,  this.depth+1, this);
-    this.children[predTermVal].push(obj)
+    const obj = TreeNode.fromStatements(objTerm, this.statements, predTerm, this.depth + 1, this);
+    this.children[predTermVal].push(obj);
   }
-  private populateChildren(statements:Statements) {
-    if (this.term.termType === 'literal') {
+  private populateChildren(statements: N3.Quad[]) {
+    if (this.term.termType === "Literal") {
       //nothing to pulate. it's a leaf
     } else {
       for (const statement of statements) {
         //avoid cyclic references. This is a _tree_
-        if (this.termEquals(statement[0]) && !this.parentExists(statement[2])) {
-          this.addChild(statement[1], statement[2]);
+        if (this.termEquals(statement.subject) && !this.parentExists(statement.object)) {
+          this.addChild(statement.predicate, statement.object);
         }
       }
     }
   }
 
-  private parentExists(term:Term):boolean {
+  private parentExists(term: N3.Term): boolean {
     //start checking self
     if (this.termEquals(term)) return true;
     //now check parents
@@ -67,42 +68,52 @@ export default class TreeNode {
     if (parent) return parent.parentExists(term);
     return false;
   }
-  public getChildren(predicate?:string):TreeNode[] {
-    if (!predicate) return _.flatten<TreeNode>(_.values(this.children))
+  public getChildren(predicate?: string): TreeNode[] {
+    if (!predicate) return _.flatten<TreeNode>(_.values(this.children));
     if (this.children[predicate]) return this.children[predicate];
     return [];
   }
   /**
    * Public methods
    */
-  public hasChildren():boolean {
-    return !!_.size(this.children)
+  public hasChildren(): boolean {
+    return !!_.size(this.children);
   }
 
   public getStatements() {
     return this.statements;
   }
-  public termEquals(term:Term) {
+  public termEquals(term: N3.Term) {
     return this.term.value === term.value;
   }
-  public termMatches(requirements: QueryObject) {
-  return !(
-    (requirements.value && requirements.value !== this.term.value) ||
-    (requirements.language && requirements.language !== this.term.language) ||
-    (requirements.datatype && requirements.datatype !== this.term.datatype) ||
-    (requirements.termType && requirements.termType !== this.term.termType) ||
-    (requirements.filter && !requirements.filter(this.term))
-  );
-}
+  public termMatches(requirements: QueryObject | string) {
+    if (typeof requirements === "string") return this.term.value === requirements;
+    return !(
+      (requirements.value && requirements.value !== this.term.value) ||
+      (requirements.language && this.term.termType === "Literal" && requirements.language !== this.term.language) ||
+      (requirements.datatype && this.term.termType === "Literal" && requirements.datatype !== this.term.datatypeString) ||
+      (requirements.termType && requirements.termType !== this.term.termType) ||
+      (requirements.filter && !requirements.filter(this.term))
+    );
+  }
   public getDepth() {
     return this.depth;
   }
-  public getNquads():Promise<string> {
-    return ntriplyToNquads(this.statements)
-  }
-  public find(...pattern:QueryPattern[])  {
-    return new Query(this, pattern).isRoot();
+  public getNquads(): Promise<string> {
+    const writer = N3.Writer();
+    for (const s of this.statements) {
+      writer.addQuad(s);
+    }
+    return new Promise<string>((resolve, reject) => {
+      writer.end((error, result) => {
+        if (error) return reject(error)
+        resolve(result)
+      });
 
+    })
+  }
+  public find(...pattern: QueryPattern[]) {
+    return new Query(this, pattern).isRoot();
   }
   public getChildrenCount() {
     return this.childrenCount;
@@ -110,10 +121,10 @@ export default class TreeNode {
   public getParent() {
     return this.parent;
   }
-  public getParents():TreeNode[] {
-    const parents:TreeNode[] = [];
+  public getParents(): TreeNode[] {
+    const parents: TreeNode[] = [];
     if (this.parent) {
-      return [this.parent].concat(this.parent.getParents())
+      return [this.parent].concat(this.parent.getParents());
     }
     return parents;
   }
@@ -123,20 +134,26 @@ export default class TreeNode {
   public getLevel() {
     return this.depth;
   }
-  public getKey():string {
-    return this.predicate + this.depth + this.childrenCount + this.term.value;
+  public getKey(): string {
+    return this.predicate.value + this.depth + this.childrenCount + this.term.value;
   }
-  public getPredicate():string {
-    return this.predicate
+  public getPredicate(): N3.Term {
+    return this.predicate;
   }
-  public toJson():Object {
+  public toJson(): Object {
     return {
       term: this.term,
       count: this.childrenCount,
-      children: this.getChildren().map((c => c.toJson()))
-    }
+      children: this.getChildren().map(c => c.toJson())
+    };
   }
-  public static fromStatements(forTerm:Term, statements:Statements, predicate:string = null, level = 0, parent:TreeNode = null) {
+  public static fromStatements(
+    forTerm: N3.Term,
+    statements: N3.Quad[],
+    predicate: N3.Term = null,
+    level = 0,
+    parent: TreeNode = null
+  ) {
     const tree = new TreeNode(forTerm, statements, predicate, level, parent);
     tree.populateChildren(statements);
     return tree;
@@ -147,8 +164,8 @@ export type QueryObject = {
   value?: string;
   language?: string;
   datatype?: string;
-  termType?: Term["termType"];
-  filter?: (term: Term) => boolean;
+  termType?: N3.Term["termType"];
+  filter?: (term: N3.Term) => boolean;
 };
 export type QueryPattern = Array<string | QueryObject>;
 
@@ -158,9 +175,9 @@ export class Query {
   private returnDepth = -1;
   private _limit = -1;
   private rootQuery = false;
-  private nextPatterns:QueryPattern[] = []
+  private nextPatterns: QueryPattern[] = [];
   constructor(tree: TreeNode, _patterns: QueryPattern[]) {
-    var patterns = _.clone(_patterns)
+    var patterns = _.clone(_patterns);
     this.pattern = patterns.shift();
     if (!this.pattern) this.pattern = [];
 
@@ -168,8 +185,8 @@ export class Query {
 
     this.nextPatterns = patterns;
   }
-  public isRoot(isRoot=true) {
-    this.rootQuery = isRoot
+  public isRoot(isRoot = true) {
+    this.rootQuery = isRoot;
     return this;
   }
   private patternHasBoundVariables() {
@@ -183,7 +200,7 @@ export class Query {
     this._limit = limit;
     return this;
   }
-  private adjustResultsPerLimit(results:TreeNode[]) {
+  private adjustResultsPerLimit(results: TreeNode[]) {
     if (this._limit > 0) {
       results = results.slice(0, this._limit);
     }
@@ -195,7 +212,7 @@ export class Query {
   }
   private postProcessResults(results: TreeNode[]) {
     if (!this.rootQuery) return results;
-    var finalResults = this.adjustResultsPerLimit(results)
+    var finalResults = this.adjustResultsPerLimit(results);
     if (this._limit > 0 && finalResults.length >= this._limit) {
       return finalResults;
     }
@@ -210,7 +227,7 @@ export class Query {
     }
     return finalResults;
   }
-  public or(pattern:QueryPattern) {
+  public or(pattern: QueryPattern) {
     this.nextPatterns.push(pattern);
   }
   public exec(): TreeNode[] {
@@ -234,7 +251,14 @@ export class Query {
     }
 
     const results = pattern.length
-      ? _.flatten(matchingObjs.map(node => node.find(pattern).isRoot(false).exec()))
+      ? _.flatten(
+          matchingObjs.map(node =>
+            node
+              .find(pattern)
+              .isRoot(false)
+              .exec()
+          )
+        )
       : matchingObjs;
     if (this.returnDepth < 0) return this.postProcessResults(results);
 
@@ -251,10 +275,8 @@ export class Query {
       selectedResults.push(selectedNode);
     }
     return this.postProcessResults(selectedResults);
-
-
   }
-  private copy(withPattern:QueryPattern) {
+  private copy(withPattern: QueryPattern) {
     const q = new Query(this.tree, [withPattern]);
     q._limit = this._limit;
     q.returnDepth = this.returnDepth;

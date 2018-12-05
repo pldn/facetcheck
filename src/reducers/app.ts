@@ -2,12 +2,9 @@
 import * as Immutable from "immutable";
 
 //import own dependencies
-import { GlobalState } from "./";
 import {Actions as FacetsActions} from './facets'
 export enum Actions {
   SET_ROOT_CLASS = "triply/app/TOGGLE_CLASS" as any,
-  //Toggling of the panel on small screens is stored in react-router part of the state,
-  //as this way we can use the browserhistory api to toggle the panel (e.g. when using the browser back btn)
   TOGGLE_DS_PANEL_COLLAPSE_LG = "triply/app/TOGGLE_DS_PANEL_COLLAPSE_LG" as any
 }
 
@@ -40,17 +37,4 @@ export function setRootClassname(className: string): any {
     type: Actions.SET_ROOT_CLASS,
     className: className
   };
-}
-
-export function toggleDsPanelCollapseLg(): any {
-  return {
-    type: Actions.TOGGLE_DS_PANEL_COLLAPSE_LG
-  };
-}
-export function isCollapsedSm(state: GlobalState) {
-  return (
-    !state.routing.locationBeforeTransitions ||
-    !state.routing.locationBeforeTransitions.state ||
-    !!state.routing.locationBeforeTransitions.state.dsPanelCollapsedSm
-  );
 }

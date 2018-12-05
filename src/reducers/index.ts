@@ -1,15 +1,12 @@
 //external dependencies
 import * as reactRedux from "react-redux";
-import * as reduxForm from "redux-form";
 import * as ReduxObservable from "redux-observable";
 //import own dependencies
 
 // import {State as NotificationState} from './notifications';
 import { ResponseMetaData } from "../helpers/ApiClient";
 import * as Redux from "redux";
-const { reducer } = require("redux-connect");
 import * as _ from "lodash";
-import { reducer as form } from "redux-form";
 
 import ApiClient from "../helpers/ApiClient";
 
@@ -18,110 +15,32 @@ import ApiClient from "../helpers/ApiClient";
  */
 // import * as accounts from './accounts';
 import * as app from "./app";
-// import * as auth from './auth';
 import * as facets from "./facets";
-// import * as contact from './contact';
-// import * as containerManagement from './containerManagement';
-// import * as containers from './containers';
-// import * as datasetManagement from './datasetManagement';
-// import * as datasets from './datasets';
-// import * as files from './files';
-// import * as fileUploads from './fileUploads';
-// import * as graphs from './graphs';
-// import * as imports from './imports';
-// import * as prefixes from './prefixes';
-import * as routing from "./routing";
 import * as statements from "./statements";
-// import * as triples from './triples';
-// import * as uploading from './uploading';
 import * as notifications from "./notifications";
-const transitImmutable = require("transit-immutable-js");
 
-const transitHandler = transitImmutable.withRecords(
-  [
-    app.StateRecord,
-    facets.StateRecord,
-    facets.Facet,
-    routing.LocationRecord,
-    routing.StateRecord,
-    notifications.NotificationRecord,
-    statements.StateRecord
-  ],
-  function(name: any, value: any): any {
-    console.warn("missing record", name);
-    return null;
-  }
-);
 
 import { GlobalState } from "./";
-export function toJs(state: any) {
-  return transitHandler.toJSON(state);
-}
 export type GlobalStateAsJs = { [K in keyof GlobalState]: any };
-export function fromJs(js: any) {
-  if (typeof js === "string") {
-    return transitHandler.fromJSON(js);
-  } else {
-    return js;
-  }
-}
 
 /**
 Keep in alphabetic order
 **/
 export interface GlobalState extends Partial<reactRedux.ProviderProps> {
-  // accounts: accounts.StateRecordInterface,
-  // auth: auth.StateRecordInterface,
   app: app.StateRecordInterface;
   facets: facets.FacetState;
-  // contact: contact.StateRecordInterface,
-  // containerManagement:containerManagement.StateInterface,
-  // containers:containers.StateInterface,
-  // datasetManagement: datasetManagement.StateRecordInterface,
-  // datasets: datasets.StateInterface,
-  // files: files.StateInterface,
-  // fileUploads: fileUploads.StateInterface,
-  // graphs: graphs.StateInterface,
-  // imports: imports.StateInterface,
   notifications: notifications.StateInterface;
-  // prefixes: prefixes.StateInterface,
-  // triples: triples.StateInterface,
-  // uploading: uploading.StateInterface,
   statements: statements.StateRecordInterface;
-
-  //the state managed by included libs such as react-router-redux
-  reduxAsyncConnect: any;
-  form: { [formName: string]: reduxForm.Form<any, any, any> };
-  routing: routing.StateRecordInterface;
 }
 const appReducer = Redux.combineReducers(
   <{ [K in keyof GlobalState]: any }>{
     /**
    * Keep in alphabetic order
    */
-    // accounts: accounts.reducer,
     app: app.reducer,
-    // auth: auth.reducer,
     facets: facets.reducer,
-    // contact:contact.reducer,
-    // containers:containers.reducer,
-    // containerManagement:containerManagement.reducer,
-    // datasetManagement: datasetManagement.reducer,
-    // datasets: datasets.reducer,
-    // files: files.reducer,
-    // fileUploads: fileUploads.reducer,
-    // graphs: graphs.reducer,
-    // imports: imports.reducer,
     notifications: notifications.reducer,
-    // prefixes:prefixes.reducer,
     statements: statements.reducer,
-    // triples:triples.reducer,
-    // uploading:uploading.reducer,
-
-    //the state managed by included libs such as react-router-redux
-    routing: routing.reducer,
-    reduxAsyncConnect: reducer,
-    form
   }
 );
 export var rootEpic = ReduxObservable

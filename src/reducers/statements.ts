@@ -5,18 +5,15 @@ import { extname } from "path";
 import * as Immutable from "immutable";
 import ApiClient from "../helpers/ApiClient";
 import { GlobalActions } from "../reducers";
-import {getAsString, prefix} from '../prefixes'
-import {default as Config} from '../config/config'
+import { getAsString, prefix } from "../prefixes";
 const urlParse = require("url-parse");
 import { default as Tree, QueryPattern, QueryObject } from "../helpers/Tree";
-import { Term, Statement, Statements } from "@triply/triply-node-utils/build/src/nTriply";
 import { Actions as FacetsActions, Action as FacetAction } from "./facets";
 import * as ReduxObservable from "redux-observable";
 import * as Redux from "redux";
 import { GlobalState } from "./";
-import * as RX from "rxjs";
-import "rxjs";
-import { CLASSES, FACETS,getPrefixes } from "../facetConf";
+import { CLASSES, getPrefixes } from "../facetConf";
+import { map, filter, withLatestFrom, catchError, mergeMap, mergeAll } from "rxjs/operators";
 
 // import {Actions as FacetActions} from './facets'
 //import own dependencies
@@ -29,7 +26,7 @@ export enum Actions {
 
 export var StateRecord = Immutable.Record(
   {
-    resourceDescriptions: Immutable.OrderedMap<string, Statements>(),
+    resourceDescriptions: Immutable.OrderedMap<string, N3.Quad[]>(),
     fetchRequests: 0,
     fetchQueue: Immutable.OrderedSet<string>(),
     getMatchingIrisError: <string>null,
@@ -40,7 +37,7 @@ export var StateRecord = Immutable.Record(
 export var initialState = new StateRecord();
 export type StateRecordInterface = typeof initialState;
 
-export type ResourceDescriptions = Immutable.OrderedMap<string, Statements>;
+export type ResourceDescriptions = Immutable.OrderedMap<string, N3.Quad[]>;
 export type Errors = Immutable.OrderedMap<string, string>;
 
 export interface Action extends GlobalActions<Actions> {
@@ -60,9 +57,11 @@ export function reducer(state = initialState, action: Action & FacetAction) {
         .update("fetchRequests", num => num - 1)
         .update("errors", errors => errors.set(action.forIri, action.message));
     case Actions.GET_STATEMENTS_SUCCESS:
-      return state.update("fetchRequests", num => num - 1).update("resourceDescriptions", resourceDescriptions => {
-        return resourceDescriptions.set(action.forIri, action.result);
-      });
+      return state
+        .update("fetchRequests", num => num - 1)
+        .update("resourceDescriptions", resourceDescriptions => {
+          return resourceDescriptions.set(action.forIri, action.result);
+        });
     case Actions.MARK_FOR_FETCHING_OR_DELETION:
       if (action.toRemove && action.toRemove.length) {
         state = state.update("resourceDescriptions", resourceDescriptions => {
@@ -84,54 +83,59 @@ export function reducer(state = initialState, action: Action & FacetAction) {
 export type Action$ = ReduxObservable.ActionsObservable<any>;
 // export type Action$ = ReduxObservable.ActionsObservable<any>;
 export type Store = Redux.Store<GlobalState>;
-export var epics: [(action: Action$, store: Store) => any] = [
+export var epics: Array<ReduxObservable.Epic<any,Action,GlobalState>> = [
   /**
    * Do some bookkeeping on which descriptions to remove, and which ones to fetch
    */
-  (action$: Action$, store: Store) => {
-    return action$
-      .ofType(FacetsActions.GET_MATCHING_IRIS_SUCCESS)
-      // .map((action: FacetAction) => action.result)
-      .map((action: FacetAction) => {
-
+  (action$, store) => {
+    // action$.
+    return action$.pipe(
+      ReduxObservable.ofType(FacetsActions.GET_MATCHING_IRIS_SUCCESS),
+      map((action: FacetAction) => {
         const matchingIris = action.result.iris;
         const existingStatements = store
-          .getState()
+          .value
           .statements.resourceDescriptions.keySeq()
           .toArray();
 
         //don't remove anything when we have an offset (we'd like to append)
-        const toRemove = action.offset ? []:_.difference(existingStatements, matchingIris);
+        const toRemove = action.offset ? [] : _.difference(existingStatements, matchingIris);
         const toFetch = matchingIris.filter(s => {
           return existingStatements.indexOf(s) < 0;
         });
 
         return markForFetchingOrDeletion(toRemove, toFetch);
-      });
+      })
+    );
   },
   //Toggle fetching of first statement (all subsequent requests are sent when the first statement if fetched)
-  (action$: Action$, store: Store) => {
-    return action$
-      .ofType(Actions.MARK_FOR_FETCHING_OR_DELETION)
-      .map(action => action.toFetch)
-      .filter((toFetch: string[]) => toFetch.length > 0)
-      .map((toFetch: string[]) => {
+  (action$, store) => {
+    return action$.pipe(
+      ReduxObservable.ofType(Actions.MARK_FOR_FETCHING_OR_DELETION),
+      map(action => action.toFetch),
+      filter((toFetch: string[]) => toFetch.length > 0),
+      map((toFetch: string[]) => {
         const matchingIri = toFetch[0];
-        return getStatements(matchingIri, store.getState().facets.selectedClass);
-      });
+        return getStatements(matchingIri, store.value.facets.selectedClass);
+      })
+    );
   },
   //Fetch new statement from queue list when we've finished fetching
-  (action$: Action$, store: Store) => {
-    return action$
-      .ofType(Actions.GET_STATEMENTS_SUCCESS)
-      .map((action: any): any => {
-        return store.getState().statements.fetchQueue;
+  (action$, store) => {
+    return action$.pipe(
+      ReduxObservable.ofType(Actions.GET_STATEMENTS_SUCCESS),
+
+      map(
+        (_action: any): any => {
+          return store.value.statements.fetchQueue;
+        }
+      ),
+      filter((fetchQueue: Immutable.OrderedSet<string>) => fetchQueue.size > 0),
+      map((fetchQueue: Immutable.OrderedSet<string>) => {
+        const matchingIri = fetchQueue.first<undefined>();
+        return getStatements(matchingIri, store.value.facets.selectedClass);
       })
-      .filter((fetchQueue: Immutable.OrderedSet<string>) => fetchQueue.size > 0)
-      .map((fetchQueue: Immutable.OrderedSet<string>) => {
-        const matchingIri = fetchQueue.first();
-        return getStatements(matchingIri, store.getState().facets.selectedClass);
-      });
+    );
   }
 ];
 
@@ -145,7 +149,9 @@ export function markForFetchingOrDeletion(toRemove: string[], toFetch: string[])
 export function getStatements(resource: string, className: string): Action {
   if (!className) throw new Error("missing classname. cannot get statements");
   if (!resource) throw new Error("missing resource IRI. cannot get statements");
-  const q = `${getAsString(getPrefixes())} ${CLASSES.find(c => c.iri === className).resourceDescriptionQuery(resource)}`;
+  const q = `${getAsString(getPrefixes())} ${CLASSES.find(c => c.iri === className).resourceDescriptionQuery(
+    resource
+  )}`;
   console.groupCollapsed("Querying for resource description of " + resource);
   console.info(q);
   console.groupEnd();
@@ -160,20 +166,20 @@ export function getStatements(resource: string, className: string): Action {
 }
 
 // export function
-export function getLabel(iri: string, tree: Tree): string {
-  if (!N3.Util.isIRI(iri)) return null;
+export function getLabel(term: N3.Term, tree: Tree): string {
+  if (term.termType !== "NamedNode") return null;
   const labelStatement = tree
     .getStatements()
-    .find(s => s[1].value === "http://www.w3.org/2000/01/rdf-schema#label" && s[0].value === iri);
-  if (labelStatement && labelStatement[2].termType === "literal") return labelStatement[2].value;
-  const lnameInfo = getLocalNameInfo(iri);
+    .find(s => s.predicate.value === "http://www.w3.org/2000/01/rdf-schema#label" && s.object.value === term.value);
+  if (labelStatement && labelStatement.object.termType === "Literal") return labelStatement.object.value;
+  const lnameInfo = getLocalNameInfo(term.value);
   if (lnameInfo.localName) {
     return lnameInfo.localName;
   }
   return null;
 }
 
-export function getStatementsAsTree(forIri: Term, statements: Statements) {
+export function getStatementsAsTree(forIri: N3.Term, statements: N3.Quad[]) {
   return Tree.fromStatements(forIri, statements);
 }
 
@@ -197,7 +203,7 @@ export type SelectWidget = (tree: Tree) => WidgetConfig;
  */
 const selectGeometry: SelectWidget = t => {
   const node = t
-    .find([prefix(getPrefixes(), 'geo', "hasGeometry"), null, prefix(getPrefixes(), 'geo', "asWKT")])
+    .find([prefix(getPrefixes(), "geo", "hasGeometry"), null, prefix(getPrefixes(), "geo", "asWKT")])
     .exec();
   if (node.length) {
     return <WidgetConfig>{
@@ -211,7 +217,7 @@ const selectGeometry: SelectWidget = t => {
 };
 const selectDescription: SelectWidget = t => {
   const node = t
-    .find([prefix(getPrefixes(), 'dct', "description"), null])
+    .find([prefix(getPrefixes(), "dct", "description"), null])
     .limit(1)
     .exec();
   if (node.length) {
@@ -225,7 +231,7 @@ const selectDescription: SelectWidget = t => {
 };
 const selectSummary: SelectWidget = t => {
   const node = t
-    .find([prefix(getPrefixes(), 'rdf', "comment"), null])
+    .find([prefix(getPrefixes(), "rdf", "comment"), null])
     .limit(1)
     .exec();
   if (node.length) {
@@ -244,7 +250,7 @@ const findImageLiteralPatterns = [
     null,
     {
       datatype: "http://www.w3.org/2001/XMLSchema#anyURI",
-      filter: (term: Term) => imageExtensions.indexOf(extname(term.value).toLowerCase()) >= 0
+      filter: (term: N3.Term) => imageExtensions.indexOf(extname(term.value).toLowerCase()) >= 0
     }
   ]
 ];
@@ -255,7 +261,7 @@ $(IRI) foaf:depiction ?img .
 */
 const selectImage: SelectWidget = t => {
   // console.log(t)
-  const patterns: QueryPattern[] = [...findImageLiteralPatterns, [prefix(getPrefixes(), 'foaf' , "depiction"), null]];
+  const patterns: QueryPattern[] = [...findImageLiteralPatterns, [prefix(getPrefixes(), "foaf", "depiction"), null]];
   const images: WidgetConfig[] = [];
   const nodes = t
     .find(...patterns)
@@ -266,7 +272,7 @@ const selectImage: SelectWidget = t => {
     //this might be an image literal, or a depiction resource
     if (node.hasChildren()) {
       const label = node
-        .find([prefix(getPrefixes(), 'rdfs', "label"), null], [prefix(getPrefixes(), 'dct' , "description"), null])
+        .find([prefix(getPrefixes(), "rdfs", "label"), null], [prefix(getPrefixes(), "dct", "description"), null])
         .limit(1)
         .exec();
       var img: Tree[] = [];
@@ -279,8 +285,8 @@ const selectImage: SelectWidget = t => {
       }
       if (img.length) {
         var labelString = label && label.length ? label[0].getTerm().value : null;
-        img[0].setLabel(labelString)
-        images.push({ values: img,  config: { type: "image" } });
+        img[0].setLabel(labelString);
+        images.push({ values: img, config: { type: "image" } });
       }
     } else {
       images.push({
@@ -302,7 +308,7 @@ const selectImage: SelectWidget = t => {
 };
 const selectLabel: SelectWidget = t => {
   const node = t
-    .find([prefix(getPrefixes(), 'rdfs' , "label"), null])
+    .find([prefix(getPrefixes(), "rdfs", "label"), null])
     .limit(1)
     .exec();
   if (node.length) {
@@ -320,7 +326,7 @@ const catchAll: SelectWidget = t => {
   const removeNodes: number[] = [];
   for (var i = 0; i < nodes.length; i++) {
     const node = nodes[i];
-    if (node.getTerm().termType === "bnode") {
+    if (node.getTerm().termType === "BlankNode") {
       removeNodes.push(i);
       if (node.hasChildren()) {
         nodes = nodes.concat(node.getChildren());
@@ -338,7 +344,7 @@ const catchAll: SelectWidget = t => {
         .join(",")
   );
   const selections: WidgetConfig[] = [];
-  _.forEach(groupedByPred, (nodes, predicate) => {
+  _.forEach(groupedByPred, (nodes, _predicate) => {
     selections.push({
       label: getLabel(nodes[0].getPredicate(), t),
       values: nodes

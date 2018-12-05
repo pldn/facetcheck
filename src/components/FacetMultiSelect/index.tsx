@@ -6,10 +6,10 @@ import {FACETS} from '../../facetConf'
 import {FacetValue} from '../../facetConfUtils'
 import SparqlJson from '../../helpers/SparqlJson'
 import SparqlBuilder from '../../helpers/SparqlBuilder'
-namespace FacetMultiSelect {
+declare namespace FacetMultiSelect {
 
 }
-const styles = require("./style.scss");
+import * as styles from "./style.module.scss"
 
 @Facet.staticImplements<Facet.FacetComponent>()
 class FacetMultiSelect extends React.PureComponent<Facet.Props, any> {

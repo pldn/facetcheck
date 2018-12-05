@@ -1,0 +1,48 @@
+@import "../../theme/bootstrap.overrides/variables.scss";
+.alert {
+  display: flex;
+  .icon {
+    margin-left: 15px;
+    width: 15px;
+    display: flex;
+    align-items: center;
+  }
+  &.sm {
+    margin: 0;
+    .content {
+      padding: 5px 15px;
+    }
+  }
+  margin: 0.5rem 0 1rem 0;
+  transition: box-shadow 0.25s;
+  border-radius: 2px;
+  .content {
+    padding: 11px;
+    width: 100%;
+  }
+  color: $custom3;
+}
+.error {
+  &.transparent {
+    background-color: transparent;
+    color: #f44336;
+    border: 1px solid #f44336;
+  }
+  background-color: #f44336;
+}
+.warning {
+  &.transparent {
+    background-color: transparent;
+    color: $brand-warning;
+    border: 1px solid $brand-warning;
+  }
+  background-color: $brand-warning;
+}
+.info {
+  &.transparent {
+    background-color: transparent;
+    color: $brand-info;
+    border: 1px solid $brand-info;
+  }
+  background-color: $brand-info;
+}

@@ -10,11 +10,12 @@ import { Term, Leaflet } from "../";
 import { getLabel, getWidgets, WidgetConfig } from "../../reducers/statements";
 import { getDereferenceableLink } from "../../facetConf";
 import Tree from "../../helpers/Tree";
-
-const styles = require("./style.scss");
-namespace ResourceDescriptionSection {
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import * as fa from "@fortawesome/free-solid-svg-icons";
+import * as styles from "./style.module.scss";
+declare namespace ResourceDescriptionSection {
   export interface StatementContext {
-    path: N3.Statement[];
+    path: N3.Quad[];
     value: string;
   }
   export interface GroupedStatements {
@@ -53,11 +54,11 @@ class ResourceDescriptionSection extends React.PureComponent<
   static defaultProps: Partial<ResourceDescriptionSection.Props> = {
     level: 0
   };
-  toggleShow() {
+  toggleShow = () => {
     const { widget } = this.props;
     const enableToggle = widget.config && !!widget.config.asToggle;
     if (!enableToggle) return;
-    this.setState((prevState: ResourceDescriptionSection.State, props: ResourceDescriptionSection.Props) => {
+    this.setState((prevState: ResourceDescriptionSection.State, _props: ResourceDescriptionSection.Props) => {
       return { show: !prevState.show };
     });
   }
@@ -73,20 +74,11 @@ class ResourceDescriptionSection extends React.PureComponent<
           className={getClassNames(styles.sectionHeader, styles.full, {
             [styles.asToggle]: enableToggle
           })}
-          onClick={this.toggleShow.bind(this)}
+          onClick={this.toggleShow}
         >
-          {widget.config &&
-            widget.config.asToggle && (
-              <i
-                className={getClassNames({
-                  fa: true,
-                  "fa-chevron-down": !this.state.show,
-                  "fa-chevron-up": this.state.show,
-
-                  [styles.chevron]: !!styles.chevron
-                })}
-              />
-            )}
+          {widget.config && widget.config.asToggle && (
+            <FontAwesomeIcon className={styles.chevron} icon={this.state.show ? fa.faChevronUp : fa.faChevronDown} />
+          )}
           {widget.label && (
             <span
               className={styles.label}
@@ -126,15 +118,17 @@ class ResourceDescriptionSection extends React.PureComponent<
     const enabledStyles: { [key: string]: boolean } = {
       [styles.values]: !!styles.values
     };
-
+    const dereferenceableLink = getDereferenceableLink(values[0].getPredicate().value)
     return (
       <div className={getClassNames(enabledStyles)}>
         {label && (
           <div className={styles.title}>
-            {getDereferenceableLink(values[0].getPredicate()) ? (
-              <a href={getDereferenceableLink(values[0].getPredicate())} target="_blank" rel="noopener noreferrer">{label}</a>
+            {dereferenceableLink ? (
+              <a href={dereferenceableLink} target="_blank" rel="noopener noreferrer" title={values[0].getPredicate().value}>
+                {label}
+              </a>
             ) : (
-              <span>{label}</span>
+              <span title={values[0].getPredicate().value}>{label}</span>
             )}
           </div>
         )}

@@ -1,0 +1,68 @@
+html,body {
+  height:100%;
+  margin:0;
+  font-family: Roboto2,Helvetica Neue,Helvetica,Arial,sans-serif;
+  font-size: 15px;
+  background-color: #ebedef;
+}
+
+a {
+  color: #1690c6;
+  text-decoration: none;
+}
+a:hover,
+a:focus {
+  color: #23527c;
+  text-decoration: underline;
+}
+a:focus {
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+menu,
+nav,
+section,
+summary {
+  display: block;
+}
+
+audio,
+canvas,
+progress,
+video {
+  display: inline-block;
+  vertical-align: baseline;
+}
+
+@font-face {
+    font-family: 'Roboto2';
+    src: url('./fonts/roboto2-bold.eot');
+    src: url('./fonts/roboto2-bold.eot?#iefix') format('embedded-opentype'),
+         url('./fonts/roboto2-bold.woff2') format('woff2'),
+         url('./fonts/roboto2-bold.woff') format('woff'),
+         url('./fonts/roboto2-bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+
+}
+@font-face {
+    font-family: 'Roboto2';
+    src: url('./fonts/roboto2-regular.eot');
+    src: url('./fonts/roboto2-regular.eot?#iefix') format('embedded-opentype'),
+         url('./fonts/roboto2-regular.woff2') format('woff2'),
+         url('./fonts/roboto2-regular.woff') format('woff'),
+         url('./fonts/roboto2-regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+
+}

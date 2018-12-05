@@ -2,7 +2,6 @@
 import * as React from "react";
 
 import { Helmet } from "react-helmet";
-import * as reactRouterRedux from "react-router-redux";
 
 import { ErrorPage } from "../";
 import { connect } from "react-redux";
@@ -15,9 +14,9 @@ import * as getClassName from "classnames";
 import { refreshFacets, FacetState } from "../../reducers/facets";
 import { GlobalState } from "../../reducers";
 import { getFacetcheckTitle } from "../../facetConf";
-namespace App {
+import {Home, Nav} from '../'
+declare namespace App {
   export interface DispatchProps {
-    pushState: Function;
     refreshFacets: typeof refreshFacets;
   }
   export interface PropsFromState {
@@ -26,6 +25,8 @@ namespace App {
     facetLabels: FacetState["facetLabels"];
     selectedClass: string;
   }
+  export interface OwnProps {
+  }
   export interface State {
     error: string;
     // modalShown: boolean
@@ -33,15 +34,7 @@ namespace App {
   export type Props = DispatchProps & PropsFromState;
 }
 
-const styles = require("./style.scss");
-// @asyncConnect([
-//   {
-//     promise: ({ store: { dispatch, getState } }) => {
-//       const state:GlobalState = getState();
-//       return Promise.all([dispatch(refreshFacets(state.facets.facetLabels, state.facets.selectedClass))]);
-//     }
-//   } as IAsyncConnect<any>
-// ])
+import * as styles from "./style.module.scss"
 class App extends React.PureComponent<App.Props, App.State> {
   state: App.State = { error: null };
   componentDidCatch(e: Error) {
@@ -62,7 +55,7 @@ class App extends React.PureComponent<App.Props, App.State> {
     } else if (this.props.globalErr) {
       mainComponent = <ErrorPage title="Something went wrong" message={this.props.globalErr} />;
     } else {
-      mainComponent = this.props.children;
+      mainComponent = <Nav><Home/></Nav>;
     }
     const title = getFacetcheckTitle();
     const head = {
@@ -92,7 +85,8 @@ class App extends React.PureComponent<App.Props, App.State> {
   }
 }
 
-export default connect<GlobalState, App.PropsFromState, App.DispatchProps, any>(
+export default connect<App.PropsFromState, App.DispatchProps, App.OwnProps, GlobalState>(
+// export default connect<GlobalState, App.PropsFromState, App.DispatchProps, any>(
   state => ({
     appClassName: state.app.className,
     globalErr: state.app.globalErr,
@@ -101,7 +95,6 @@ export default connect<GlobalState, App.PropsFromState, App.DispatchProps, any>(
   }),
   //dispatch
   {
-    pushState: reactRouterRedux.push,
     refreshFacets: refreshFacets
   }
 )(App);

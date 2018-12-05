@@ -3,9 +3,9 @@ import * as React from "react";
 import * as getClassName from "classnames";
 import { extname } from "path";
 import { TermLiteral, TermLiteralDefault } from "../";
-import * as styles from "./style.scss";
+import * as styles from "./style.module.scss";
 
-namespace TermLiteralImage {
+declare namespace TermLiteralImage {
   export interface State {
     imageLoaded: boolean;
     imageError: boolean;

@@ -2,7 +2,7 @@ declare namespace __App {
   export interface ReactWindow extends Window {
     __data: any;
     React: any;
-    devToolsExtension: any;
+    __REDUX_DEVTOOLS_EXTENSION__: any;
   }
 }
 
@@ -14,6 +14,5 @@ declare var __DEVTOOLS__: boolean;
 
 declare namespace NodeJS {
   interface Global {
-    socket: SocketIOClient.Socket;
   }
 }

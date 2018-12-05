@@ -26,7 +26,7 @@ const provinces:FacetProvinces.Provinces[] = ["limburg"
 , "groningen"
 , "friesland"
 ]
-namespace FacetProvinces {
+declare namespace FacetProvinces {
   //Interface that extends the generic selectedObject from the facet reducer
   export type OptionObject = { [P in Provinces]: FacetValue | any };
   export interface FacetProps extends GenericFacetProps {
@@ -50,7 +50,7 @@ namespace FacetProvinces {
     | "groningen"
     | "friesland";
 }
-const styles = require("./style.scss");
+import * as styles from "./style.module.scss"
 
 @Facet.staticImplements<Facet.FacetComponent>()
 class FacetProvinces extends React.PureComponent<FacetProvinces.Props, any> {

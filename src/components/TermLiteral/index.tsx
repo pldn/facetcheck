@@ -2,24 +2,22 @@
 import * as React from "react";
 import * as getClassName from "classnames";
 import Tree from '../../helpers/Tree'
-import * as nTriply from '@triply/triply-node-utils/build/src/nTriply'
 import {
   TermLiteralBoolean,
   TermLiteralDefault,
   TermLiteralString,
   TermLiteralWktLeaflet,
-  TermLiteralWktSvg,
   TermLiteralNumeric,
   TermLiteralImage,
   TermLiteralLink,
   TermLiteralHtml,
   TermLiteralTextarea
 } from "../";
-import * as styles from "./style.scss";
+import * as styles from "./style.module.scss";
 import {RenderConfiguration} from '../../reducers/statements'
 // import * as rowStyles from "../"/TriplesTable/style.scss";
 
-export namespace TermLiteral {
+export declare namespace TermLiteral {
   export interface Props {
     className?: string;
     config?:RenderConfiguration
@@ -44,10 +42,10 @@ export namespace TermLiteral {
 
 //used for e.g. IRIs and graphnames
 export class TermLiteral extends React.PureComponent<TermLiteral.Props, TermLiteral.State> {
-  LiteralRenderers: [TermLiteral.TermLiteralRenderer];
+  LiteralRenderers: Array<TermLiteral.TermLiteralRenderer>;
   //used by subcomponents, so we can have an 'implements' interface that has static methods
   static staticImplements<T>() {
-    return (constructor: T) => {};
+    return (_constructor: T) => {};
   }
   constructor(props: any) {
     super(props);

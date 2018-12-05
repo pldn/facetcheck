@@ -1,8 +1,6 @@
 import * as React from "react";
 
 import * as getClassName from "classnames";
-// import {Row,Col} from 'react-bootstrap';
-// import {LinkContainer} from 'react-router-bootstrap'
 import { NotificationRecordProps, NotificationType, removeNotification } from "../../reducers/notifications";
 // import {Models} from '../../../typings-tmp/swagger'
 
@@ -11,7 +9,7 @@ export interface INotificationsProps extends NotificationRecordProps {
   closeHandler: typeof removeNotification;
   style: React.CSSProperties;
 }
-import * as styles from "./style.scss";
+import * as styles from "./style.module.scss";
 
 /**
  * Setting styles directly instead of using classes

@@ -1,7 +1,6 @@
 import * as React from "react";
 
 import * as getClassName from "classnames";
-import { Label } from "react-bootstrap";
 import SparqlJson from "../../helpers/SparqlJson";
 import SparqlBuilder from "../../helpers/SparqlBuilder";
 import { Facet as FacetProps } from "../../reducers/facets";
@@ -10,7 +9,7 @@ import { setSelectedFacetValue, setSelectedObject } from "../../reducers/facets"
 import { FACETS, getDereferenceableLink } from "../../facetConf";
 import { FacetTypes } from "../../facetConfUtils";
 
-namespace Facet {
+declare namespace Facet {
   //Hacky interface so we can define a static function in an interface
   export interface FacetComponent {
     new (props?: Facet.Props): React.PureComponent<Facet.Props, any>;
@@ -26,13 +25,13 @@ namespace Facet {
     setSelectedObject: typeof setSelectedObject;
   }
 }
-const styles = require("./style.scss");
+import * as styles from "./style.module.scss"
 
 class Facet extends React.PureComponent<Facet.Props, any> {
-  FacetComponents: [Facet.FacetComponent];
+  FacetComponents: Array<Facet.FacetComponent>;
   //used by subcomponents, so we can have an 'implements' interface that has static methods
   static staticImplements<T>() {
-    return (constructor: T) => {};
+    return (_constructor: T) => {};
   }
   static getFacetFromString(key: FacetTypes) {
     switch (key) {
@@ -71,7 +70,8 @@ class Facet extends React.PureComponent<Facet.Props, any> {
     const { className } = this.props;
     var facet: any;
     if (this.props.facet.error) {
-      facet = <Label bsStyle="danger">{this.props.facet.error}</Label>;
+      // facet = <Label bsStyle="danger">{this.props.facet.error}</Label>;
+      facet = <div>{this.props.facet.error}</div>;
     } else {
       for (const FacetComponent of this.FacetComponents) {
         if (FacetComponent.shouldRender(this.props)) facet = <FacetComponent {...this.props} />;

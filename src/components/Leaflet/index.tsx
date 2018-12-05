@@ -1,15 +1,11 @@
 //external dependencies
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-const parse = require("wellknown");
 import * as getClassName from "classnames";
-// import {Table,Button} from 'react-bootstrap';
 //import own dependencies
-// import { ITerm} from '../../reducers/data'
-export namespace Leaflet {
+export declare namespace Leaflet {
   export interface Props {
     className?: string;
-    // context: Immutable.List<N3.Statement>;
     values: string[];
   }
 }
@@ -55,7 +51,7 @@ if (!__SERVER__) {
   };
 }
 
-const styles = require("./style.scss");
+import * as styles from "./style.module.scss"
 
 //used for e.g. IRIs and graphnames
 class Leaflet extends React.PureComponent<Leaflet.Props, any> {

@@ -3,21 +3,18 @@ import * as React from "react";
 import * as getClassNames from "classnames";
 // import * as UriJs from "urijs";
 import * as N3 from "n3";
-import * as Immutable from 'immutable'
-import * as nTriply from '@triply/triply-node-utils/build/src/nTriply'
 //import own dependencies
 // import {getLabel,State as LabelsState,fetchLabel} from '../../reducers/labels'
 import { ResourceDescriptionSection } from "../";
-import Tree from '../../helpers/Tree'
 import {getLabel, getWidgets,WidgetConfig,getStatementsAsTree} from '../../reducers/statements'
 
 
-const styles = require("./style.scss");
-namespace ResourceDescription {
+import * as styles from "./style.module.scss"
+declare namespace ResourceDescription {
   export interface Props {
     className?: string;
     forIri: string;
-    statements: nTriply.Statements,
+    statements: N3.Quad[],
     fetchingMatchingIris: boolean
     selectedClass: string
   }
@@ -41,8 +38,8 @@ class ResourceDescription extends React.PureComponent<ResourceDescription.Props,
       [className]: !!className,
       [styles.overlay]: fetchingMatchingIris
     };
-
-    const tree=getStatementsAsTree({value: forIri, termType:'iri'}, statements);
+    const iriTerm = N3.DataFactory.namedNode(forIri)
+    const tree=getStatementsAsTree(iriTerm, statements);
     const rootWidget = getWidgets(tree);
     const {label, ...widget} = rootWidget;
     return (
@@ -52,7 +49,7 @@ class ResourceDescription extends React.PureComponent<ResourceDescription.Props,
           <div className={styles.iri}>
             <a href={forIri} target="_blank" rel="noopener noreferrer">
               {
-                label || getLabel(forIri,tree)
+                label || getLabel(iriTerm,tree)
               }
             </a>
           </div>

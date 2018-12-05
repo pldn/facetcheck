@@ -8,8 +8,7 @@ import * as Immutable from 'immutable'
 import { TermLink, TermLiteral} from "../";
 import Tree from '../../helpers/Tree'
 import {RenderConfiguration,getLabel} from  '../../reducers/statements'
-import * as nTriply from '@triply/triply-node-utils/build/src/nTriply'
-export namespace Term {
+export declare namespace Term {
   export interface Props {
     className?: string;
     value: Tree;
@@ -21,14 +20,14 @@ export namespace Term {
   }
 }
 
-const styles = require("./style.scss");
+import * as styles from "./style.module.scss"
 class Term extends React.PureComponent<Term.Props, any> {
   render() {
     const {value, className, label,config,tree } = this.props;
     const term = this.props.value.getTerm()
     // if (TermGeo.acceptsTerm(term, resourceContext)) return <TermGeo term={term} context={resourceContext} />;
     // if (TermLink.acceptsTerm(term, resourceContext)) return <TermLink className={className} iri={term} label={label} />;
-    if (term.termType=== 'literal') {
+    if (term.termType=== 'Literal') {
       return (
         <TermLiteral
         selectedClass={this.props.selectedClass}
@@ -38,7 +37,7 @@ class Term extends React.PureComponent<Term.Props, any> {
         />
       );
     } else {
-      return <TermLink className={className} value={value} label={label || getLabel(term.value, tree)} />
+      return <TermLink className={className} value={value} label={label || getLabel(term, tree)} />
     }
   }
 }

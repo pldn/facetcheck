@@ -1,0 +1,123 @@
+@import "../../theme/bootstrap.overrides/variables.scss";
+@import "../../theme/bootstrap.overrides/mixins/_buttons.scss";
+@import "../Nav/vars.scss";
+.app {
+  height: 100%; //to allow space for a vertical menu bar
+  // position:relative;
+}
+
+.navbar {
+  padding: 0 10px;
+  height: $navbar-height;
+  background-color: rgba(255, 255, 255, 0.87);
+  box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 2px 1px -1px rgba(0, 0, 0, 0.12);
+  .no-rgba & {
+    background-color: white;
+  }
+  top: 0;
+  right: 0;
+  left: 0;
+  border-width: 0 0 1px;
+  position: fixed;
+  z-index: 1030;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  height: 100%;
+
+  img {
+    max-height: 80%;
+    width: initial;
+  }
+}
+
+.navBrand,
+.separator {
+  color: $custom3;
+  &:hover,
+  &:active,
+  &:focus {
+    color: $custom3;
+  }
+  text-decoration: inherit;
+}
+
+.separator {
+  padding: 0px 10px;
+}
+
+.appContent {
+  position: absolute;
+  overflow: auto;
+  top: $navbar-height;
+  right: 0;
+  bottom: 0;
+  transition: left $animateDuration cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.brandWrapper {
+  // float: left;
+  // font-size: 19px;
+  // line-height: 21px;
+
+  // display: flex;
+  // justify-content: center;
+  // a,
+  // span {
+  //   display: flex;
+  //   align-items: center;
+  // }
+}
+
+@keyframes overlayLeave {
+  0% {
+    right: 0;
+    bottom: 0;
+  }
+  99% {
+    opacity: 0;
+  }
+  100% {
+    right: 100%;
+    bottom: 100%;
+  }
+}
+
+.overlay {
+  background-color: $custom6;
+  opacity: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 100%;
+  bottom: 100%;
+  z-index: 40; //should be less than ds panel
+  transition: opacity $animateDuration ease;
+}
+
+:global(.toggled) .overlay {
+  right: 0;
+  bottom: 0;
+  opacity: 0.4;
+}
+
+@media #{$showCollapsableOnSize} {
+  //if panel is toggled, and window is resized (larger). still make sure to hide verlay
+  :global(.toggled) .overlay {
+    right: 100%;
+    bottom: 100%;
+    opacity: 0;
+  }
+}
+
+//use global style, so we can use this in other components
+.panel {
+  //position is taken care of by component itself
+  width: $panelWidth;
+}
+
+.appContent {
+  left: $panelWidth;
+}

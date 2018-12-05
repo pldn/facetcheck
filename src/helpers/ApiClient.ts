@@ -1,31 +1,28 @@
 //external dependencies
 import * as superagent from "superagent";
 import * as _ from "lodash";
-import * as N3 from 'n3'
-import * as NTriply from '@triply/triply-node-utils/build/src/nTriply'
+import * as N3 from "n3";
 //import own dependencies
-import {CONFIG} from '../facetConf'
-import SparqlJson from './SparqlJson'
+import { CONFIG } from "../facetConf";
+import SparqlJson from "./SparqlJson";
 import * as parseLinkHeader from "parse-link-header";
 
 // const config = getConfig();
 // declare var __SERVER__: boolean;
 // const methods = ['get', 'post', 'put', 'patch', 'del'];
-type Query  = {[key:string]:string}
-const getQueryArgs = ():Query => {
+type Query = { [key: string]: string };
+const getQueryArgs = (): Query => {
   if (!window || !window.location || !window.location.search) {
-    return { };
+    return {};
   }
-  const query = window.location.search
+  const query = window.location.search;
 
-  return (/^[?#]/.test(query) ? query.slice(1) : query)
-    .split('&')
-    .reduce<Query>((params, param) => {
-      let [ key, value ] = param.split('=');
-      params[key] = value ? decodeURIComponent(value.replace(/\+/g, ' ')) : '';
-      return params;
-    }, { });
-}
+  return (/^[?#]/.test(query) ? query.slice(1) : query).split("&").reduce<Query>((params, param) => {
+    let [key, value] = param.split("=");
+    params[key] = value ? decodeURIComponent(value.replace(/\+/g, " ")) : "";
+    return params;
+  }, {});
+};
 export interface Links extends parseLinkHeader.Links {
   next: parseLinkHeader.Link;
   first: parseLinkHeader.Link;
@@ -60,13 +57,12 @@ export interface RequestArguments {
   isForm?: boolean;
 }
 interface RunningRequests {
-  [reqTag: string]: { [uuid: string]: superagent.Request<any> };
+  [reqTag: string]: { [uuid: string]: superagent.Request };
 }
 
 export default class ApiClient {
   private static requests: RunningRequests = {};
   // private request: Request;
-
 
   formatUrl(urlOrPath: string) {
     if (!urlOrPath) return "";
@@ -78,7 +74,7 @@ export default class ApiClient {
     return "/_api" + adjustedPath;
   }
 
-  private addRequestReference(tag: string, request: superagent.Request<any>) {
+  private addRequestReference(tag: string, request: superagent.Request) {
     if (tag) {
       if (!ApiClient.requests[tag]) ApiClient.requests[tag] = {};
       const uuid = _.uniqueId();
@@ -112,18 +108,18 @@ export default class ApiClient {
         }
         const query = getQueryArgs();
         if (query.endpoint) {
-          requestTo = query.endpoint
+          requestTo = query.endpoint;
         } else if (args.endpoint) {
           requestTo = args.endpoint;
         } else {
-          requestTo = CONFIG.endpoint.url
+          requestTo = CONFIG.endpoint.url;
           if (CONFIG.endpoint.token) {
-            args.headers["Authorization"] = "Bearer " + CONFIG.endpoint.token
+            args.headers["Authorization"] = "Bearer " + CONFIG.endpoint.token;
           }
         }
       }
 
-      const request: superagent.Request<any> = superagent[args.method](requestTo);
+      const request: superagent.Request = superagent[args.method](requestTo);
       const uuid = this.addRequestReference(args.requestTag, request);
       // console.info(requestTo);
       if (args.query) {
@@ -131,7 +127,6 @@ export default class ApiClient {
       }
       if (args.headers) {
         for (var h in args.headers) {
-
           request.set(h, args.headers[h]);
         }
       }
@@ -144,9 +139,6 @@ export default class ApiClient {
         _.forEach(args.files, function(val, key) {
           request.attach(key, <any>val);
         });
-      }
-      if (args.onProgress) {
-        request.on("progress", args.onProgress);
       }
       if (args.body) {
         request.send(args.body);
@@ -174,19 +166,19 @@ export default class ApiClient {
 
       request.end((err: Error, res: superagent.Response) => {
         const getBody = (res: superagent.Response) => {
-          if (!res) return undefined
+          if (!res) return undefined;
           if (res.body) return res.body;
           if (res.text) {
-            return res.text
+            return res.text;
           }
-          return undefined
-        }
+          return undefined;
+        };
         this.removeRequestReference(args.requestTag, uuid);
 
         const body = getBody(res);
         if (err || !res) return reject(formatError(err, body));
         if (args.sparqlSelect) {
-          return resolve(<any>new SparqlJson(body))
+          return resolve(<any>new SparqlJson(body));
         }
         const meta = {
           status: res.status,
@@ -194,12 +186,10 @@ export default class ApiClient {
           req: request
         };
 
-        return resolve(
-          <any>{
-            body:(args.sparqlConstruct? N3.Parser().parse(body).map(s => NTriply.n3ToNtriply(s)): body),
-            meta
-          }
-        );
+        return resolve(<any>{
+          body: args.sparqlConstruct ? (<any>N3).Parser().parse(body) : body,
+          meta
+        });
       });
     });
   }

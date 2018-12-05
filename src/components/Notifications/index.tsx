@@ -4,14 +4,14 @@ import { spring, TransitionMotion, presets } from "react-motion";
 import { StateInterface as NotificationState, removeNotification } from "../../reducers/notifications";
 import { Notification } from "../";
 
-export namespace Notifications {
+export declare namespace Notifications {
   export interface Props {
     notifications: NotificationState;
     closeHandler: typeof removeNotification;
   }
 }
 
-import * as styles from "./style.scss";
+import * as styles from "./style.module.scss";
 export default class Notifications extends React.PureComponent<Notifications.Props, any> {
   /**
   The only way to both animate the notifications, -and- allow for dynamic notification heights
@@ -47,7 +47,7 @@ export default class Notifications extends React.PureComponent<Notifications.Pro
         <TransitionMotion
           willLeave={this.willLeave}
           willEnter={this.willEnter}
-          styles={notifications.toArray().map(notification => ({
+          styles={notifications.valueSeq().toArray().map(notification => ({
             key: notification.notificationKey,
             style: {
               maxHeight: spring(10000, presets.noWobble),

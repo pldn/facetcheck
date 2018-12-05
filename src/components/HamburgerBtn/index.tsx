@@ -11,7 +11,7 @@ export interface IHamburgerBtnProps {
   onClick?: React.MouseEventHandler<any>;
   active?: boolean;
 }
-import * as styles from "./style.scss";
+import * as styles from "./style.module.scss";
 
 const HamburgerBtn: React.StatelessComponent<IHamburgerBtnProps> = (props: IHamburgerBtnProps) => {
   const { className, title, onClick } = props;

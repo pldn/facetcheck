@@ -1,17 +1,19 @@
 //external dependencies
 import * as React from "react";
 //import own dependencies
-import { ResourceDescription, Button } from "../../components";
+import { ResourceDescription, Button,Alert } from "../../components";
 import * as getClassName from "classnames";
 import { connect } from "react-redux";
 import { GlobalState } from "../../reducers";
 import { getMatchingIris, FacetState } from "../../reducers/facets";
-import { Alert } from "react-bootstrap";
-import { ResourceDescriptions, Errors, getStatementsAsTree } from "../../reducers/statements";
+import { ResourceDescriptions, Errors } from "../../reducers/statements";
 import { ErrorPage } from "../";
-namespace Home {
+declare namespace Home {
   export interface DispatchProps {
     showMore: typeof getMatchingIris;
+  }
+  export interface OwnProps{
+
   }
   export interface PropsFromState {
     resourceDescriptions: ResourceDescriptions;
@@ -31,7 +33,7 @@ namespace Home {
   export type Props = DispatchProps & PropsFromState;
 }
 
-const styles = require("./style.scss");
+import * as styles from "./style.module.scss"
 
 // @(connect as any)(mapStateToProps, {getMatchingIris,getResourceDescription,fetchLabel,fetchShapes})
 class Home extends React.PureComponent<Home.Props, Home.State> {
@@ -40,7 +42,8 @@ class Home extends React.PureComponent<Home.Props, Home.State> {
     if (this.props.resourceDescriptions.size === 0 && this.props.resourceDescriptionErrors.size === 0) {
       if (this.props.fetchingResources) {
         return (
-            <i style={{ fontSize: 40 }} className="fa fa-cog fa-spin" />
+            // <i style={{ fontSize: 40 }} className="far fa-cog fa-spin" />
+            <i style={{ fontSize: 40 }} className="far fa-cog fa-spin" />
         );
       }
       return (
@@ -54,7 +57,7 @@ class Home extends React.PureComponent<Home.Props, Home.State> {
     if (this.props.resourceDescriptionErrors.size) {
       this.props.resourceDescriptionErrors.entrySeq().forEach(([forIri, error]) => {
         els.push(
-          <Alert key={forIri} bsStyle="danger">
+          <Alert key={forIri} severity="error">
             <pre>{error}</pre>
           </Alert>
         );
@@ -90,7 +93,8 @@ class Home extends React.PureComponent<Home.Props, Home.State> {
         <div className={getClassName(styles.home)}>{descriptions}</div>
         <div className={getClassName(styles.buttons, { [styles.hasNextPage]: this.props.hasNextPage })}>
           <Button primary disabled={this.props.loadingNextPage} onClick={this.showMore}>
-            Show more {this.props.loadingNextPage && <i className={"fa fa-cog fa-spin"} />}
+            {/* Show more {this.props.loadingNextPage && <i className={"fa fa-cog fa-spin"} />} */}
+            Show more {this.props.loadingNextPage && <i className={"far fa-cog fa-spin"} />}
           </Button>
         </div>
       </div>
@@ -98,8 +102,8 @@ class Home extends React.PureComponent<Home.Props, Home.State> {
   }
 }
 
-export default connect<GlobalState, Home.PropsFromState, Home.DispatchProps, {}>(
-  (state, ownProps) => {
+export default connect<Home.PropsFromState,Home.DispatchProps, Home.OwnProps, GlobalState>(
+  (state, _ownProps) => {
     return {
       hasNextPage: state.facets.hasNextPage,
       resourceDescriptions: state.statements.resourceDescriptions,

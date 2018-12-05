@@ -1,8 +1,5 @@
 import * as React from "react";
 import * as getClassName from "classnames";
-// import {OverlayTrigger, Tooltip} from 'react-bootstrap'
-// import {Row,Col} from 'react-bootstrap';
-// import {Link} from 'react-router'
 
 export interface IDatasetListItemProps {
   icon: string;
@@ -12,7 +9,7 @@ export interface IDatasetListItemProps {
   active?: boolean;
   onClick?: React.MouseEventHandler<any>;
 }
-const styles = require("./style.scss");
+import * as styles from "./style.module.scss"
 
 export default class DatasetListItem extends React.PureComponent<IDatasetListItemProps, any> {
   render() {

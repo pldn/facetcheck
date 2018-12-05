@@ -8,8 +8,8 @@
 // import * as Immutable from 'immutable';
 // import {Paths, getLabel} from '../../reducers/statements'
 // import Tree from '../../helpers/Tree'
-// const styles = require("./style.scss");
-// namespace Statements {
+// import * as styles from "./style.module.scss"
+// declare namespace Statements {
 //   export interface GroupedStatements {
 //     [predicate: string]: string[];
 //   }

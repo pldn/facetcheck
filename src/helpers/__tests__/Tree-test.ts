@@ -5,22 +5,20 @@ import * as N3 from 'n3'
 import * as fs from 'fs-extra'
 import * as path from 'path'
 import Tree from '../Tree'
-import { getAsString, prefix} from '../../prefixes'
+import { prefix} from '../../prefixes'
 import {getPrefixes} from '../../facetConf'
-import {default as Config} from '../../config/config'
-import {Term, n3ToNtriply} from '@triply/triply-node-utils/build/src/nTriply'
 
-async function getTree(fromFile:string, forStatement:Term) {
+async function getTree(fromFile:string, forStatement:N3.Term) {
   const string = await fs.readFile(path.resolve(__dirname, 'data', fromFile), 'utf8')
-  const statements = N3.Parser().parse(string).map(s => n3ToNtriply(s));
+  const statements:N3.Quad[] = (<any>N3).Parser().parse(string);
   return Tree.fromStatements(forStatement,statements)
 }
-describe.only("Tree", function() {
+describe("Tree", function() {
   var pdokTree:Tree
   var geosoupTree:Tree
   before(async function() {
-    pdokTree = await getTree('pdok_test.nt',{value: 'https://data.pdok.nl/cbs/2015/id/buurt/BU01060710', termType:'iri'})
-    geosoupTree = await getTree('geosoup.ttl',{value: 'https://cultureelerfgoed.nl/id/monument/511321', termType:'iri'})
+    pdokTree = await getTree('pdok_test.nt',N3.DataFactory.namedNode('https://data.pdok.nl/cbs/2015/id/buurt/BU01060710'))
+    geosoupTree = await getTree('geosoup.ttl',N3.DataFactory.namedNode('https://cultureelerfgoed.nl/id/monument/511321'))
   });
   it("Root node should have correct shape", function() {
     expect(pdokTree.getParent()).to.be.null;

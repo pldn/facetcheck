@@ -1,0 +1,21 @@
+@import "../../theme/bootstrap.overrides/variables.scss";
+
+.container {
+  flex-grow: 1000000;
+  @media (min-width: $screen-lg-min) {
+    flex-basis: $screen-lg;
+    flex-grow: 0;
+  }
+}
+
+.flex {
+  display: flex;
+}
+
+.side {
+  flex-grow: 1;
+  flex-basis: 40px;
+  @media (max-width: $screen-sm-min) {
+    flex-basis: 0px;
+  }
+}

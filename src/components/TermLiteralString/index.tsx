@@ -12,13 +12,17 @@ class TermLiteralString extends React.PureComponent<TermLiteral.Props, any> {
 
   constructor(props: TermLiteral.Props) {
     super(props);
-    this.tags = this.parseTags(props.value.getTerm().language);
-    this.state = {
-      imageSource: this.getSource(this.tags.regionCode)
-    };
+    const term = props.value.getTerm();
+    if (term.termType === "Literal") {
+      this.tags = this.parseTags(term.language);
+      this.state = {
+        imageSource: this.getSource(this.tags.regionCode)
+      };
+    }
   }
   static shouldRender(props: TermLiteral.Props) {
-    return props.value.getTerm().datatype === "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
+    const term = props.value.getTerm();
+    return term.termType === "Literal" && term.datatypeString === "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
   }
   static WidgetName: 'LiteralString'
   getSource(regionCode: string) {
@@ -37,7 +41,7 @@ class TermLiteralString extends React.PureComponent<TermLiteral.Props, any> {
       regionCode: region && region.format()
     };
   }
-  imageError(e: any) {
+  imageError = (_e: any) => {
     this.setState({ imageSource: null });
   }
   getTitle() {
@@ -56,7 +60,7 @@ class TermLiteralString extends React.PureComponent<TermLiteral.Props, any> {
       <div>
         {imageSource &&
           <div style={{ float: "left", display: "flex", paddingTop: 4, paddingRight: 4 }}>
-            <img src={imageSource} onError={this.imageError.bind(this)} />
+            <img src={imageSource} onError={this.imageError} />
           </div>}
         <div title={this.getTitle()}>
           <TermLiteralDefault {...this.props} />

@@ -1,25 +1,23 @@
 //external dependencies
 import { createStore as _createStore, applyMiddleware, compose, Middleware, Store } from "redux";
-import { routerMiddleware } from "react-router-redux";
 import { createEpicMiddleware } from "redux-observable";
 import { rootEpic } from "../reducers";
 import createPromiseMw from "./promiseMw";
 
 //import own dependencies
-import { GlobalState, default as reducer, fromJs } from "../reducers";
+import { GlobalState, default as reducer } from "../reducers";
 // import * as History from 'history'
 import ApiClient from "../helpers/ApiClient";
 import thunk from "redux-thunk";
 declare var module: any;
 declare var window: __App.ReactWindow;
 
-export default function createStore(history: any, apiClient: ApiClient, state?: GlobalState) {
+export default function createStore(apiClient: ApiClient) {
   // Sync dispatched route actions to the history
-  const reduxRouterMiddleware = <Middleware>routerMiddleware(history);
+  const epicMw = createEpicMiddleware();
   const middleware: Middleware[] = [
     createPromiseMw(apiClient),
-    reduxRouterMiddleware,
-    createEpicMiddleware(rootEpic),
+    epicMw,
     thunk
   ];
   //we're on the client, so we can create the connection
@@ -28,14 +26,17 @@ export default function createStore(history: any, apiClient: ApiClient, state?: 
     //only include lib here, when we're not running prod mode
     const { persistState } = require("redux-devtools");
     const storeMw: any[] = [applyMiddleware(...middleware)];
-    if (window.devToolsExtension) storeMw.push(window.devToolsExtension());
+    if (window.__REDUX_DEVTOOLS_EXTENSION__) storeMw.push(window.__REDUX_DEVTOOLS_EXTENSION__());
     storeMw.push(persistState(<any>window.location.href.match(/[?&]debug_session=([^&]+)\b/)));
     finalCreateStore = (<any>compose)(...storeMw)(_createStore);
   } else {
     finalCreateStore = applyMiddleware(...middleware)(_createStore);
   }
 
-  const store: Store<GlobalState> = finalCreateStore(reducer, fromJs(state));
+  const store: Store<GlobalState> = finalCreateStore(reducer);
+
+  epicMw.run(rootEpic);
+
   //It's bad practice to use the redux '@@INIT' action to check whether redux state
   //was instantiated. So, therefore we're using out own action for this
   store.dispatch({ type: "INSTANTIATED" });

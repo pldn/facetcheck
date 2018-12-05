@@ -16,7 +16,7 @@ export interface ISvgProps {
   onClick?: React.EventHandler<React.MouseEvent<any>>;
 }
 
-const styles = require("./style.scss");
+import * as styles from "./style.module.scss"
 const Svg: React.StatelessComponent<ISvgProps> = (props: ISvgProps) => {
   const { className, src, style, imgStyle, onClick } = props;
 

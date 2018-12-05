@@ -1,12 +1,14 @@
 //external dependencies
 
 //import own dependencies
+export { default as Alert} from "./Alert";
 export { default as Ellipsis } from "./Ellipsis";
 export { default as Button} from "./Button";
 export { default as Facet } from "./Facet";
 export { default as FacetMultiSelect } from "./FacetMultiSelect";
 export { default as FacetProvinces } from "./FacetProvinces";
 export { default as FacetSlider } from "./FacetSlider";
+export { default as FlexContainer } from "./FlexContainer";
 export { default as HamburgerBtn } from "./HamburgerBtn";
 export { default as Leaflet } from "./Leaflet";
 export { default as NavIcon } from "./NavIcon";

@@ -4,7 +4,7 @@ import * as _ from "lodash";
 const parse = require("wellknown");
 
 import { TermLiteral, TermLiteralDefault } from "../";
-import * as styles from "./style.scss";
+import * as styles from "./style.module.scss";
 
 export type Coords = [number, number];
 export interface Svg {
@@ -24,7 +24,9 @@ const wkt = [
 export /* this statement implements both normal interface & static interface */
 class TermLiteralWkt extends React.PureComponent<TermLiteral.Props, any> {
   static shouldRender(props: TermLiteral.Props) {
-    return wkt.indexOf(props.value.getTerm().datatype) >= 0;
+    const term = props.value.getTerm();
+
+    return term.termType === "Literal" && wkt.indexOf(term.datatypeString) >= 0;
   }
   static WidgetName:TermLiteral.WidgetIdentifiers = 'LiteralWktSvg'
   getBorders(poly: Array<Coords>) {

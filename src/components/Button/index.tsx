@@ -3,8 +3,7 @@ import * as React from "react";
 
 import * as getClassName from "classnames";
 //import own dependencies
-import {} from "components";
-namespace Button {
+declare namespace Button {
   export interface Props extends React.HTMLProps<any> {
     href?: string;
     disabled?: boolean;
@@ -36,7 +35,7 @@ namespace Button {
   }
 }
 
-import * as styles from "./style.scss";
+import * as styles from "./style.module.scss";
 
 class Button extends React.PureComponent<Button.Props, any> {
   static defaultProps: Partial<Button.Props> = {

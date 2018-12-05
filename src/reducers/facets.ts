@@ -4,15 +4,15 @@ import * as N3 from "n3";
 import * as Immutable from "immutable";
 import ApiClient from "../helpers/ApiClient";
 import { GlobalActions, GlobalState } from "../reducers";
-import { FACETS, CLASSES,CONFIG } from "../facetConf";
-import { FacetValue,ClassConfig } from "../facetConfUtils";
+import { FACETS, CLASSES, CONFIG } from "../facetConf";
+import { FacetValue } from "../facetConfUtils";
 import * as ReduxObservable from "redux-observable";
+import { map, filter } from "rxjs/operators";
 import * as Redux from "redux";
 import { Facet as FacetComponent } from "../components";
-import {getAsString, prefix} from '../prefixes'
-import {getPrefixes, getPageSize} from '../facetConf'
+import { getPrefixes, getPageSize } from "../facetConf";
 import SparqlBuilder from "../helpers/SparqlBuilder";
-import * as sparqljs from "sparqljs";
+import * as sparqljs from 'sparqljs'
 import { default as SparqlJson } from "../helpers/SparqlJson";
 // import {Actions as FacetActions} from './facets'
 //import own dependencies
@@ -33,7 +33,7 @@ export enum Actions {
   // GET_FACET_CONFIG_FAIL = "facetcheck/facets/GET_FACET_CONFIG_FAIL" as any
 }
 
-export type Statement = N3.Statement;
+export type Statement = N3.Quad;
 export type Statements = Immutable.List<Statement>;
 
 // export type FacetValueOptions = Partial<FacetProvinces.Options & FacetMultiSelect.Options & FacetSlider.Options>;
@@ -45,8 +45,9 @@ export interface FacetProps {
   //so no use using an immutable model here
   optionList: FacetValue[];
   optionObject: { [key: string]: FacetValue | number };
+  // optionObject: { [key: string]: FacetValue  };
   selectedObject: { [key: string]: number };
-  error:string
+  error: string;
 }
 export var Facet = Immutable.Record<FacetProps>(
   {
@@ -55,35 +56,33 @@ export var Facet = Immutable.Record<FacetProps>(
     optionList: null,
     optionObject: null,
     selectedObject: null,
-    error:null
+    error: null
   },
   "facetValues"
 );
 export type Facet = Immutable.Record.Inst<FacetProps>;
 
-var defaultClass:string;
+var defaultClass: string;
 if (CONFIG.defaultClass) {
   if (!CLASSES.find(c => c.iri === CONFIG.defaultClass)) {
-    console.warn(`Cannot find class configuration for class that is set as default (${CONFIG.defaultClass})`)
-    defaultClass = CLASSES[0].iri
+    console.warn(`Cannot find class configuration for class that is set as default (${CONFIG.defaultClass})`);
+    defaultClass = CLASSES[0].iri;
   } else {
-    defaultClass = CONFIG.defaultClass
+    defaultClass = CONFIG.defaultClass;
   }
 } else {
-  defaultClass = CLASSES[0].iri
-
+  defaultClass = CLASSES[0].iri;
 }
 
-// const defaultClass = _.values<ClassConfig>(CLASSES).find((val) => val.default)
 export var StateRecord = Immutable.Record(
   {
     matchingIris: Immutable.List<string>(),
-    facetLabels: Immutable.Map<string,string>(),
+    facetLabels: Immutable.Map<string, string>(),
     fetchResources: 0,
     nextPageOffset: 0,
     hasNextPage: false,
     updateFacetInfoQueue: Immutable.List<string>(),
-    selectedClass: defaultClass ,
+    selectedClass: defaultClass,
     facets: Immutable.OrderedMap<string, Facet>()
   },
   "facets"
@@ -99,40 +98,40 @@ export interface Action extends GlobalActions<Actions> {
   result?: {
     optionList?: FacetProps["optionList"];
     optionObject?: FacetProps["optionObject"];
-    iris?:string[];
-    labelKeys?: {[key:string]:string}
-    hasNextPage?:boolean
+    iris?: string[];
+    labelKeys?: { [key: string]: string };
+    hasNextPage?: boolean;
   };
-  offset?:number
+  offset?: number;
   facetQueue?: string[];
   facetValueKey?: string;
   checked?: boolean;
   selectedFacetObject?: FacetProps["selectedObject"];
-  sync?:boolean
+  sync?: boolean;
 }
 
 export function reducer(state = initialState, action: Action) {
   switch (action.type) {
     case Actions.GET_MATCHING_IRIS:
-      var result =  state.update("fetchResources", num => num + 1).set('nextPageOffset', action.offset)
-      if (!action.offset) result = result.set('matchingIris', Immutable.List<string>())
+      var result = state.update("fetchResources", num => num + 1).set("nextPageOffset", action.offset);
+      if (!action.offset) result = result.set("matchingIris", Immutable.List<string>());
 
       return result;
     case Actions.GET_MATCHING_IRIS_FAIL:
       return state.update("fetchResources", num => num - 1);
     case Actions.GET_MATCHING_IRIS_SUCCESS:
-      var result =  state
+      var result = state
         .update("fetchResources", num => num - 1)
-        .set('hasNextPage', action.result.hasNextPage)
+        .set("hasNextPage", action.result.hasNextPage)
         .update("matchingIris", iris => iris.concat(action.result.iris));
       if (action.result.hasNextPage) {
-        var result = result.update('nextPageOffset', offset => offset += action.result.iris.length)
+        var result = result.update("nextPageOffset", offset => (offset += action.result.iris.length));
       }
       return result;
     case Actions.SET_SELECTED_CLASS:
-      return state.set("nextPageOffset", 0).set("selectedClass",action.className);
+      return state.set("nextPageOffset", 0).set("selectedClass", action.className);
     case Actions.SET_FACET_VALUE:
-      return state.set('nextPageOffset', 0).update("facets", facet => {
+      return state.set("nextPageOffset", 0).update("facets", facet => {
         return facet.update(action.facetName, new Facet(), _vals => {
           return _vals.withMutations(vals => {
             if (action.facetValueKey) {
@@ -150,17 +149,18 @@ export function reducer(state = initialState, action: Action) {
         });
       });
     case Actions.REFRESH_FACETS:
-      return state.set('facets', Immutable.OrderedMap())//clear old facet configs
-        .set('matchingIris', Immutable.List())//clear old facet configs
+      return state
+        .set("facets", Immutable.OrderedMap()) //clear old facet configs
+        .set("matchingIris", Immutable.List()) //clear old facet configs
         .set("updateFacetInfoQueue", Immutable.List(action.facetQueue));
     case Actions.REFRESH_FACETS_SUCCESS:
-      return state.update('facetLabels', map => {
-        return map.merge(action.result.labelKeys)
-      })
+      return state.update("facetLabels", map => {
+        return map.merge(action.result.labelKeys);
+      });
     case Actions.FETCH_FACET_PROPS:
       return state.update("updateFacetInfoQueue", list => {
         const i = list.indexOf(action.facetName);
-        if (i >= 0) return list.delete(list.indexOf(action.facetName))
+        if (i >= 0) return list.delete(list.indexOf(action.facetName));
         return list;
       });
     case Actions.FETCH_FACET_PROPS_FAIL:
@@ -175,24 +175,25 @@ export function reducer(state = initialState, action: Action) {
       }
       const facetSorting = getFacetsForClass(getSelectedClass(state));
       return state.update("facets", facet => {
-        return facet.update(action.facetName, new Facet(), _vals => {
-          return _vals.withMutations(vals => {
-            if (action.type === Actions.FETCH_FACET_PROPS_FAIL) {
-
-              vals.set('error', action.message)
-            }
-            vals.set("iri", action.facetName);
-            if (action.result && action.result.optionList) {
-              vals.set("optionList", action.result.optionList);
-            }
-            if (action.result && action.result.optionObject) {
-              vals.set("optionObject", action.result.optionObject);
-            }
-            if (action.error) vals.set('error',action.error)
+        return facet
+          .update(action.facetName, new Facet(), _vals => {
+            return _vals.withMutations(vals => {
+              if (action.type === Actions.FETCH_FACET_PROPS_FAIL) {
+                vals.set("error", action.message);
+              }
+              vals.set("iri", action.facetName);
+              if (action.result && action.result.optionList) {
+                vals.set("optionList", action.result.optionList);
+              }
+              if (action.result && action.result.optionObject) {
+                vals.set("optionObject", action.result.optionObject);
+              }
+              if (action.error) vals.set("error", action.error);
+            });
+          })
+          .sortBy((val, key) => {
+            return facetSorting.indexOf(key);
           });
-        }).sortBy((val,key) => {
-          return facetSorting.indexOf(key)
-        });
       });
     default:
       return state;
@@ -200,58 +201,66 @@ export function reducer(state = initialState, action: Action) {
 }
 
 export type Action$ = ReduxObservable.ActionsObservable<any>;
-// export type Action$ = ReduxObservable.ActionsObservable<any>;
 export type Store = Redux.Store<GlobalState>;
-export var epics: [(action: Action$, store: Store) => any] = [
+export var epics: Array<ReduxObservable.Epic<any,Action,GlobalState>> = [
   //update matching iris when classes change
-  (action$: Action$, store: Store) => {
-    return action$.ofType(Actions.SET_SELECTED_CLASS).map((action: Action) => {
-      //facet settings might need removing before fetching the matching iris. So make sure we don't call one before the other
-      // store.dispatch(getMatchingIris(store.getState()));
-      const state = store.getState();
-      return store.dispatch(refreshFacets(state.facets.facetLabels, action.className));
-    });
+  (action$, store) => {
+    return action$.pipe(
+      ReduxObservable.ofType(Actions.SET_SELECTED_CLASS),
+      map((action) => {
+        //facet settings might need removing before fetching the matching iris. So make sure we don't call one before the other
+        // store.dispatch(getMatchingIris(store.getState()));
+        return refreshFacets(store.value.facets.facetLabels, action.className)
+      })
+    );
   },
   //update matching iris when facets change
-  (action$: Action$, store: Store) => {
-    return action$.ofType(Actions.SET_FACET_VALUE).map((action: Action) => {
-      const facetState = store.getState().facets;
-      return store.dispatch(getMatchingIris(facetState.facets,facetState.selectedClass, facetState.nextPageOffset));
-    });
+  (action$, store) => {
+    return action$.pipe(
+      ReduxObservable.ofType(Actions.SET_FACET_VALUE),
+      map((_action) => {
+        return getMatchingIris(store.value.facets.facets, store.value.facets.selectedClass, store.value.facets.nextPageOffset);
+      })
+    );
   },
   //update matching iris when facets are refreshed (this triggers new resourcedescriptions as well)
-  (action$: Action$, store: Store) => {
-    return action$.ofType(Actions.REFRESH_FACETS).map((action: Action) => {
-      const facetState = store.getState().facets;
-      return store.dispatch(getMatchingIris(facetState.facets,facetState.selectedClass, facetState.nextPageOffset));
-    });
+  (action$, store) => {
+    return action$.pipe(
+      ReduxObservable.ofType(Actions.REFRESH_FACETS),
+      map((_action: Action) => {
+        return getMatchingIris(store.value.facets.facets, store.value.facets.selectedClass, store.value.facets.nextPageOffset);
+      })
+    );
   },
 
   //update facet information when facets are added to the queue
-  (action$: Action$, store: Store) => {
-    return action$.ofType(Actions.REFRESH_FACETS).map((action: Action) => {
-      return store.dispatch(getFacetProps(store.getState(), action.facetQueue[0]));
-    });
+  (action$, store) => {
+    return action$.pipe(
+      ReduxObservable.ofType(Actions.REFRESH_FACETS),
+      map((action: Action) => {
+        return getFacetProps(store.value, action.facetQueue[0]);
+      })
+    );
   },
   //update facet information when another one finished
-  (action$: Action$, store: Store) => {
-    return action$
-      .ofType(Actions.FETCH_FACET_PROPS_SUCCESS)
-      .filter(() => {
-        return !!store.getState().facets.updateFacetInfoQueue.size;
+  (action$, store) => {
+    return action$.pipe(
+      ReduxObservable.ofType(Actions.FETCH_FACET_PROPS_SUCCESS),
+      filter(() => {
+        return !!store.value.facets.updateFacetInfoQueue.size;
+      }),
+      map((_action: Action) => {
+        return getFacetProps(store.value, store.value.facets.updateFacetInfoQueue.first())
       })
-      .map((action: Action) => {
-        const state = store.getState();
-        return store.dispatch(getFacetProps(state, state.facets.updateFacetInfoQueue.first()));
-      });
+    );
   }
 ];
-export function getFacetsForClass(selectedClass:string):string[] {
+export function getFacetsForClass(selectedClass: string): string[] {
   const classConf = CLASSES.find(c => c.iri === selectedClass);
-  if (!classConf) throw new Error('No class definition found for ' + selectedClass)
+  if (!classConf) throw new Error("No class definition found for " + selectedClass);
   return classConf.facets;
 }
-export function facetsToQuery(facets: FacetState['facets'], selectedClass:string, nextPageOffset:number) {
+export function facetsToQuery(facets: FacetState["facets"], selectedClass: string, nextPageOffset: number) {
   const sparqlBuilder = SparqlBuilder.get(getPrefixes());
   sparqlBuilder
     .vars("?_r")
@@ -272,11 +281,12 @@ export function facetsToQuery(facets: FacetState['facets'], selectedClass:string
     throw new Error(`Class ${selectedClass} does not have any configured facets`);
   }
   if (classConf.classToQueryPattern) {
-    sparqlBuilder.addQueryPatterns([SparqlBuilder.getQueryPattern('{ ' + classConf.classToQueryPattern(selectedClass) + '}')])
+    sparqlBuilder.addQueryPatterns([
+      SparqlBuilder.getQueryPattern("{ " + classConf.classToQueryPattern(selectedClass) + "}")
+    ]);
   } else {
     sparqlBuilder.hasClasses(selectedClass);
   }
-
 
   /**
    * Get facets we might need to integrate in this query
@@ -287,24 +297,28 @@ export function facetsToQuery(facets: FacetState['facets'], selectedClass:string
     return !!_.size(facetsValues.selectedObject) || !!facetsValues.selectedFacetValues.size;
   });
 
-  var queryPatterns: sparqljs.QueryPattern[] = [];
+  var queryPatterns: sparqljs.Pattern[] = [];
   for (const facetKey of facetsToCheck) {
     const facetConfig = FACETS[facetKey];
     const facetIri = facetKey;
     const facetsValues = facets.get(facetKey);
     var bgp = "";
     if (facetsValues.selectedFacetValues.size) {
-      const listOfFacetValues = facetsValues.optionList
-        ? facetsValues.optionList
-        : _.values<FacetValue>(facetsValues.optionObject);
+      var listOfFacetValues:Array<FacetValue | number> = facetsValues.optionList
+      // if (facetsValues.optionList) {
+      //   listOfFacetValues = facetsValues.optionList
+      // }
+      if (!listOfFacetValues) {
+        listOfFacetValues = _.values<FacetValue | number>(facetsValues.optionObject);
+      }
       const pattern = facetConfig.facetToQueryPatterns(
         facetIri,
-        listOfFacetValues.filter(v => facetsValues.selectedFacetValues.has(v.value))
+        listOfFacetValues.filter((v:any) => facetsValues.selectedFacetValues.has(v.value)) as any
       );
       if (pattern && pattern.length) bgp += `{ ${pattern} }`;
     } else {
       //just pass the object
-      const pattern = facetConfig.facetToQueryPatterns(facetIri,facetsValues.selectedObject);
+      const pattern = facetConfig.facetToQueryPatterns(facetIri, facetsValues.selectedObject);
       if (pattern && pattern.length) {
         bgp += "{" + pattern + "}";
       }
@@ -315,14 +329,16 @@ export function facetsToQuery(facets: FacetState['facets'], selectedClass:string
   }
 
   sparqlBuilder.addQueryPatterns(queryPatterns);
-  console.groupCollapsed('Querying for matching IRIs');console.info(sparqlBuilder.toString());console.groupEnd()
+  console.groupCollapsed("Querying for matching IRIs");
+  console.info(sparqlBuilder.toString());
+  console.groupEnd();
   return sparqlBuilder.toString();
 }
 
 export function setSelectedClass(className: string): Action {
   return {
     type: Actions.SET_SELECTED_CLASS,
-    className: className,
+    className: className
   };
 }
 //
@@ -346,7 +362,7 @@ export function setSelectedObject(facetProp: string, facetObject: FacetProps["se
 }
 
 var lastExecutedQuery: string;
-export function getMatchingIris(facets: FacetState['facets'], selectedClass:string, nextPageOffset:number): any {
+export function getMatchingIris(facets: FacetState["facets"], selectedClass: string, nextPageOffset: number): any {
   try {
     const query = facetsToQuery(facets, selectedClass, nextPageOffset);
     if (lastExecutedQuery === query) {
@@ -364,74 +380,80 @@ export function getMatchingIris(facets: FacetState['facets'], selectedClass:stri
           })
           .then(sparql => {
             return {
-              iris: sparql.getValuesForVar('_r').slice(0, getPageSize()),
+              iris: sparql.getValuesForVar("_r").slice(0, getPageSize()),
               hasNextPage: sparql.getValues().length > getPageSize()
             };
           })
     };
-  } catch(e) {
-    console.error('Failed querying for matching IRIs', e);
+  } catch (e) {
+    console.error("Failed querying for matching IRIs", e);
     return {
       type: Actions.GET_MATCHING_IRIS_FAIL,
-      error: 'Failed to query for resource that match these facets: ' + e.message
-    }
+      error: "Failed to query for resource that match these facets: " + e.message
+    };
   }
 }
-export function getSelectedClass(facetState:FacetState ):string {
-  return facetState.selectedClass
+export function getSelectedClass(facetState: FacetState): string {
+  return facetState.selectedClass;
 }
 
-export function refreshFacets(facetLabels: FacetState['facetLabels'], forClass: string): Action {
+export function refreshFacets(facetLabels: FacetState["facetLabels"], forClass: string): Action {
   try {
-    if (!forClass) throw new Error('No class is selected. Either no default class is selected in the class config, or something else is wrong')
+    if (!forClass)
+      throw new Error(
+        "No class is selected. Either no default class is selected in the class config, or something else is wrong"
+      );
     var facets: string[] = [];
 
     const classConf = CLASSES.find(c => c.iri === forClass);
     if (!classConf) {
       throw new Error("Could not find class config for " + forClass);
     }
-    var facets: string[] = classConf.facets
+    var facets: string[] = classConf.facets;
     if (!facets.length) {
-      throw new Error(`Class ${forClass} does not have any configured facets`)
+      throw new Error(`Class ${forClass} does not have any configured facets`);
     }
-    const fetchLabelsFor:string[] = facets.filter(f => (FACETS[f] && !( 'label' in FACETS[f]) && !facetLabels.has(f)));
+    const fetchLabelsFor: string[] = facets.filter(f => FACETS[f] && !("label" in FACETS[f]) && !facetLabels.has(f));
     const getLabelQuery = () => {
-      if (fetchLabelsFor.length === 0) return 'SELECT * WHERE {?s ?p ?o} LIMIT 0'
+      if (fetchLabelsFor.length === 0) return "SELECT * WHERE {?s ?p ?o} LIMIT 0";
       return `
-      SELECT ${_.keys(fetchLabelsFor).map((k) => '?'+k).join(' ')} WHERE {
-        ${fetchLabelsFor.map((val,key) => {
-          return `OPTIONAL {
+      SELECT ${_.keys(fetchLabelsFor)
+        .map(k => "?" + k)
+        .join(" ")} WHERE {
+        ${fetchLabelsFor
+          .map((val, key) => {
+            return `OPTIONAL {
             <${val}> rdfs:label ?${key} .
-          }`
-        }).join(' ')}
-      } LIMIT 1`
-    }
+          }`;
+          })
+          .join(" ")}
+      } LIMIT 1`;
+    };
     return {
       types: [Actions.REFRESH_FACETS, Actions.REFRESH_FACETS_SUCCESS, Actions.REFRESH_FACETS_FAIL],
       facetQueue: _.uniq(facets),
       promise: (client: ApiClient) =>
-      client
-      .req<any, SparqlJson>({
-
-        sparqlSelect: getLabelQuery()
-      })
-      .then(sparql => {
-        const vals = sparql.getValues()[0]
-        var labels:{[key:string]:string} = {}
-        fetchLabelsFor.forEach((label, key) => {
-          labels[label] = vals[key] ? vals[key].value : null
-        })
-        return {
-          labelKeys: labels
-        }
-      })
+        client
+          .req<any, SparqlJson>({
+            sparqlSelect: getLabelQuery()
+          })
+          .then(sparql => {
+            const vals = sparql.getValues()[0];
+            var labels: { [key: string]: string } = {};
+            fetchLabelsFor.forEach((label, key) => {
+              labels[label] = vals[key] ? vals[key].value : null;
+            });
+            return {
+              labelKeys: labels
+            };
+          })
     };
-  } catch(e) {
-    console.error(e)
+  } catch (e) {
+    console.error(e);
     return {
       type: Actions.REFRESH_FACETS_FAIL,
       message: e.message
-    }
+    };
   }
 }
 
@@ -451,7 +473,7 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
             optionList: facetConf.facetValues
           },
           facetName: facetConf.facetKey,
-          sync:true
+          sync: true
         };
       } else {
         return {
@@ -460,7 +482,7 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
             optionObject: facetConf.facetValues
           },
           facetName: facetConf.facetKey,
-          sync:true
+          sync: true
         } as any;
       }
     }
@@ -471,8 +493,8 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
     sparqlBuilder.hasClasses(getSelectedClass(state.facets));
 
     const sparqlString = sparqlBuilder.toString();
-    console.groupCollapsed(`Querying for ${forProp} facet values`)
-    console.info(sparqlString)
+    console.groupCollapsed(`Querying for ${forProp} facet values`);
+    console.info(sparqlString);
     console.groupEnd();
     return {
       types: [Actions.FETCH_FACET_PROPS, Actions.FETCH_FACET_PROPS_SUCCESS, Actions.FETCH_FACET_PROPS_FAIL],
@@ -480,10 +502,11 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
       promise: (client: ApiClient) =>
         client
           .req<any, SparqlJson>({
-            sparqlSelect:sparqlString
+            sparqlSelect: sparqlString
           })
           .then(sparql => {
-            if (!sparql.hasResult())  throw new Error('No SPARQL results returned when querying the facet properties of ' + forProp)
+            if (!sparql.hasResult())
+              throw new Error("No SPARQL results returned when querying the facet properties of " + forProp);
             const opts = facetComponent.getOptionsForQueryResult(sparql);
             if (Array.isArray(opts)) {
               return {
@@ -496,13 +519,12 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
             }
           })
     };
-  } catch(e) {
-    console.error(e)
+  } catch (e) {
+    console.error(e);
     return {
       type: Actions.FETCH_FACET_PROPS_FAIL,
       facetName: forProp,
-      error:<any>`Failed to fetch facet props for ${forProp} (${e.message})`
-    }
+      error: <any>`Failed to fetch facet props for ${forProp} (${e.message})`
+    };
   }
-
 }

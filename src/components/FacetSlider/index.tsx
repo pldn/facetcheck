@@ -5,7 +5,6 @@ import * as _ from "lodash";
 import { Facet, TermLiteralNumeric } from "../";
 import { Facet as GenericFacetProps } from "../../reducers/facets";
 import { FACETS } from "../../facetConf";
-import { FacetValue } from "../../facetConfUtils";
 import * as numeral from "numeral";
 const Slider = require("rc-slider");
 const createSliderWithTooltip = Slider.createSliderWithTooltip;
@@ -14,7 +13,7 @@ import { default as SparqlJson, Term } from "../../helpers/SparqlJson";
 import SparqlBuilder from "../../helpers/SparqlBuilder";
 require("numeral/locales/nl-nl");
 numeral.locale("nl-nl");
-namespace FacetSlider {
+declare namespace FacetSlider {
   //Interface that extends the generic selectedObject from the facet reducer
   export interface Options {
     min?: any;
@@ -37,7 +36,8 @@ namespace FacetSlider {
     facet: FacetProps;
   }
 }
-const styles = require("./style.scss");
+import * as styles from "./style.module.scss"
+
 @Facet.staticImplements<Facet.FacetComponent>()
 class FacetSlider extends React.PureComponent<FacetSlider.Props, FacetSlider.State> {
   static shouldRender(props: Facet.Props) {

@@ -1,13 +1,9 @@
 import * as React from "react";
 
 import * as getClassName from "classnames";
-// import {Row,Col} from 'react-bootstrap';
-// import {LinkContainer} from 'react-router-bootstrap'
-
-// import {Models} from '../../../typings-tmp/swagger'
 import { Svg } from "../";
 
-namespace NavIcon {
+declare namespace NavIcon {
   export interface Props {
     className?: string;
     clickHandler?: React.MouseEventHandler<any>;
@@ -19,7 +15,7 @@ namespace NavIcon {
     //because of their layout (e.g. adding some margins)
   }
 }
-import * as styles from "./style.scss";
+import * as styles from "./style.module.scss";
 
 class NavIcon extends React.PureComponent<NavIcon.Props, any> {
   render() {

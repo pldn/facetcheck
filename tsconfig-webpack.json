@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./webpack",
+    "module": "commonjs",
+    "target": "es5",
+    "declaration": false,
+    "noImplicitAny": false,
+    "noImplicitThis": false,
+    "noUnusedLocals": false,
+    "sourceMap": false,
+    "plugins": []
+  },
+  "include": [
+    "./webpack/*.ts"
+  ]
+}

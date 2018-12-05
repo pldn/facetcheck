@@ -3,13 +3,14 @@ import * as React from "react";
 import * as getClassName from "classnames";
 
 import { TermLiteral, TermLiteralDefault } from "../";
-import * as styles from "./style.scss";
+import * as styles from "./style.module.scss";
 
 @TermLiteral.staticImplements<TermLiteral.TermLiteralRenderer>()
 export /* this statement implements both normal interface & static interface */
 class TermLiteralBoolean extends React.PureComponent<TermLiteral.Props, any> {
   static shouldRender(props: TermLiteral.Props) {
-    return props.value.getTerm().datatype === "http://www.w3.org/2001/XMLSchema#boolean";
+    const term = props.value.getTerm();
+    return term.termType === "Literal" && term.datatypeString === "http://www.w3.org/2001/XMLSchema#boolean";
   }
   static WidgetName:TermLiteral.WidgetIdentifiers = 'LiteralBoolean'
   render() {
