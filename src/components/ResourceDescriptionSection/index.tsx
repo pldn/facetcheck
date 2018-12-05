@@ -3,11 +3,10 @@ import * as React from "react";
 import * as getClassNames from "classnames";
 // import * as UriJs from "urijs";
 import * as N3 from "n3";
-import * as Immutable from "immutable";
 //import own dependencies
 // import {getLabel,State as LabelsState,fetchLabel} from '../../reducers/labels'
 import { Term, Leaflet } from "../";
-import { getLabel, getWidgets, WidgetConfig } from "../../reducers/statements";
+import { WidgetConfig } from "../../reducers/statements";
 import { getDereferenceableLink } from "../../facetConf";
 import Tree from "../../helpers/Tree";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

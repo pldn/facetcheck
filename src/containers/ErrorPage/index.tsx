@@ -2,7 +2,7 @@
 import * as React from "react";
 
 import { Helmet } from "react-helmet";
-
+import getClassName from 'classnames'
 //import own dependencies
 import { Svg, FlexContainer } from "../../components";
 
@@ -12,7 +12,7 @@ class ErrorPage extends React.PureComponent<ErrorPage.Props, any> {
   render() {
     const { message, title } = this.props;
     return (
-      <FlexContainer className={styles.container}>
+      <FlexContainer className={getClassName(styles.container, {[this.props.className]: !!this.props.className})}>
         <Helmet title={title || "Not found"} />
         <div className={styles.iconRow}>
           <div>
@@ -31,6 +31,7 @@ declare namespace ErrorPage {
   export interface Props {
     message: string;
     title: string;
+    className?:string
   }
 }
 export default ErrorPage;

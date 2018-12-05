@@ -6,6 +6,7 @@ import * as N3 from "n3";
 //import own dependencies
 // import {getLabel,State as LabelsState,fetchLabel} from '../../reducers/labels'
 import { ResourceDescriptionSection } from "../";
+import {ErrorPage} from '../../containers'
 import {getLabel, getWidgets,WidgetConfig,getStatementsAsTree} from '../../reducers/statements'
 
 
@@ -18,13 +19,26 @@ declare namespace ResourceDescription {
     fetchingMatchingIris: boolean
     selectedClass: string
   }
+  export interface State {
+    error:string
+  }
 }
 
-class ResourceDescription extends React.PureComponent<ResourceDescription.Props, any> {
-
-
+class ResourceDescription extends React.PureComponent<ResourceDescription.Props, ResourceDescription.State> {
+  constructor(props:ResourceDescription.Props) {
+    super(props);
+    this.state = {
+      error:null
+    }
+  }
+  componentDidCatch(e: Error) {
+    this.setState({ error: e.message });
+  }
 
   render() {
+    if (this.state.error) {
+      return <ErrorPage className="whiteSink" title="Something went wrong" message={this.state.error} />;
+    }
     const {
       className,
       statements,

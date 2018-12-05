@@ -90,8 +90,8 @@ export default class TreeNode {
     if (typeof requirements === "string") return this.term.value === requirements;
     return !(
       (requirements.value && requirements.value !== this.term.value) ||
-      (requirements.language && this.term.termType === "Literal" && requirements.language !== this.term.language) ||
-      (requirements.datatype && this.term.termType === "Literal" && requirements.datatype !== this.term.datatypeString) ||
+      (requirements.language && (this.term.termType !== "Literal" || requirements.language !== this.term.language)) ||
+      (requirements.datatype && (this.term.termType !== "Literal" || requirements.datatype !== this.term.datatypeString)) ||
       (requirements.termType && requirements.termType !== this.term.termType) ||
       (requirements.filter && !requirements.filter(this.term))
     );

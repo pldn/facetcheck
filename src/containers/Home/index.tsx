@@ -51,7 +51,7 @@ class Home extends React.PureComponent<Home.Props, Home.State> {
       );
     }
   }
-  renderDescriptions() {
+  getDescriptionElements() {
     var els: any[] = [];
 
     if (this.props.resourceDescriptionErrors.size) {
@@ -76,6 +76,15 @@ class Home extends React.PureComponent<Home.Props, Home.State> {
     });
     return els;
   }
+  getTwoColDescriptionElements() {
+    const els = this.getDescriptionElements();
+    var halfLength = Math.ceil(els.length / 2);
+    return <>
+     <div className={styles.col}>{els.slice(0,halfLength)}</div>
+     <div className={styles.col}>{els.slice(halfLength, els.length)}</div>
+
+    </>
+  }
   componentDidCatch(e: Error) {
     this.setState({ error: e.message });
   }
@@ -87,10 +96,9 @@ class Home extends React.PureComponent<Home.Props, Home.State> {
 
     const fullSizeWidgets = this.renderFullSizeWidgets();
     if (fullSizeWidgets) return <div className={styles.messages}>{fullSizeWidgets}</div>
-    const descriptions = this.renderDescriptions();
     return (
       <div>
-        <div className={getClassName(styles.home)}>{descriptions}</div>
+        <div className={getClassName(styles.home)}>{this.getTwoColDescriptionElements()}</div>
         <div className={getClassName(styles.buttons, { [styles.hasNextPage]: this.props.hasNextPage })}>
           <Button primary disabled={this.props.loadingNextPage} onClick={this.showMore}>
             {/* Show more {this.props.loadingNextPage && <i className={"fa fa-cog fa-spin"} />} */}

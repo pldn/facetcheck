@@ -170,7 +170,7 @@ export function getLabel(term: N3.Term, tree: Tree): string {
   if (term.termType !== "NamedNode") return null;
   const labelStatement = tree
     .getStatements()
-    .find(s => s.predicate.value === "http://www.w3.org/2000/01/rdf-schema#label" && s.object.value === term.value);
+    .find(s => s.predicate.value === "http://www.w3.org/2000/01/rdf-schema#label" && s.subject.value === term.value);
   if (labelStatement && labelStatement.object.termType === "Literal") return labelStatement.object.value;
   const lnameInfo = getLocalNameInfo(term.value);
   if (lnameInfo.localName) {
@@ -268,7 +268,7 @@ const selectImage: SelectWidget = t => {
     .limit(5)
     .exec();
   for (const node of nodes) {
-    // console.log('found node', node)
+    // console.log('found node', node.getTerm().value)
     //this might be an image literal, or a depiction resource
     if (node.hasChildren()) {
       const label = node
@@ -296,7 +296,6 @@ const selectImage: SelectWidget = t => {
     }
   }
   if (images.length > 1) {
-    // console.log({images})
     return {
       config: { size: "scroll-horizontal" },
       children: images
@@ -337,10 +336,13 @@ const catchAll: SelectWidget = t => {
   const groupedByPred = _.groupBy(
     nodes,
     n =>
-      n.getPredicate() +
+      n.getPredicate().value +
       n
         .getParents()
-        .map(p => p.getPredicate())
+        .map(p => {
+          if (p && p.getPredicate()) return p.getPredicate().value;
+          return '';
+        })
         .join(",")
   );
   const selections: WidgetConfig[] = [];
