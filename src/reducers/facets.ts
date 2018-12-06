@@ -4,13 +4,13 @@ import * as N3 from "n3";
 import * as Immutable from "immutable";
 import ApiClient from "../helpers/ApiClient";
 import { GlobalActions, GlobalState } from "../reducers";
-import { FACETS, CLASSES, CONFIG } from "../facetConf";
-import { FacetValue } from "../facetConfUtils";
+
+import { FacetValue,FacetOptionsList, FacetOptionsObject, FacetOptionsNlProvinces } from "../facetConfUtils";
 import * as ReduxObservable from "redux-observable";
 import { map, filter } from "rxjs/operators";
 import * as Redux from "redux";
 import { Facet as FacetComponent } from "../components";
-import { getPrefixes, getPageSize } from "../facetConf";
+import { FACETS, CLASSES, CONFIG,getPrefixes, getPageSize } from "../facetConf";
 import SparqlBuilder from "../helpers/SparqlBuilder";
 import * as sparqljs from "sparqljs";
 import { default as SparqlJson } from "../helpers/SparqlJson";
@@ -49,22 +49,7 @@ export interface FacetProps {
   selectedObject: { [key: string]: number };
   error: string;
 }
-export type FacetOptionsObject = { [key: string]: FacetValue | number };
-export type FacetOptionsList = FacetValue[];
-export interface FacetOptionsNlProvinces {
-  drenthe: FacetValue;
-  flevoland: FacetValue;
-  friesland: FacetValue;
-  gelderland: FacetValue;
-  limburg: FacetValue;
-  "n-brabant": FacetValue;
-  "n-holland": FacetValue;
-  overijssel: FacetValue;
-  zeeland: FacetValue;
-  "z-holland": FacetValue;
-  utrecht: FacetValue;
-  groningen: FacetValue;
-}
+
 export var Facet = Immutable.Record<FacetProps>(
   {
     iri: null,

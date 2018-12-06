@@ -1,9 +1,4 @@
-export interface Term {
-  type: "uri" | "literal" | "bnode" | "typed-literal";
-  value: string;
-  "xml:lang": string;
-  datatype: string;
-}
+import {SparqlTerm as Term} from '../facetConfUtils'
 export type Binding = { [varName: string]: Term };
 export interface Sparql {
   head: {

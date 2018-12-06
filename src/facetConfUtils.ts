@@ -1,6 +1,34 @@
-import { Term as SparqlTerm } from "./helpers/SparqlJson";
+/**
+ * Lets try and keep the number of includes here to a bare minimum. That makes our live easier in the facetCheckConfig repo,
+ * because otherwise we'd get lots of missing typescript defs for some dependencies (that are used in facetcheck, not facetcheckConfig)
+ */
+
+export interface  SparqlTerm {
+  type: "uri" | "literal" | "bnode" | "typed-literal";
+  value: string;
+  "xml:lang": string;
+  datatype: string;
+}
+
 export type FacetTypes = "multiselect" | "slider" | "nlProvinces" | "multiselectText";
-import { FacetProps,FacetOptionsList, FacetOptionsNlProvinces,FacetOptionsObject } from "./reducers/facets";
+
+
+export type FacetOptionsObject = { [key: string]: FacetValue | number };
+export type FacetOptionsList = FacetValue[];
+export interface FacetOptionsNlProvinces {
+  drenthe: FacetValue;
+  flevoland: FacetValue;
+  friesland: FacetValue;
+  gelderland: FacetValue;
+  limburg: FacetValue;
+  "n-brabant": FacetValue;
+  "n-holland": FacetValue;
+  overijssel: FacetValue;
+  zeeland: FacetValue;
+  "z-holland": FacetValue;
+  utrecht: FacetValue;
+  groningen: FacetValue;
+}
 
 export type FacetToQueryPatterns<V> = (iri:string, values:V) => string
 export interface FacetConfigBase {
@@ -12,7 +40,7 @@ export interface FacetConfigBase {
 export interface FacetConfigMultiselect extends FacetConfigBase{
   facetType: 'multiselect',
   facetValues?:FacetOptionsList,
-  facetToQueryPatterns: FacetToQueryPatterns<FacetProps["optionList"]>
+  facetToQueryPatterns: FacetToQueryPatterns<FacetOptionsList>
 }
 export interface FacetConfigNlProvinces extends FacetConfigBase{
   facetType: 'nlProvinces',
