@@ -10,6 +10,7 @@ export { default as FacetProvinces } from "./FacetProvinces";
 export { default as FacetSlider } from "./FacetSlider";
 export { default as FlexContainer } from "./FlexContainer";
 export { default as HamburgerBtn } from "./HamburgerBtn";
+export { default as Label } from "./Label";
 export { default as Leaflet } from "./Leaflet";
 export { default as NavIcon } from "./NavIcon";
 export { default as Notification } from "./Notification";

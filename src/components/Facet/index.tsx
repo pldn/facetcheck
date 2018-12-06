@@ -8,7 +8,7 @@ import { FacetMultiSelect, FacetSlider, FacetProvinces } from "../";
 import { setSelectedFacetValue, setSelectedObject } from "../../reducers/facets";
 import { FACETS, getDereferenceableLink } from "../../facetConf";
 import { FacetTypes } from "../../facetConfUtils";
-
+import {Label} from '../'
 declare namespace Facet {
   //Hacky interface so we can define a static function in an interface
   export interface FacetComponent {
@@ -66,20 +66,24 @@ class Facet extends React.PureComponent<Facet.Props, any> {
     }
     return label
   }
+  renderError(msg:string) {
+    return <Label message={msg} severity="error"/>
+  }
+
+  getFacet() {
+    if (this.props.facet.error) return this.renderError(this.props.facet.error)
+    if (!this.props.facet) return this.renderError("No facet info found in props")
+    if (!this.props.facet.iri) return this.renderError("No iri found for facet config " + JSON.stringify(this.props))
+    if (!FACETS[this.props.facet.iri]) return this.renderError("No facet configuration found for " + this.props.facet.iri)
+
+    for (const FacetComponent of this.FacetComponents) {
+      if (FacetComponent.shouldRender(this.props)) return <FacetComponent {...this.props} />;
+    }
+
+  }
   render() {
     const { className } = this.props;
-    var facet: any;
-    if (this.props.facet.error) {
-      // facet = <Label bsStyle="danger">{this.props.facet.error}</Label>;
-      facet = <div>{this.props.facet.error}</div>;
-    } else {
-      for (const FacetComponent of this.FacetComponents) {
-        if (FacetComponent.shouldRender(this.props)) facet = <FacetComponent {...this.props} />;
-      }
-      if (!FACETS[this.props.facet.iri]) {
-        throw new Error("No facet configuration found for " + this.props.facet.iri);
-      }
-    }
+    const facet = this.getFacet();
 
     if (facet) {
       return (
@@ -89,7 +93,6 @@ class Facet extends React.PureComponent<Facet.Props, any> {
         </div>
       );
     }
-    return null;
   }
 }
 export default Facet;

@@ -1,0 +1,30 @@
+@import "../../theme/bootstrap.overrides/variables.scss";
+
+.label {
+ display: inline;
+ padding: .2em .6em .3em;
+ font-size: 75%;
+ font-weight: bold;
+ line-height: 1;
+ color: $custom3;
+ text-align: center;
+ vertical-align: baseline;
+ border-radius: .25em;
+ white-space: nowrap;
+}
+
+.error {
+ background-color: #f44336;
+
+}
+.warning {
+ background-color: $brand-warning;
+}
+
+.info {
+ background-color: $brand-info;
+}
+
+.success {
+ background-color: $brand-success;
+}
