@@ -1,4 +1,4 @@
-@import '../../theme/bootstrap.overrides/variables.scss';
+@import "../../theme/bootstrap.overrides/variables.scss";
 
 .messages {
   display: flex;
@@ -8,26 +8,23 @@
   height: 100%;
 }
 
-.home {
-  display:flex;
-  // padding: 10px;
-  width:100%;
-  .col {
-    width:100%;
-  }
-  // column-fill: auto;//causes 1 col in firefox
-}
 @media (min-width: $screen-lg-min) {
-  .home .col {
-    width: 50%
+  .home {
+    display: flex;
   }
 
   // column-count: 2;
 }
+.home {
+  width: 100%;
+  .col {
+    width: 100%;
+  }
+}
 .col {
   display: flex;
-flex-direction: column;
-align-items: center;
+  flex-direction: column;
+  align-items: center;
 }
 div.description {
   &:first-child {
@@ -39,17 +36,17 @@ div.description {
 }
 .noDescriptionWrapper {
   display: flex;
-    justify-content: center;
-    width: 100%;
-    height:100%;
-    align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  align-items: center;
 }
 .buttons {
-  display:none;
-  width:100%;
+  display: none;
+  width: 100%;
   justify-content: center;
   &.hasNextPage {
-    display:flex;
+    display: flex;
   }
-  margin-bottom: 10px
+  margin-bottom: 10px;
 }
