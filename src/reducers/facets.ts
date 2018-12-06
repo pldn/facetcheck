@@ -477,6 +477,7 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
       if (Array.isArray(facetConf.facetValues)) {
         return {
           type: Actions.FETCH_FACET_PROPS_SUCCESS,
+          facetName: forProp,
           result: {
             optionList: facetConf.facetValues
           },
@@ -485,11 +486,12 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
       } else {
         return {
           type: Actions.FETCH_FACET_PROPS_SUCCESS,
+          facetName: forProp,
           result: {
             optionObject: facetConf.facetValues
           },
           sync: true
-        } as any;
+        };
       }
     }
     const sparqlBuilder = SparqlBuilder.fromQueryString(FACETS[forProp].getFacetValuesQuery(forProp));
