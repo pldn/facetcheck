@@ -8,18 +8,21 @@
   height: 100%;
 }
 
-@media (min-width: $screen-lg-min) {
-  .home {
-    display: flex;
-  }
 
-  // column-count: 2;
-}
 .home {
   width: 100%;
   .col {
     width: 100%;
   }
+}
+@media (min-width: $screen-lg-min) {
+  .home {
+    display:flex;
+    .col {
+      width: 50%;
+    }
+  }
+
 }
 .col {
   display: flex;
