@@ -4,8 +4,6 @@
 
 .link {
   max-height: 200px;
-  overflow: auto;
-  //we only have 1 icon. if we have more (dynamic) icons
-  //we might need to disable this
-  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
