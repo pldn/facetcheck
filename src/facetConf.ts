@@ -15,7 +15,7 @@ export function getLogo() {
   return CONFIG.logo || require("./containers/Nav/kadaster.svg");
 }
 export function getFavIcon() {
-  return CONFIG.favIcon 
+  return CONFIG.favIcon || "https://demo.triply.cc/imgs/logos/logo.png?v=0"
 }
 export function getPageSize() {
   return CONFIG.pageSize || 5;
