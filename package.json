@@ -26,7 +26,7 @@
       }
     },
     "watch": {
-      "command": "npm run util:buildWebpackConfig && webpack-dev-server --public 0.0.0.0 --host 0.0.0.0 --port 5000 --config ./webpack/config.js",
+      "command": "npm run util:buildWebpackConfig && webpack-dev-server --disable-host-check --public 0.0.0.0 --host 0.0.0.0 --port 5000 --config ./webpack/config.js",
       "env": {
         "UV_THREADPOOL_SIZE": 100,
         "NODE_ENV": "development",
