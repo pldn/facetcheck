@@ -7,6 +7,7 @@ import * as styles from "./style.module.scss";
 export declare namespace Ellipsis {
   export interface Props {
     value: string;
+    maxSize?: number
   }
   export interface State {
     showAll: boolean;
@@ -25,7 +26,7 @@ export class Ellipsis extends React.PureComponent<Ellipsis.Props, Ellipsis.State
   }
   render() {
     const value = this.props.value;
-    const size = 17;
+    const size = this.props.maxSize ? this.props.maxSize : 17;
     if (this.state.showAll || value.length < 3 * size)
       return (
         <span>
@@ -36,7 +37,7 @@ export class Ellipsis extends React.PureComponent<Ellipsis.Props, Ellipsis.State
       <span>
         {value.substr(0, size)}{" "}
         <span
-          onClick={this.showAll.bind(this)}
+          onClick={this.showAll}
           className={getClassName(styles.dots, "btn-link")}
         >
           ......
