@@ -1,6 +1,14 @@
 import { FacetConfig, toEntity } from "@triply/facetcheck/build/src/facetConfUtils";
 import * as _ from "lodash";
 const FACETS: { [property: string]: FacetConfig } = {
+  bevolking_SearchTest: {
+    label: "Search Test",
+    facetType: "search",
+    facetToQueryPatterns: (_iri, values) => {
+      if (values.searchString) return ` ?_r ?a ?n .  filter(regex("${values.searchString.toLowerCase()}", lcase(str(?n)))) . `
+      // if (values.searchString) return ` ?_r ?a "${values.searchString}"`
+    }
+  },
   bevolking_AantalInwoners: {
     label: "👪 Inwoners",
     facetType: "slider",

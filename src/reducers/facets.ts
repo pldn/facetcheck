@@ -5,7 +5,7 @@ import * as Immutable from "immutable";
 import ApiClient from "../helpers/ApiClient";
 import { GlobalActions, GlobalState } from "../reducers";
 
-import { FacetValue,FacetOptionsList, FacetOptionsObject, FacetOptionsNlProvinces } from "../facetConfUtils";
+import { FacetValue,FacetOptionsList, FacetOptionsObject, FacetOptionsNlProvinces,FacetOptionsSearch } from "../facetConfUtils";
 import * as ReduxObservable from "redux-observable";
 import { map, filter } from "rxjs/operators";
 import * as Redux from "redux";
@@ -44,7 +44,7 @@ export interface FacetProps {
   //we're never modifying props in these objects, but always overwriting it completely
   //so no use using an immutable model here
   optionList: FacetOptionsList
-  optionObject: FacetOptionsObject | FacetOptionsNlProvinces
+  optionObject: FacetOptionsObject | FacetOptionsNlProvinces |FacetOptionsSearch
   // optionObject: { [key: string]: FacetValue  };
   selectedObject: { [key: string]: number };
   error: string;
@@ -370,6 +370,14 @@ export function setSelectedObject(facetProp: string, facetObject: FacetProps["se
   };
 }
 
+export function setSelectedSearchString(facetProp:string, searchObject: FacetOptionsSearch){
+  return {
+    type: Actions.SET_FACET_VALUE,
+    facetName: facetProp,
+    selectedFacetObject: searchObject
+  };
+}
+
 var lastExecutedQuery: string;
 export function getMatchingIris(facets: FacetState["facets"], selectedClass: string, nextPageOffset: number): any {
   try {
@@ -472,6 +480,19 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
     if (!facetConf) {
       throw new Error("Could not find facet config for " + forProp);
     }
+
+    if (facetConf.facetType==='search'){
+      // search props are always the same
+      return {
+        type: Actions.FETCH_FACET_PROPS_SUCCESS,
+        facetName: forProp,
+        result: {
+          optionObject: {searchString:''}
+        },
+        sync: true
+      };
+    }
+
     if (facetConf.facetValues) {
       //options are set directly, no need to fetch the options via sparql
       if (Array.isArray(facetConf.facetValues)) {
@@ -494,7 +515,7 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
         };
       }
     }
-    const sparqlBuilder = SparqlBuilder.fromQueryString(FACETS[forProp].getFacetValuesQuery(forProp));
+    const sparqlBuilder = SparqlBuilder.fromQueryString(facetConf.getFacetValuesQuery(forProp));
     const facetComponent = FacetComponent.getFacetFromString(facetConf.facetType);
     sparqlBuilder.distinct();
     facetComponent.prepareOptionsQuery(sparqlBuilder);
@@ -515,15 +536,17 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
           .then(sparql => {
             if (!sparql.hasResult())
               throw new Error("No SPARQL results returned when querying the facet properties of " + forProp);
-            const opts = facetComponent.getOptionsForQueryResult(sparql);
-            if (Array.isArray(opts)) {
-              return {
-                optionList: opts
-              };
-            } else {
-              return {
-                optionObject: opts
-              };
+            else {
+              const opts = facetComponent.getOptionsForQueryResult(sparql);
+              if (Array.isArray(opts)) {
+                return {
+                  optionList: opts
+                };
+              } else {
+                return {
+                  optionObject: opts
+                };
+              }
             }
           })
     };

@@ -8,6 +8,7 @@ export { default as Facet } from "./Facet";
 export { default as FacetMultiSelect } from "./FacetMultiSelect";
 export { default as FacetProvinces } from "./FacetProvinces";
 export { default as FacetSlider } from "./FacetSlider";
+export { default as FacetSearch } from "./FacetSearch";
 export { default as FlexContainer } from "./FlexContainer";
 export { default as HamburgerBtn } from "./HamburgerBtn";
 export { default as Label } from "./Label";

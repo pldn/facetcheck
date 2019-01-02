@@ -13,7 +13,8 @@ import {
   FacetsProps,
   setSelectedFacetValue,
   setSelectedObject,
-  FacetState
+  FacetState,
+  setSelectedSearchString
 } from "../../reducers/facets";
 import { CLASSES } from "../../facetConf";
 import { Facet } from "../../components";
@@ -25,6 +26,7 @@ declare namespace Panel {
     setSelectedClass: typeof setSelectedClass;
     setSelectedFacetValue: typeof setSelectedFacetValue;
     setSelectedObject: typeof setSelectedObject;
+    setSelectedSearchString: typeof setSelectedSearchString;
   }
   export interface PropsFromState {
     selectedClass: string;
@@ -61,7 +63,7 @@ const ClassSelector = React.memo<ClassSelector.Props>(props => {
 });
 class Panel extends React.PureComponent<Panel.Props, Panel.State> {
   render() {
-    const { setSelectedObject, setSelectedFacetValue, facetLabels } = this.props;
+    const { setSelectedObject, setSelectedFacetValue, facetLabels, setSelectedSearchString } = this.props;
 
     const classNames: { [className: string]: boolean } = {
       [styles.panel]: true,
@@ -80,6 +82,7 @@ class Panel extends React.PureComponent<Panel.Props, Panel.State> {
               className={styles.section}
               setSelectedFacetValue={setSelectedFacetValue}
               setSelectedObject={setSelectedObject}
+              setSelectedSearchString={setSelectedSearchString}
             />
           );
         })}
@@ -101,6 +104,7 @@ export default connect<Panel.PropsFromState, Panel.DispatchProps, Panel.OwnProps
   {
     setSelectedClass: setSelectedClass,
     setSelectedObject: setSelectedObject,
-    setSelectedFacetValue: setSelectedFacetValue
+    setSelectedFacetValue: setSelectedFacetValue,
+    setSelectedSearchString: setSelectedSearchString
   }
 )(Panel);

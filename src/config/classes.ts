@@ -5,6 +5,7 @@ const CLASSES: ClassConfig[] = [
     iri: "http://betalinkeddata.cbs.nl/def/cbs#Gemeente_Geografisch",
     label: "Gemeente",
     facets: [
+      "bevolking_SearchTest",
       "bevolking_AantalInwoners",
       "bevolking_BurgerlijkeStaat_Gehuwd-percentage",
       "bevolking_BurgerlijkeStaat_Gescheiden-percentage",

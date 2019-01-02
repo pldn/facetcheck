@@ -3,8 +3,8 @@ import * as React from "react";
 import * as getClassName from "classnames";
 import SparqlJson from "../../helpers/SparqlJson";
 import SparqlBuilder from "../../helpers/SparqlBuilder";
-import { Facet as FacetProps } from "../../reducers/facets";
-import { FacetMultiSelect, FacetSlider, FacetProvinces } from "../";
+import { Facet as FacetProps, setSelectedSearchString } from "../../reducers/facets";
+import { FacetMultiSelect, FacetSlider, FacetProvinces, FacetSearch } from "../";
 import { setSelectedFacetValue, setSelectedObject } from "../../reducers/facets";
 import { FACETS, getDereferenceableLink } from "../../facetConf";
 import { FacetTypes } from "../../facetConfUtils";
@@ -23,6 +23,7 @@ declare namespace Facet {
     facet: FacetProps;
     setSelectedFacetValue: typeof setSelectedFacetValue;
     setSelectedObject: typeof setSelectedObject;
+    setSelectedSearchString: typeof setSelectedSearchString;
   }
 }
 import * as styles from "./style.module.scss"
@@ -41,13 +42,15 @@ class Facet extends React.PureComponent<Facet.Props, any> {
         return FacetSlider;
       case "nlProvinces":
         return FacetProvinces;
+      case "search":
+        return FacetSearch;
       default:
         throw new Error("Unrecognized facet type " + key);
     }
   }
   constructor(props: Facet.Props) {
     super(props);
-    this.FacetComponents = [FacetMultiSelect, FacetSlider as any, FacetProvinces];
+    this.FacetComponents = [FacetMultiSelect, FacetSlider, FacetProvinces, FacetSearch];
   }
 
   componentDidCatch(e: Error) {
