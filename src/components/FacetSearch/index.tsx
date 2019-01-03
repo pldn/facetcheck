@@ -1,20 +1,14 @@
 import * as React from "react";
 import * as _ from "lodash";
+import { TextField } from "material-ui";
 
-import { Facet, Button } from "../";
+import { Facet } from "../";
 import { Facet as GenericFacetProps } from "../../reducers/facets";
 import { FACETS } from "../../facetConf";
 import { FacetOptionsSearch } from "../../facetConfUtils";
-import * as numeral from "numeral";
 import { default as SparqlJson } from "../../helpers/SparqlJson";
 import SparqlBuilder from "../../helpers/SparqlBuilder";
-import { TextField } from "material-ui";
-
-
 import * as styles from "./style.module.scss"
-
-require("numeral/locales/nl-nl");
-numeral.locale("nl-nl");
 
 declare namespace FacetSearch {
 
@@ -52,21 +46,17 @@ class FacetSearch extends React.PureComponent<FacetSearch.Props, FacetSearch.Sta
     throw new Error("This function should not be called or implemented, since it doesn't make sense to have a default value for a search field.")
   }
 
-  performSearch(searchString:string){
-    if (searchString===this.state.previousValue) return;
+  performSearch(){
+    if (this.state.inputValue===this.state.previousValue) return;
     const { facet, setSelectedSearchString } = this.props;
-    this.setState({previousValue: (event.target as any).value});
-    setSelectedSearchString(facet.iri, { searchString: searchString });
-  }
-
-  onAfterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.performSearch(event.target.value)
+    this.setState({previousValue: this.state.inputValue});
+    setSelectedSearchString(facet.iri, { searchString: this.state.inputValue });
   }
 
   onKeyUp = (event:React.KeyboardEvent) => {
     if (event.keyCode === 13) {
       // ENTER key
-      this.performSearch((event.target as any).value)
+      this.performSearch()
     } else if (event.keyCode === 27){
       // ESC key
       // this.setState({inputValue:this.state.previousValue}) // doesnt work properly
@@ -85,7 +75,7 @@ class FacetSearch extends React.PureComponent<FacetSearch.Props, FacetSearch.Sta
       <div className={styles.textFieldWrapper}>
         <TextField
           name={this.props.facet.get('iri')}
-          onBlur={this.onAfterChange.bind(this)}
+          onBlur={this.performSearch.bind(this)}
           onKeyUp={this.onKeyUp.bind(this)}
           className={styles.textField}
           value={this.state.inputValue}
