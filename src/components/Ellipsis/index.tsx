@@ -21,7 +21,7 @@ export class Ellipsis extends React.PureComponent<Ellipsis.Props, Ellipsis.State
       showAll: false
     };
   }
-  showAll() {
+  showAll = () => {
     this.setState({ showAll: true });
   }
   render() {

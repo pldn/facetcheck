@@ -50,9 +50,9 @@ export class TermLiteral extends React.PureComponent<TermLiteral.Props, TermLite
   constructor(props: any) {
     super(props);
     this.LiteralRenderers = [
-      TermLiteralString,
       TermLiteralHtml,//should be before text area (more specific)
       TermLiteralTextarea,
+      TermLiteralString,
       TermLiteralBoolean,
       TermLiteralWktLeaflet,
       TermLiteralNumeric,
