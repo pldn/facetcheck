@@ -5,7 +5,7 @@ import { extname } from "path";
 import * as Immutable from "immutable";
 import ApiClient from "../helpers/ApiClient";
 import { GlobalActions } from "../reducers";
-import { getAsString, prefix } from "../prefixes";
+import { getAsString, staticPrefixes } from "../prefixes";
 const urlParse = require("url-parse");
 import { default as Tree, QueryPattern, QueryObject } from "../helpers/Tree";
 import { Actions as FacetsActions, Action as FacetAction } from "./facets";
@@ -203,7 +203,7 @@ export type SelectWidget = (tree: Tree) => WidgetConfig;
  */
 const selectGeometry: SelectWidget = t => {
   const node = t
-    .find([prefix(getPrefixes(), "geo", "hasGeometry"), null, prefix(getPrefixes(), "geo", "asWKT")])
+    .find([staticPrefixes.geo("hasGeometry").value, null, staticPrefixes.geo("asWKT").value])
     .exec();
   if (node.length) {
     return <WidgetConfig>{
@@ -217,7 +217,7 @@ const selectGeometry: SelectWidget = t => {
 };
 const selectDescription: SelectWidget = t => {
   const node = t
-    .find([prefix(getPrefixes(), "dct", "description"), null])
+    .find([staticPrefixes.dct("description").value, null])
     .limit(1)
     .exec();
   if (node.length) {
@@ -231,7 +231,7 @@ const selectDescription: SelectWidget = t => {
 };
 const selectSummary: SelectWidget = t => {
   const node = t
-    .find([prefix(getPrefixes(), "rdf", "comment"), null])
+    .find([staticPrefixes.rdfs("comment").value, null])
     .limit(1)
     .exec();
   if (node.length) {
@@ -261,7 +261,7 @@ $(IRI) foaf:depiction ?img .
 */
 const selectImage: SelectWidget = t => {
   // console.log(t)
-  const patterns: QueryPattern[] = [...findImageLiteralPatterns, [prefix(getPrefixes(), "foaf", "depiction"), null]];
+  const patterns: QueryPattern[] = [...findImageLiteralPatterns, [staticPrefixes.foaf("depiction").value, null]];
   const images: WidgetConfig[] = [];
   const nodes = t
     .find(...patterns)
@@ -272,7 +272,7 @@ const selectImage: SelectWidget = t => {
     //this might be an image literal, or a depiction resource
     if (node.hasChildren()) {
       const label = node
-        .find([prefix(getPrefixes(), "rdfs", "label"), null], [prefix(getPrefixes(), "dct", "description"), null])
+        .find([staticPrefixes.rdfs('label').value, null], [staticPrefixes.dct('description').value, null])
         .limit(1)
         .exec();
       var img: Tree[] = [];
@@ -307,7 +307,7 @@ const selectImage: SelectWidget = t => {
 };
 const selectLabel: SelectWidget = t => {
   const node = t
-    .find([prefix(getPrefixes(), "rdfs", "label"), null])
+    .find([staticPrefixes.rdfs('label').value, null])
     .limit(1)
     .exec();
   if (node.length) {

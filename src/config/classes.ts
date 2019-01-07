@@ -117,7 +117,7 @@ const CLASSES: ClassConfig[] = [
       "bevolking_ParticuliereHuishoudens_HuishoudensMetKinderen-percentage",
       "bevolking_ParticuliereHuishoudens_HuishoudensZonderKinderen-percentage"
     ],
-    classToQueryPattern: (iri: string) => `?_r rdf:type <${iri}> .`,
+    classToQueryPattern: (iri: string) => `?_r a <${iri}> .`,
     resourceDescriptionQuery: function(iri: string) {
       var projectPattern = `
         <${iri}> ?p ?o .

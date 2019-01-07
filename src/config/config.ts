@@ -17,6 +17,7 @@ const conf: GlobalConfig = {
     qb: "http://purl.org/linked-data/cube#",
     rdfs: "http://www.w3.org/2000/01/rdf-schema#",
     slice: "http://betalinkeddata.cbs.nl/83487NED/id/slice/",
+    rdf:'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     xsd: "http://www.w3.org/2001/XMLSchema#"
   },
   title: "👪 Bevolkings Browser",

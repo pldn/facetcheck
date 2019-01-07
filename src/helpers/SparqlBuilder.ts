@@ -57,7 +57,7 @@ export default class SparqlBuilder {
       return {type: 'bgp',
       triples: [{
         subject: this.stringAsTerm('?_r'),
-        predicate: this.stringAsTerm(prefix(getPrefixes(),'rdf', 'type')),
+        predicate: this.stringAsTerm(prefix({rdf:'http://www.w3.org/1999/02/22-rdf-syntax-ns#', ...getPrefixes()},'rdf', 'type')),
         object: this.stringAsTerm(c)
       }]
       }
