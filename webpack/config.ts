@@ -29,6 +29,19 @@ const SUPPORTED_BROWSERS = [
 ];
 // Get enrivonment variables to inject into our app.
 var env = getClientEnvironment();
+const babelLoader = {
+  loader: "babel-loader",
+  options: {
+    presets: [
+      [
+        "@babel/preset-env",
+        {
+          targets: ["last 3 versions", "> 1%"]
+        }
+      ]
+    ]
+  }
+};
 
 interface StyleLoaderConf {
   isDev: boolean;
@@ -155,6 +168,10 @@ const conf: webpack.Configuration = {
             ]
           }
         }
+      },{
+        test:/\.js/,
+        include: [/superagent/],
+        use: [babelLoader]
       },
       {
         oneOf: [
