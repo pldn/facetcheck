@@ -4,7 +4,6 @@ const conf: GlobalConfig = {
     token: "",
     url: "https://betalinkeddata.cbs.nl/sparql"
   },
-  logo: "https://www.cbs.nl/Content/images/cbs-brand.svg",
   pageSize: 6,
   prefixes: {
     cbs: "http://betalinkeddata.cbs.nl/def/cbs#",
