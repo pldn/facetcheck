@@ -17,7 +17,7 @@ case ${1} in
       app:bundle)
         exec_as_facetcheck npm run prod:build;
         rm -rf ./src/config/.bundle;
-        cp -r ./build/assets/dist ./src/config/.bundle;
+        exec_as_facetcheck cp -r ./build/assets/dist ./src/config/.bundle;
         ;;
       app:start)
         exec_as_facetcheck npm run prod:build;
