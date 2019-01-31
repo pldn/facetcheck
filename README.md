@@ -194,7 +194,16 @@ The following keys can be used in class configuration objects:
     UI.  If this option is not set, FacetCheck tries to retrieve the
     label from the data (e.g., from an `rdfs:label` statement).  If no
     label can be found, the IRI that denotes the class is used as a
-    last resolt.
+    last resort.
+
+  - `classToQueryPattern: (iri: string) => string` (optional)
+
+    The SPARQL select query that retrieves the selected IRIs given the criteria
+    set by the facets. The retrieved IRIs are then passed to the resourceDescriptionQuery.
+    The argument is optional, if the user does not add the argument, the basic string
+    used for the matching IRIs is:
+    `?_r rdf:type <${iri}> .`
+    Else it gets converted to the value implemented in the classToQueryPattern.
 
   - `resourceDescriptionQuery: (iri: string) => string` (TBD)
 
@@ -262,7 +271,7 @@ The following keys can be used in class configuration objects:
 
       - `"multiselect"`
 
-        A collection of checkboxes, denoting a disjuctive set of
+        A collection of checkboxes, denoting a disjunctive set of
         values.  (“Select instances that have values X ór Y ór Z.”)
 
       - `"nlProvinces"`
@@ -277,7 +286,7 @@ The following keys can be used in class configuration objects:
 
       - `"slider"`
 
-        A slider that allows a range to be specified with a mimum and
+        A slider that allows a range to be specified with a minimum and
         a maximum value, selecting instances whose value falls within
         the specified range.
 
@@ -334,7 +343,7 @@ The following keys can be used in class configuration objects:
     used instead.
 
     If no label can be found, the key of the facet configuration
-    object is used as a last resolt.
+    object is used as a last resort.
 
 An example of a facet configuration:
 
