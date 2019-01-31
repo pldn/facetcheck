@@ -7,13 +7,13 @@ import ApiClient from "../helpers/ApiClient";
 import { GlobalActions } from "../reducers";
 import { getAsString, staticPrefixes } from "../prefixes";
 const urlParse = require("url-parse");
-import { default as Tree, QueryPattern, QueryObject } from "../helpers/Tree";
+import { default as Tree, QueryPattern} from "../helpers/Tree";
 import { Actions as FacetsActions, Action as FacetAction } from "./facets";
 import * as ReduxObservable from "redux-observable";
 import * as Redux from "redux";
 import { GlobalState } from "./";
-import { CLASSES, getPrefixes } from "../facetConf";
-import { map, filter, withLatestFrom, catchError, mergeMap, mergeAll } from "rxjs/operators";
+import { CLASSES, getPrefixes,logEnabled } from "../facetConf";
+import { map, filter } from "rxjs/operators";
 
 // import {Actions as FacetActions} from './facets'
 //import own dependencies
@@ -152,9 +152,12 @@ export function getStatements(resource: string, className: string): Action {
   const q = `${getAsString(getPrefixes())} ${CLASSES.find(c => c.iri === className).resourceDescriptionQuery(
     resource
   )}`;
-  console.groupCollapsed("Querying for resource description of " + resource);
-  console.info(q);
-  console.groupEnd();
+  // Added in debug state and made printing of colors possible.
+if(logEnabled()){
+    console.groupCollapsed("%c"+"Querying for resource description of " + "%c"+resource , "color: #ed583a; font-weight: normal;", "color: #ed583a; font-weight: normal; text-decoration: underline;");
+    console.info("%c"+ q,  "color: black; ");
+    console.groupEnd();
+  }
   return {
     types: [Actions.GET_STATEMENTS, Actions.GET_STATEMENTS_SUCCESS, Actions.GET_STATEMENTS_FAIL],
     promise: (client: ApiClient) =>

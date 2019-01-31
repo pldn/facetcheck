@@ -18,6 +18,18 @@ After installation, FacetCheck is run with the following command:
 npm run dev
 ```
 
+After starting the Facetcheck, facetcheck can be found standard on your localhost:5000
+To run the developer debug mode you have to activate the menu by typing in the following statement:
+
+```
+localStorage.setItem("FACETCHECK_DEBUG", true)
+```
+
+To deactivate the debug mode you'll just need to type in the following statement:
+```
+localStorage.setItem("FACETCHECK_DEBUG", false)
+```
+
 ## Release procedure
 
 Run the following sequence of commands in order to release a new

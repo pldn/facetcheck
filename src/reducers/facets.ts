@@ -10,7 +10,7 @@ import * as ReduxObservable from "redux-observable";
 import { map, filter } from "rxjs/operators";
 import * as Redux from "redux";
 import { Facet as FacetComponent } from "../components";
-import { FACETS, CLASSES, CONFIG,getPrefixes, getPageSize } from "../facetConf";
+import { FACETS, CLASSES, CONFIG,getPrefixes, getPageSize,logEnabled } from "../facetConf";
 import SparqlBuilder from "../helpers/SparqlBuilder";
 import * as sparqljs from "sparqljs";
 import { default as SparqlJson } from "../helpers/SparqlJson";
@@ -192,7 +192,7 @@ export function reducer(state = initialState, action: Action) {
               if (action.error) vals.set("error", action.error);
             });
           })
-          .sortBy((val, key) => {
+          .sortBy((_val, key) => {
             return facetSorting.indexOf(key);
           });
       });
@@ -337,10 +337,14 @@ export function facetsToQuery(facets: FacetState["facets"], selectedClass: strin
     }
   }
 
-  sparqlBuilder.addQueryPatterns(queryPatterns);
-  console.groupCollapsed("Querying for matching IRIs");
-  console.info(sparqlBuilder.toString());
-  console.groupEnd();
+  sparqlBuilder.addQueryPatterns(queryPatterns)
+
+  // Added in debug state and made printing of colors possible.
+if(logEnabled()) {
+    console.groupCollapsed("%cQuerying for matching IRIs", "color: #133201; font-weight: bolder;");
+    console.info("%c"+sparqlBuilder.toString(), "color: black; ");
+    console.groupEnd();
+  }
   return sparqlBuilder.toString();
 }
 
@@ -522,9 +526,15 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
     sparqlBuilder.hasClasses(getSelectedClass(state.facets));
 
     const sparqlString = sparqlBuilder.toString();
-    console.groupCollapsed(`Querying for ${forProp} facet values`);
-    console.info(sparqlString);
-    console.groupEnd();
+
+    // Added in debug state and made printing of colors possible.
+    if(logEnabled())
+    {
+      console.groupCollapsed("%c"+`Querying for %c` +`${facetConf.label}` + `%c facet values`, "color: #1690c6; font-weight: normal;",
+                             "color: #1690c6; font-weight: normal; text-decoration: underline;", "color: #1690c6; font-weight: normal;");
+      console.info("%c"+sparqlString, "color: black");
+      console.groupEnd();
+    }
     return {
       types: [Actions.FETCH_FACET_PROPS, Actions.FETCH_FACET_PROPS_SUCCESS, Actions.FETCH_FACET_PROPS_FAIL],
       facetName: forProp,

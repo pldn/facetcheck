@@ -19,7 +19,9 @@ export function getFavIcon() {
 export function getPageSize() {
   return CONFIG.pageSize || 5;
 }
-
+export function logEnabled() {
+  return localStorage.getItem("FACETCHECK_DEBUG") === "true" 
+}
 export function getDereferenceableLink(link: string) {
   if (CONFIG.getDereferenceableLink) {
     return CONFIG.getDereferenceableLink(link);
