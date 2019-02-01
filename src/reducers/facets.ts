@@ -5,12 +5,18 @@ import * as Immutable from "immutable";
 import ApiClient from "../helpers/ApiClient";
 import { GlobalActions, GlobalState } from "../reducers";
 
-import { FacetValue,FacetOptionsList, FacetOptionsObject, FacetOptionsNlProvinces,FacetOptionsSearch } from "../facetConfUtils";
+import {
+  FacetValue,
+  FacetOptionsList,
+  FacetOptionsObject,
+  FacetOptionsNlProvinces,
+  FacetOptionsSearch
+} from "../facetConfUtils";
 import * as ReduxObservable from "redux-observable";
 import { map, filter } from "rxjs/operators";
 import * as Redux from "redux";
 import { Facet as FacetComponent } from "../components";
-import { FACETS, CLASSES, CONFIG,getPrefixes, getPageSize,logEnabled } from "../facetConf";
+import { FACETS, CLASSES, CONFIG, getPrefixes, getPageSize, logEnabled } from "../facetConf";
 import SparqlBuilder from "../helpers/SparqlBuilder";
 import * as sparqljs from "sparqljs";
 import { default as SparqlJson } from "../helpers/SparqlJson";
@@ -43,8 +49,8 @@ export interface FacetProps {
 
   //we're never modifying props in these objects, but always overwriting it completely
   //so no use using an immutable model here
-  optionList: FacetOptionsList
-  optionObject: FacetOptionsObject | FacetOptionsNlProvinces |FacetOptionsSearch
+  optionList: FacetOptionsList;
+  optionObject: FacetOptionsObject | FacetOptionsNlProvinces | FacetOptionsSearch;
   // optionObject: { [key: string]: FacetValue  };
   selectedObject: { [key: string]: number };
   error: string;
@@ -290,9 +296,9 @@ export function facetsToQuery(facets: FacetState["facets"], selectedClass: strin
     throw new Error(`Class ${selectedClass} does not have any configured facets`);
   }
   if (classConf.classToQueryPattern) {
-    sparqlBuilder.addQueryPatterns([
+    sparqlBuilder.addQueryPatterns(
       SparqlBuilder.getQueryPattern("{ " + classConf.classToQueryPattern(selectedClass) + "}")
-    ]);
+    );
   } else {
     sparqlBuilder.hasClasses(selectedClass);
   }
@@ -337,12 +343,12 @@ export function facetsToQuery(facets: FacetState["facets"], selectedClass: strin
     }
   }
 
-  sparqlBuilder.addQueryPatterns(queryPatterns)
+  sparqlBuilder.addQueryPatterns(queryPatterns);
 
   // Added in debug state and made printing of colors possible.
-if(logEnabled()) {
+  if (logEnabled()) {
     console.groupCollapsed("%cQuerying for matching IRIs", "color: #133201; font-weight: bolder;");
-    console.info("%c"+sparqlBuilder.toString(), "color: black; ");
+    console.info("%c" + sparqlBuilder.toString(), "color: black; ");
     console.groupEnd();
   }
   return sparqlBuilder.toString();
@@ -374,7 +380,7 @@ export function setSelectedObject(facetProp: string, facetObject: FacetProps["se
   };
 }
 
-export function setSelectedSearchString(facetProp:string, searchObject: FacetOptionsSearch){
+export function setSelectedSearchString(facetProp: string, searchObject: FacetOptionsSearch) {
   return {
     type: Actions.SET_FACET_VALUE,
     facetName: facetProp,
@@ -485,13 +491,13 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
       throw new Error("Could not find facet config for " + forProp);
     }
 
-    if (facetConf.facetType==='search'){
+    if (facetConf.facetType === "search") {
       // search props are always the same
       return {
         type: Actions.FETCH_FACET_PROPS_SUCCESS,
         facetName: forProp,
         result: {
-          optionObject: {searchString:''}
+          optionObject: { searchString: "" }
         },
         sync: true
       };
@@ -528,11 +534,14 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
     const sparqlString = sparqlBuilder.toString();
 
     // Added in debug state and made printing of colors possible.
-    if(logEnabled())
-    {
-      console.groupCollapsed("%c"+`Querying for %c` +`${facetConf.label}` + `%c facet values`, "color: #1690c6; font-weight: normal;",
-                             "color: #1690c6; font-weight: normal; text-decoration: underline;", "color: #1690c6; font-weight: normal;");
-      console.info("%c"+sparqlString, "color: black");
+    if (logEnabled()) {
+      console.groupCollapsed(
+        "%c" + `Querying for %c` + `${facetConf.label}` + `%c facet values`,
+        "color: #1690c6; font-weight: normal;",
+        "color: #1690c6; font-weight: normal; text-decoration: underline;",
+        "color: #1690c6; font-weight: normal;"
+      );
+      console.info("%c" + sparqlString, "color: black");
       console.groupEnd();
     }
     return {

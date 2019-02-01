@@ -92,7 +92,7 @@ export default class SparqlBuilder {
     if (bgpString[0] !== '{') throw new Error(`Expected a BGP clause. Did you forget to enclose the BGP in parenthesis? ('{' and '}'). The string I received: ${bgpString}`)
     const parser = new sparqlJs.Parser({...getPrefixes(), ..._prefixes});
     const parsed = parser.parse(`SELECT * WHERE { ${bgpString} }`) as sparqlJs.SelectQuery
-    return (parsed.where[0] as any).patterns
+    return (parsed.where[0] as sparqlJs.BlockPattern).patterns
   }
   static get(prefixes?:Prefixes) {
     const builder = new SparqlBuilder();
