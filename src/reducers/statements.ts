@@ -155,7 +155,7 @@ export function getStatements(resource: string, className: string): Action {
   // Added in debug state and made printing of colors possible.
 if(logEnabled()){
     console.groupCollapsed("%c"+"Querying for resource description of " + "%c"+resource , "color: #ed583a; font-weight: normal;", "color: #ed583a; font-weight: normal; text-decoration: underline;");
-    console.info("%c"+ q,  "color: black; ");
+    console.info( q);
     console.groupEnd();
   }
   return {

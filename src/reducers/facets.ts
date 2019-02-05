@@ -348,7 +348,7 @@ export function facetsToQuery(facets: FacetState["facets"], selectedClass: strin
   // Added in debug state and made printing of colors possible.
   if (logEnabled()) {
     console.groupCollapsed("%cQuerying for matching IRIs", "color: #133201; font-weight: bolder;");
-    console.info("%c" + sparqlBuilder.toString(), "color: black; ");
+    console.info(sparqlBuilder.toString());
     console.groupEnd();
   }
   return sparqlBuilder.toString();
@@ -532,7 +532,6 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
     sparqlBuilder.hasClasses(getSelectedClass(state.facets));
 
     const sparqlString = sparqlBuilder.toString();
-
     // Added in debug state and made printing of colors possible.
     if (logEnabled()) {
       console.groupCollapsed(
@@ -541,7 +540,7 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
         "color: #1690c6; font-weight: normal; text-decoration: underline;",
         "color: #1690c6; font-weight: normal;"
       );
-      console.info("%c" + sparqlString, "color: black");
+      console.info( sparqlString);
       console.groupEnd();
     }
     return {
