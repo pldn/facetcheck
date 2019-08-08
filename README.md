@@ -138,9 +138,9 @@ Pokémons.
 ```ts
 {
   endpoint: {
-    url: "https://api.demo.triply.cc/datasets/academy/pokemon/services/pokemon/sparql"
+    url: "https://api.triplydb.com/datasets/academy/pokemon/services/pokemon/sparql"
   },
-  logo: "https://demo.triply.cc/imgs/avatars/d/5b9952d15cce65029ba10c25.png?v=0",
+  logo: "https://triplydb.com/imgs/avatars/d/5b9952d15cce65029ba10c25.png?v=0",
   pageSize: 12,
   prefixes: {
     pokémon: "https://triply.cc/academy/pokemon/def/",
@@ -150,7 +150,7 @@ Pokémons.
   getDereferenceableLink: (link) => {
     console.log(link);
     if (link.indexOf('https://triply.cc/academy/pokemon/') === 0) {
-      return `https://demo.triply.cc/academy/pokemon/browser?r=${encodeURIComponent(link)}`
+      return `https://triplydb.com/academy/pokemon/browser?r=${encodeURIComponent(link)}`
     }
     return link;
   }

@@ -11,16 +11,16 @@ export function getFacetcheckTitle() {
 }
 
 export function getLogo() {
-  return CONFIG.logo || "https://demo.triply.cc/imgs/logos/logo-lg.svg?v=0";
+  return CONFIG.logo || "https://triplydb.com/imgs/logos/logo-lg.svg?v=0";
 }
 export function getFavIcon() {
-  return CONFIG.favIcon || "https://demo.triply.cc/imgs/logos/logo.png?v=0"
+  return CONFIG.favIcon || "https://triplydb.com/imgs/logos/logo.png?v=0"
 }
 export function getPageSize() {
   return CONFIG.pageSize || 5;
 }
 export function logEnabled() {
-  return localStorage.getItem("FACETCHECK_DEBUG") === "true" 
+  return localStorage.getItem("FACETCHECK_DEBUG") === "true"
 }
 export function getDereferenceableLink(link: string) {
   if (CONFIG.getDereferenceableLink) {
