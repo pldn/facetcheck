@@ -97,6 +97,9 @@ class LeafletWidget extends React.PureComponent<LeafletWidget.Props, any> {
                 icon: myIcon
               };
               // return null;
+            },
+            pointToLayer: (_feature, latlng) => {
+              return Leaflet.marker(latlng, { icon: myIcon });
             }
           })
         );

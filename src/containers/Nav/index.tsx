@@ -30,10 +30,6 @@ const mapStateToProps = (state: GlobalState): IAppProps =>
 export default //had to modify the typescript definition of the connect function to return ClassDecorator.
 //otherwise, you're not able to extend the component with any other properties than defined in the component class
 class App extends React.PureComponent<IAppProps, any> {
-  goToMainPage = () => {
-    this.props.pushState("/");
-  }
-
   render() {
     const {  notifications, removeNotification } = this.props;
 
@@ -44,7 +40,9 @@ class App extends React.PureComponent<IAppProps, any> {
     return (
       <div className={getClassName(enabledStyles)}>
         <div  className={styles.navbar}>
-          <Svg src={getLogo()} onClick={this.goToMainPage} className={styles.logo} />
+          <a href='/'>
+          <Svg src={getLogo()} className={styles.logo} />
+          </a>
         </div>
         <Notifications closeHandler={removeNotification} notifications={notifications} />
         <Panel/>
