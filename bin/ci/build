@@ -1,5 +1,0 @@
-#!/bin/sh
-source ${CI_PROJECT_DIR}/bin/ci/env
-now=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
-echo "Building for tag ${DOCKER_IMAGE} with build date ${now}"
-docker build -f ./docker/Dockerfile -t $DOCKER_IMAGE --build-arg SSH_PRIVATE_KEY="${SSH_PRIVATE_KEY}" --build-arg BUILD_DATE="${now}" .
