@@ -12,8 +12,6 @@ build:
   stage: build
   script:
   - ./bin/ci/build
-  except:
-    - master
 
 release:
   stage: release
