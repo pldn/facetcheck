@@ -19,6 +19,12 @@
   border-width: 0 0 1px;
   position: fixed;
   z-index: 1030;
+
+  display: flex;
+  justify-content: space-between;
+  .downloadButton {
+    align-self: center;
+  }
 }
 
 div.logo {
