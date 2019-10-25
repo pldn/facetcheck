@@ -22,6 +22,12 @@
 
   display: flex;
   justify-content: space-between;
+
+  a {
+    height:100%;
+    display: flex;
+  }
+
   .downloadButton {
     align-self: center;
   }
@@ -29,10 +35,9 @@
 
 div.logo {
   display: flex;
-  align-items: center;
-  height: 100%;
-
+  height:100%;
   img {
+    align-self: center;
     max-height: 80%;
     width: auto;
     width: initial;

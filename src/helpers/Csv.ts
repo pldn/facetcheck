@@ -16,7 +16,7 @@ function createDownloadFilename(downloadFilenameBase:string) {
   // deburr: e.g. Å -> A, è -> e
   // kebabCase: e.g. "makeMe a KEBAB" -> make-me-a-kebab
   // regex replace: remove non-alphanumeric non-dash chars, e.g. 😋 -> ''
-  return `${deburr(kebabCase(downloadFilenameBase).replace(/[^a-z0-9\-]/gi, ''))}.csv`;
+  return `${kebabCase(deburr(downloadFilenameBase).replace(/[^a-z0-9\-\s]/gi, '').trim())}.csv`;
 }
 
 interface Row { [key: string]: string }
@@ -59,7 +59,15 @@ export function downloadCsv(descriptions: Array<[string, Array<Quad>]>, download
     // Create cells for each kind of the special properties.
     // We only use one of each kind, consistently with the web interface.
     for (const specialProperty of specialProperties) {
-      const objectTree = specialProperty.values[0];
+      let objectTree:Tree;
+      if (specialProperty.values){
+        // there's only one widget
+        objectTree = specialProperty.values[0];
+      } else if (specialProperty.children) {
+	// there's multiple widgets of this kind, choose the first one. 
+        objectTree = specialProperty.children[0].values[0];
+      }
+
       const label = getLabel(objectTree.getPredicate(), tree);
       row[label] = getValue(objectTree, tree);
       specialHeaderNames.add(label);
