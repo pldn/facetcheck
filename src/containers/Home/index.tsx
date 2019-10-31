@@ -46,9 +46,7 @@ class Home extends React.PureComponent<Home.Props, Home.State> {
             <i style={{ fontSize: 40 }} className="far fa-cog fa-spin" />
         );
       }
-      return (
-          <div className={"whiteSink"}>No descriptions matched your criteria</div>
-      );
+      return <div className={"whiteSink"}>No results found based on your criteria</div>;
     }
   }
   getDescriptionElements() {
