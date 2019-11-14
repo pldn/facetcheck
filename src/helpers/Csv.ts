@@ -42,7 +42,8 @@ export function downloadCsv(descriptions: Array<[string, Array<Quad>]>, download
     const row: Row = { resource: getLabel(resource, tree) }
 
     // The list of normal properties can be identified by its' "Properties" label.
-    const normalProperties = widgets.children.filter(c => c.label === "Properties")[0].children;
+    const normalPropertiesParent = widgets.children.filter(c => c.label === "Properties")[0];
+    const normalProperties = normalPropertiesParent?normalPropertiesParent.children:[];
 
     // Create a cell in the row for each property.
     // We use the first of its' objects as value.
