@@ -1,4 +1,4 @@
-FROM triply/ubuntu:20181018
+FROM triply/ubuntu:20191029-1
 ARG SSH_PRIVATE_KEY=''
 ARG BUILD_DATE
 
