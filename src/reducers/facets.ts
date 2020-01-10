@@ -442,7 +442,6 @@ export function refreshFacets(facetLabels: FacetState["facetLabels"], forClass: 
     }
     const fetchLabelsFor: string[] = facets.filter(f => FACETS[f] && !("label" in FACETS[f]) && !facetLabels.has(f));
     const getLabelQuery = () => {
-      if (fetchLabelsFor.length === 0) return "SELECT * WHERE {?s ?p ?o} LIMIT 0";
       return `
       SELECT ${_.keys(fetchLabelsFor)
         .map(k => "?" + k)
@@ -459,8 +458,11 @@ export function refreshFacets(facetLabels: FacetState["facetLabels"], forClass: 
     return {
       types: [Actions.REFRESH_FACETS, Actions.REFRESH_FACETS_SUCCESS, Actions.REFRESH_FACETS_FAIL],
       facetQueue: _.uniq(facets),
-      promise: (client: ApiClient) =>
-        client
+      promise: (client: ApiClient) => {
+        if (fetchLabelsFor.length === 0) {
+          return Promise.resolve({ labelKeys: {} });
+        }
+        return client
           .req<any, SparqlJson>({
             sparqlSelect: getLabelQuery()
           })
@@ -474,6 +476,16 @@ export function refreshFacets(facetLabels: FacetState["facetLabels"], forClass: 
               labelKeys: labels
             };
           })
+          .catch(e => {
+            console.warn(`Couldn't retrieve facet labels for ${fetchLabelsFor.concat()} due to error `, e);
+            // Use the original labels as the new labels
+            var labels: { [key: string]: string } = {};
+            fetchLabelsFor.forEach(label => {
+              labels[label] = label;
+            });
+            return { labelKeys: labels };
+          });
+      }
     };
   } catch (e) {
     console.error(e);
@@ -540,7 +552,7 @@ export function getFacetProps(state: GlobalState, forProp: string): Action {
         "color: #1690c6; font-weight: normal; text-decoration: underline;",
         "color: #1690c6; font-weight: normal;"
       );
-      console.info( sparqlString);
+      console.info(sparqlString);
       console.groupEnd();
     }
     return {
