@@ -2,7 +2,7 @@ version: '3'
 services:
   facetcheck:
     restart: unless-stopped
-    image: triply/facetcheck
+    image: registry.triply.cc/triply/facetcheck
     build:
       context: ../
       dockerfile: ./docker/Dockerfile

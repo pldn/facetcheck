@@ -2,11 +2,12 @@ stages:
   - build
   - release
 
-image: jonaskello/docker-and-compose:1.12.1-1.8.0
+image: triply/ci:20200921
 
-before_script:
-  - docker login -u laurensrietveldci -p ${REGISTRY_PW}
-  - echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+default:
+  before_script:
+    - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
+    - echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
 
 build:
   stage: build
@@ -19,4 +20,3 @@ release:
     - ./bin/ci/release
   except:
     - master
-
