@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 source ${CI_PROJECT_DIR}/bin/ci/env
 now=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
 echo "Building for tag ${DOCKER_IMAGE} with build date ${now}"

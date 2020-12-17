@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 source ${CI_PROJECT_DIR}/bin/ci/env
 
 echo "Releasing for build ref ${CI_COMMIT_REF_NAME}"
