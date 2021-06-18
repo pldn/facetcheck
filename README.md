@@ -133,7 +133,7 @@ configuration object (`{ … }`):
     The title of the FacetCheck browser.
 
 The following shows an example class configuration object for
-Pokémons.
+Pokémons:
 
 ```ts
 {
