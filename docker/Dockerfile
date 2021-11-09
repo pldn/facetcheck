@@ -2,7 +2,7 @@ FROM triply/ubuntu:20200630
 ARG SSH_PRIVATE_KEY=''
 ARG BUILD_DATE
 
-MAINTAINER laurens.rietveld@triply.cc
+MAINTAINER info@triply.cc
 ENV FACETCHECK_CACHE_DIR="/etc/docker-facetcheck" \
     FACETCHECK_USER="facetcheck" \
     HOME_DIR="/home/facetcheck"
