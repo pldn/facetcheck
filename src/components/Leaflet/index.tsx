@@ -42,7 +42,7 @@ class LeafletWidget extends React.PureComponent<LeafletWidget.Props, any> {
         gestureHandling: true,
         layers: [
           Leaflet.tileLayer(
-            "https://geodata.nationaalgeoregister.nl/tiles/service/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=brtachtergrondkaart&STYLE=default&FORMAT=image/png&TILEMATRIXSET=EPSG:3857&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
+            "https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/standaard/EPSG:3857/{z}/{x}/{y}.png",
             // /brtachtergrondkaart/EPSG:3857/{z}/{x}/{y}.png",
             {
               attribution:
