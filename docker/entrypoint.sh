@@ -20,7 +20,7 @@ case ${1} in
         exec_as_facetcheck cp -r ./build/assets/dist ./src/config/.bundle;
         ;;
       app:start)
-        exec_as_facetcheck yar run prod:build;
+        exec_as_facetcheck yarn run prod:build;
         exec_as_facetcheck yarn run prod:start;
         ;;
       app:dev)
