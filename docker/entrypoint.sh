@@ -15,16 +15,16 @@ case ${1} in
 
     case ${1} in
       app:bundle)
-        exec_as_facetcheck npm run prod:build;
+        exec_as_facetcheck yarn run prod:build;
         rm -rf ./src/config/.bundle;
         exec_as_facetcheck cp -r ./build/assets/dist ./src/config/.bundle;
         ;;
       app:start)
-        exec_as_facetcheck npm run prod:build;
-        exec_as_facetcheck npm run prod:start;
+        exec_as_facetcheck yar run prod:build;
+        exec_as_facetcheck yarn run prod:start;
         ;;
       app:dev)
-        exec_as_facetcheck npm run dev
+        exec_as_facetcheck yarn run dev
         ;;
     esac
     ;;

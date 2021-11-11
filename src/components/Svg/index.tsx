@@ -1,6 +1,6 @@
 import * as React from "react";
 // import BaseComponent from '../../helpers/BaseComponent'
-import * as getClassName from "classnames";
+import getClassName from "classnames";
 
 /**
 IMPORTANT:

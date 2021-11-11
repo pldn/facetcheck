@@ -7,7 +7,7 @@ A configurable faceted browser for browsing Linked Datasets.
 After cloning this repository, run the following command:
 
 ```sh
-npm ci
+yarn
 ```
 
 ## Running
@@ -15,7 +15,7 @@ npm ci
 After installation, FacetCheck is run with the following command:
 
 ```sh
-npm run dev
+yarn run dev
 ```
 
 ## Debug mode
@@ -41,8 +41,8 @@ Run the following sequence of commands in order to release a new
 version:
 
 ```sh
-npm version <patch|minor|major>
-npm publish
+yarn version <--patch|--minor|--major>
+yarn publish
 git push
 ```
 

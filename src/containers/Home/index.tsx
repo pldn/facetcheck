@@ -2,7 +2,7 @@
 import * as React from "react";
 //import own dependencies
 import { ResourceDescription, Button,Alert } from "../../components";
-import * as getClassName from "classnames";
+import getClassName from "classnames";
 import { connect } from "react-redux";
 import { GlobalState } from "../../reducers";
 import { getMatchingIris, FacetState } from "../../reducers/facets";

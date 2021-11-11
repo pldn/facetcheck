@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import * as getClassName from "classnames";
+import getClassName from "classnames";
 import { NotificationRecordProps, NotificationType, removeNotification } from "../../reducers/notifications";
 // import {Models} from '../../../typings-tmp/swagger'
 

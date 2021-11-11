@@ -100,7 +100,7 @@ export default class TreeNode {
     return this.depth;
   }
   public getNquads(): Promise<string> {
-    const writer = N3.Writer();
+    const writer = new N3.Writer();
     for (const s of this.statements) {
       writer.addQuad(s);
     }

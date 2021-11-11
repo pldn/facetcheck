@@ -1,7 +1,7 @@
 //external dependencies
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import * as getClassName from "classnames";
+import getClassName from "classnames";
 import { getMap } from "../../facetConf";
 import * as Leaflet from "leaflet";
 import * as wellknown from "wellknown";

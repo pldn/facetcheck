@@ -1,7 +1,7 @@
 //external dependencies
 import * as React from "react";
 import { connect } from "react-redux";
-import * as getClassName from "classnames";
+import getClassName from "classnames";
 import { Button } from "react-toolbox/lib/button";
 
 //import own dependencies

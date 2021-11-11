@@ -1,4 +1,4 @@
 import Imm = require("immutable");
 declare module "immutable" {
-  export namespace Record { export type Inst<I> = Readonly<I> & Imm.Record<I>; }
+  export namespace Record { export type Inst<I> = Readonly<I> & Imm.Record<any>; }
 }

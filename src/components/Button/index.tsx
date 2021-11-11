@@ -1,7 +1,7 @@
 //external dependencies
 import * as React from "react";
 
-import * as getClassName from "classnames";
+import getClassName from "classnames";
 //import own dependencies
 declare namespace Button {
   export interface Props extends React.HTMLProps<any> {

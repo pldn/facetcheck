@@ -21,12 +21,6 @@ import * as autoprefixer from "autoprefixer";
 var TerserPlugin = require("terser-webpack-plugin");
 import * as OptimizeCSSAssetsPlugin from "optimize-css-assets-webpack-plugin";
 
-//If you change this value, make sure to also update the postcss.config.js file
-const SUPPORTED_BROWSERS = [
-  "last 3 versions",
-  //or
-  "> 3%"
-];
 // Get enrivonment variables to inject into our app.
 var env = getClientEnvironment();
 const babelLoader = {
@@ -82,7 +76,7 @@ function getStyleLoader(conf: StyleLoaderConf): webpack.RuleSetRule {
     options: {
       ident: "postcss",
       sourceMap: conf.isDev,
-      plugins: () => [autoprefixer({ browsers: SUPPORTED_BROWSERS }), bgImage({ mode: "cutter" })]
+      plugins: () => [autoprefixer(), bgImage({ mode: "cutter" })]
     }
   });
   if (conf.ext.indexOf("scss") >= 0) {
@@ -156,14 +150,14 @@ const conf: webpack.Configuration = {
             cacheDirectory: true,
             babelrc: false,
             presets: [
-              ["@babel/preset-env", { targets: { browsers: SUPPORTED_BROWSERS } }],
+              ["@babel/preset-env"],
               "@babel/preset-typescript",
               "@babel/preset-react"
             ],
             plugins: [
               // plugin-proposal-decorators is only needed if you're using experimental decorators in TypeScript
               ["@babel/plugin-proposal-decorators", { legacy: true }],
-              ["@babel/plugin-proposal-class-properties", { loose: true }],
+              ["@babel/plugin-proposal-class-properties"],
               "react-hot-loader/babel"
             ]
           }
@@ -291,7 +285,7 @@ const conf: webpack.Configuration = {
     ifDev(new webpack.NoEmitOnErrorsPlugin()),
     ifDev(new webpack.IgnorePlugin(/webpack-stats\.json$/)),
     ifDev(new WebpackBuildNotifierPlugin()),
-    // If you require a missing module and then `npm install` it, you still have
+    // If you require a missing module and then `yarn install` it, you still have
     // to restart the development server for Webpack to discover it. This plugin
     // makes the discovery automatic so you don't have to restart.
     // See https://github.com/facebookincubator/create-react-app/issues/186

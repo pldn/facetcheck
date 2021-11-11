@@ -2,7 +2,7 @@
 //import own dependencies
 import * as React from "react";
 //
-import * as getClassName from "classnames";
+import getClassName from "classnames";
 // import {FieldProp} from 'redux-form';
 
 export interface IHamburgerBtnProps {

@@ -1,6 +1,6 @@
 //external dependencies
 import * as React from "react";
-import * as getClassName from "classnames";
+import getClassName from "classnames";
 
 import { TermLiteral, TermLiteralDefault } from "../";
 import * as styles from "./style.module.scss";

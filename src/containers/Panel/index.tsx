@@ -3,7 +3,7 @@ import * as React from "react";
 // import * as Helmet from 'react-helmet';
 import * as _ from "lodash";
 import { connect } from "react-redux";
-import * as getClassName from "classnames";
+import getClassName from "classnames";
 //import own dependencies
 import { RadioGroup, RadioButton } from "react-toolbox/lib/radio";
 

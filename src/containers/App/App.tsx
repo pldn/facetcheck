@@ -5,7 +5,7 @@ import { Helmet,HelmetProps } from "react-helmet";
 
 import { ErrorPage } from "../";
 import { connect } from "react-redux";
-import * as getClassName from "classnames";
+import getClassName from "classnames";
 // import {ActionCreator} from 'redux';
 
 //import own dependencies
@@ -67,7 +67,7 @@ class App extends React.PureComponent<App.Props, App.State> {
 
       meta: [
         { name: "description", content: title },
-        { charset: "utf-8" },
+        { charSet: "utf-8" },
         { property: "og:site_name", content: title },
         // {property: 'og:image', content: clientConfig.branding.logo},
         { property: "og:locale", content: "en_US" },

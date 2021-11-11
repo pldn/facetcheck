@@ -1,7 +1,7 @@
 //external dependencies
 import * as React from "react";
 import * as N3 from "n3";
-import * as getClassName from "classnames";
+import getClassName from "classnames";
 import Tree from '../../helpers/Tree'
 export declare namespace TermLink {
   export interface Props {

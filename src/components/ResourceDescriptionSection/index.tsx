@@ -1,6 +1,6 @@
 //external dependencies
 import * as React from "react";
-import * as getClassNames from "classnames";
+import getClassNames from "classnames";
 // import * as UriJs from "urijs";
 import * as N3 from "n3";
 //import own dependencies

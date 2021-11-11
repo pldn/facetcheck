@@ -10,7 +10,7 @@ import SparqlJson from "../../helpers/SparqlJson";
 import { Facet } from "../";
 const SVGInline = require("react-svg-inline").default;
 import * as _ from "lodash";
-import * as getClassName from "classnames";
+import getClassName from "classnames";
 import SparqlBuilder from "../../helpers/SparqlBuilder";
 
 const provinces:FacetProvinces.Provinces[] = ["limburg"

@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import * as getClassName from "classnames";
+import getClassName from "classnames";
 import { Svg } from "../";
 
 declare namespace NavIcon {

@@ -2,7 +2,7 @@
 import * as React from "react";
 
 import * as N3 from "n3";
-import * as getClassName from "classnames";
+import getClassName from "classnames";
 import * as Immutable from 'immutable'
 //import own dependencies
 import { TermLink, TermLiteral} from "../";

@@ -1,13 +1,13 @@
 //external dependencies
 import * as React from "react";
-import * as getClassNames from "classnames";
+import getClassNames from "classnames";
 // import * as UriJs from "urijs";
 import * as N3 from "n3";
 //import own dependencies
 // import {getLabel,State as LabelsState,fetchLabel} from '../../reducers/labels'
 import { ResourceDescriptionSection } from "../";
 import {ErrorPage} from '../../containers'
-import {getLabel, getWidgets,WidgetConfig,getStatementsAsTree} from '../../reducers/statements'
+import {getLabel, getWidgets,getStatementsAsTree} from '../../reducers/statements'
 
 
 import * as styles from "./style.module.scss"

@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as getClassName from "classnames";
+import getClassName from "classnames";
 
 //import own dependencies
 

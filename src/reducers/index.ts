@@ -20,7 +20,6 @@ import * as statements from "./statements";
 import * as notifications from "./notifications";
 
 
-import { GlobalState } from "./";
 export type GlobalStateAsJs = { [K in keyof GlobalState]: any };
 
 /**

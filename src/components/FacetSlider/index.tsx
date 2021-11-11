@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import * as _ from "lodash";
-// import * as getClassName from "classnames";
+// import getClassName from "classnames";
 import { Facet, TermLiteralNumeric } from "../";
 import { Facet as GenericFacetProps } from "../../reducers/facets";
 import { FACETS } from "../../facetConf";

@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import * as getClassName from "classnames";
+import getClassName from "classnames";
 import SparqlJson from "../../helpers/SparqlJson";
 import SparqlBuilder from "../../helpers/SparqlBuilder";
 import { Facet as FacetProps, setSelectedSearchString } from "../../reducers/facets";
