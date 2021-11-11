@@ -187,7 +187,7 @@ export default class ApiClient {
         };
 
         return resolve(<any>{
-          body: args.sparqlConstruct ? (<any>N3).Parser().parse(body) : body,
+          body: args.sparqlConstruct ? new N3.Parser().parse(body) : body,
           meta
         });
       });
