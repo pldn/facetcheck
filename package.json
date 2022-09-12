@@ -8,8 +8,9 @@
     "build": "npm run prod:build",
     "dev:watch": "better-npm-run watch",
     "dev": "npm run util:clean  && npm run dev:watch",
-    "postpublish": "versionToBranch",
-    "prepublishOnly": "npm run prod:build",
+    "preversion": "isCleanBranch",
+    "postversion": "versionToBranch",
+    "prepublishOnly": "if [ -z \"${CI}\" ]; then echo Publishing is not allowed. Only the CI may publish; exit 1; fi",
     "prod:build": "npm run util:clean && better-npm-run build && tsc  -p tsconfig-build.json",
     "prod:start": "better-npm-run start",
     "upgrade-interactive": "npm-check --skip-unused -u",
@@ -121,6 +122,7 @@
     "@babel/preset-env": "^7.2.0",
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-typescript": "^7.1.0",
+    "@triply/utils": "^1.3.97",
     "@types/autoprefixer": "^9.1.1",
     "@types/chai": "^4.1.7",
     "@types/classnames": "^2.2.6",
@@ -181,5 +183,8 @@
     "webpack-dev-middleware": "^3.4.0",
     "webpack-dev-server": "^3.1.10",
     "webpack-hot-middleware": "^2.24.3"
+  },
+  "publishConfig": {
+    "@triplydb:registry": " https://git.triply.cc/api/v4/projects/393/packages/npm/"
   }
 }
