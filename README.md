@@ -42,12 +42,9 @@ version:
 
 ```sh
 npm version <patch|minor|major>
-yarn publish
-git push
 ```
 
-This will release a new Docker image automatically by the Triply CI
-pipeline.
+The CI will then release a new docker image and npm package automatically.
 
 ## Configuration
 
