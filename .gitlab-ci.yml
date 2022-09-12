@@ -21,7 +21,7 @@ release:
     - |
       echo "//${CI_SERVER_HOST}/api/v4/projects/393/packages/npm/:_authToken=${CI_JOB_TOKEN}" > .npmrc
     - yarn npm publish
-    ./bin/ci/release
+    - ./bin/ci/release
   only:
     refs:
       - /^v-.*$/
