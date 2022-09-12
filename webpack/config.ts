@@ -130,7 +130,7 @@ const conf: webpack.Configuration = {
   },
   resolve: {
     alias: {
-      "@triply/facetcheck/build/src": path.resolve(__dirname, "..", "src")
+      "@triplydb/facetcheck/build/src": path.resolve(__dirname, "..", "src")
       // leaflet_css: __dirname + "/../node_modules/leaflet/dist/leaflet.css",
       // leaflet_marker: __dirname + "/../node_modules/leaflet/dist/images/marker-icon.png",
       // leaflet_marker_2x: __dirname + "/../node_modules/leaflet/dist/images/marker-icon-2x.png",

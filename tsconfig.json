@@ -16,7 +16,7 @@
     "experimentalDecorators": true,
     "baseUrl": ".",
     "paths": {
-      "@triply/facetcheck/build/src/*": ["src/*"]
+      "@triplydb/facetcheck/build/src/*": ["src/*"]
     }
   },
   "compileOnSave": false,

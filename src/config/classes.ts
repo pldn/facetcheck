@@ -1,4 +1,4 @@
-import { ClassConfig } from "@triply/facetcheck/build/src/facetConfUtils";
+import { ClassConfig } from "@triplydb/facetcheck/build/src/facetConfUtils";
 const CLASSES: ClassConfig[] = [
   // cbs:Gemeente_Geografisch
   {

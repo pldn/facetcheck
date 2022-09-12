@@ -41,7 +41,7 @@ Run the following sequence of commands in order to release a new
 version:
 
 ```sh
-yarn version <--patch|--minor|--major>
+npm version <patch|minor|major>
 yarn publish
 git push
 ```
@@ -58,7 +58,7 @@ A FacetCheck configuration is stored in 3 files.
 A FacetCheck browser is configured in file `config.ts`.
 
 ```ts
-import { GlobalConfig } from "@triply/facetcheck/build/src/facetConfUtils";
+import { GlobalConfig } from "@triplydb/facetcheck/build/src/facetConfUtils";
 const conf: GlobalConfig = { … };
 export default conf;
 ```
@@ -163,7 +163,7 @@ Classes are defined in configuration file `classes.ts`, which has the
 following structure:
 
 ```ts
-import { ClassConfig } from "@triply/facetcheck/build/src/facetConfUtils";
+import { ClassConfig } from "@triplydb/facetcheck/build/src/facetConfUtils";
 const CLASSES: ClassConfig[] = [ … ];
 export default CLASSES;
 ```
@@ -236,7 +236,7 @@ Facets are defined in configuration file `facets.ts`, which has the
 following structure:
 
 ```ts
-import { FacetConfig, toEntity } from "@triply/facetcheck/build/src/facetConfUtils";
+import { FacetConfig, toEntity } from "@triplydb/facetcheck/build/src/facetConfUtils";
 import * as _ from "lodash";
 const FACETS: { [property: string]: FacetConfig } = { … };
 export default FACETS;

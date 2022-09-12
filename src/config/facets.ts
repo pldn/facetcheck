@@ -1,4 +1,4 @@
-import { FacetConfig, toEntity } from "@triply/facetcheck/build/src/facetConfUtils";
+import { FacetConfig, toEntity } from "@triplydb/facetcheck/build/src/facetConfUtils";
 import * as _ from "lodash";
 const FACETS: { [property: string]: FacetConfig } = {
   bevolking_SearchTest: {
